@@ -1,0 +1,1 @@
+# unix kinsta inchimediatama
