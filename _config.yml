@@ -2,7 +2,7 @@
 #   Main Configs   #
 # ---------------- #
 baseurl:
-url: https://mazhuang.org
+url: https://unixwinbsd.github.io/unixbsdshell/
 date_format: "ordinal"
 title: 码志
 subtitle: "公众号：闷骚的程序员"
@@ -13,7 +13,7 @@ encoding: "utf-8"
 # 页面左下角显示的年份
 since: 2015
 # 源码仓库，请替换成自己的
-repository: mzlogin/mzlogin.github.io
+repository: unixwinbsd.github.io
 # 对 css 和 js 资源的 cdn 加速配置
 cdn:
     jsdelivr:
@@ -51,7 +51,7 @@ components:
 compress_html:
   clippings: all
   comments: ["<!--", "-->"]
-# 代码高亮风格，支持的 theme 列表见 https://github.com/mzlogin/rouge-themes
+# 代码高亮风格，支持的 theme 列表见 https://unixwinbsd.github.io/unixbsdshell/
 highlight_theme: github
 
 # ---------------- #
