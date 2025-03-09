@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible"
+            content="IE=edge">
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/icon/apple-touch-icon.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/icon/favicon-32x32.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/icon/favicon-16x16.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/assets/icon/favicon-96x96.png" />
+<link rel="manifest"
+      href="/assets/icon/site.webmanifest" />
+<meta name="msapplication-TileColor"
+      content="#00a300" />
+<meta name="theme-color"
+      content="#ffffff" />
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>A Tale of Performance and Bad SQL Usage | UnixBSDShell</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="A Tale of Performance and Bad SQL Usage" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The other day I was looking at telemetry for one of my websites to try and finally figure out why I was running into my telemetry cap, which I had been putting off for a while. I’m on the free Application Insights tier, so I only get 1 GB a month and was needing to sample to only 4% of traffic to remain under the cap, which didn’t seem right considering the traffic that site gets." />
+<meta property="og:description" content="The other day I was looking at telemetry for one of my websites to try and finally figure out why I was running into my telemetry cap, which I had been putting off for a while. I’m on the free Application Insights tier, so I only get 1 GB a month and was needing to sample to only 4% of traffic to remain under the cap, which didn’t seem right considering the traffic that site gets." />
+<link rel="canonical" href="http://192.168.5.71:4000/unixbsdshell/a-tale-of-performance-and-bad-sql-usage/" />
+<meta property="og:url" content="http://192.168.5.71:4000/unixbsdshell/a-tale-of-performance-and-bad-sql-usage/" />
+<meta property="og:site_name" content="UnixBSDShell" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-03-24T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A Tale of Performance and Bad SQL Usage" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2018-03-24T00:00:00+07:00","datePublished":"2018-03-24T00:00:00+07:00","description":"The other day I was looking at telemetry for one of my websites to try and finally figure out why I was running into my telemetry cap, which I had been putting off for a while. I’m on the free Application Insights tier, so I only get 1 GB a month and was needing to sample to only 4% of traffic to remain under the cap, which didn’t seem right considering the traffic that site gets.","headline":"A Tale of Performance and Bad SQL Usage","mainEntityOfPage":{"@type":"WebPage","@id":"http://192.168.5.71:4000/unixbsdshell/a-tale-of-performance-and-bad-sql-usage/"},"url":"http://192.168.5.71:4000/unixbsdshell/a-tale-of-performance-and-bad-sql-usage/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet"
+            href="/unixbsdshell/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://192.168.5.71:4000/unixbsdshell/feed.xml" title="UnixBSDShell" /></head><body><header class="site-header">
+
+    <div class="wrapper">
+        <a class="site-title"
+           rel="author"
+           href="/unixbsdshell/">UnixBSDShell</a>
+
+        <nav class="site-nav">
+            <input type="checkbox"
+                   id="nav-trigger"
+                   class="nav-trigger" />
+            <label for="nav-trigger">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 18 15"
+                         width="18px"
+                         height="15px">
+                        <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+                    </svg>
+                </span>
+            </label>
+
+            <div class="trigger"><a class="page-link"
+                   href="/unixbsdshell/categories/">Categories</a><a class="page-link"
+                   href="/unixbsdshell/about/">About</a></div>
+        </nav>
+
+        <a href="/unixbsdshell/"
+           class="site-banner">
+            <img src="/unixbsdshell/assets/banner.png"
+                 alt="David's Blog">
+        </a>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+    </div>
+</header><main class="page-content"
+          aria-label="Content">
+        <div class="wrapper">
+            <div class="post-nav"><span class="post-previous">
+        <a href="/trimming-unnecessary-dependencies-from-projects/"
+           rel="prev">← Previous Post</a>
+    </span><span class="post-next">
+        <a href="/learn-span-by-implementing-a-high-performance-csv-parser/"
+           rel="next">Next Post →</a>
+    </span></div>
+
+<article class="post h-entry"
+         itemscope
+         itemtype="http://schema.org/BlogPosting">
+
+    <header class="post-header">
+        <h1 class="post-title p-name"
+            itemprop="name headline">A Tale of Performance and Bad SQL Usage</h1>
+        <p class="post-meta">
+            <time class="dt-published"
+                  datetime="2018-03-24T00:00:00+07:00"
+                  itemprop="datePublished">
+                Mar 24, 2018
+            </time>• Posted in
+            
+            <a href="/categories/#.net">.NET</a></p>
+    </header>
+
+    <div class="post-content e-content"
+         itemprop="articleBody">
+        <p>The other day I was looking at telemetry for one of my <a href="https://clickerheroestracker.azurewebsites.net/" target="_blank">websites</a> to try and finally figure out why I was running into my telemetry cap, which I had been putting off for a while. I’m on the free <a href="https://azure.microsoft.com/en-us/services/application-insights/" target="_blank">Application Insights</a> tier, so I only get 1 GB a month and was needing to sample to only 4% of traffic to remain under the cap, which didn’t seem right considering the traffic that site gets.</p>
+
+<p>What I found is that the <code class="language-plaintext highlighter-rouge">dependencies</code> was just being spammed with similar SQL calls:</p>
+
+<p><a href="/assets/SqlCalls.png"><img src="/assets/SqlCalls.png" alt="Similar SQL calls" class="center" /></a></p>
+
+<p>And based on the behavior of the website, I knew that all of those calls listed were part of a single web request and <a href="https://docs.microsoft.com/en-us/sql/t-sql/language-elements/transactions-transact-sql" target="_blank">SQL transaction</a>. At the time, I originally implemented this, it seems that I was lazy and just put a bunch of separate <code class="language-plaintext highlighter-rouge">INSERT INTO</code> statements in one transaction. Note that I manually craft the SQL queries in my app (I know, the horror!) because <a href="https://docs.microsoft.com/en-us/aspnet/entity-framework" target="_blank">Entity Framework</a> tends to have pretty bad performance despite being a pretty good programming interface, and <a href="https://docs.microsoft.com/en-us/sql/relational-databases/stored-procedures/stored-procedures-database-engine" target="_blank">stored procedures</a> felt a bit <a href="https://docs.microsoft.com/en-us/sql/relational-databases/tables/use-table-valued-parameters-database-engine" target="_blank">awkward to use when the inputs are tables</a>. Still, judgement may still be warranted this practice, but it’s what I have right now.</p>
+
+<p>In any case, I ended up <a href="https://github.com/dfederm/ClickerHeroesTracker/commit/da320be6c60ab8422a54842fc3eac996e77ec1cb" target="_blank">combining the <code class="language-plaintext highlighter-rouge">INSERT INTO</code> statements</a> for similar tables, which cut the number of SQL calls from 40 to 7 for this sort of request. The results were a drastic decrease in the number of SQL calls and thus telemetry entries:</p>
+
+<p><a href="/assets/SqlCallsAfter.png"><img src="/assets/SqlCallsAfter.png" alt="SQL calls after" class="center" /></a></p>
+
+<p>This actually was enough of a cut for me to increase my sampling to about 25%. That’s still lower than I’d like, but it’s a great improvement. The majority of the remaining excess is the SQL calls made by <a href="https://docs.microsoft.com/en-us/aspnet/entity-framework" target="_blank">Entity Framework</a> since I’m using it for <a href="https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?tabs=visual-studio%2Caspnetcore2x" target="_blank">Identity</a> and <a href="https://github.com/openiddict/openiddict-core" target="_blank">Authentication</a>.</p>
+
+<p>One very interesting and initially unexpected side-effect of this change is that each of the individual SQL calls seems to take approximately the same amount of time as before, about 40 or so milliseconds per call (with some outliers where I need to use <code class="language-plaintext highlighter-rouge">HOLDLOCK</code>), so this actually had an additional benefit of <strong>cutting end to end latency for the request to about one third of what it previously was</strong>.</p>
+
+<p><a href="/assets/SqlLatency.png"><img src="/assets/SqlLatency.png" alt="SQL latency" class="center" /></a></p>
+
+<p>I’m considering taking this even further and composing one massive SQL query, including the transaction statements to just have one single SQL call per request. The moral of the story though is to just combine calls when it’s practical to do so. In my case, it was pretty straightforward and good sense to combine a loop of <code class="language-plaintext highlighter-rouge">INSERT INTO</code> statements into a single statement, as <code class="language-plaintext highlighter-rouge">INSERT INTO</code> easily allows for that.</p>
+
+<p><a href="https://docs.microsoft.com/en-us/sql/relational-databases/stored-procedures/stored-procedures-database-engine" target="_blank">Stored procedures</a> are the obvious solution to this problem, and are one of the reasons they’re highly recommended by pretty much anyone who knows anything about SQL, including some readers of this article who I’m sure are livid by avoidance of them, but I personally find the awkwardness of use combined with the fact that my business logic ends up being split between my app and database to be unattractive enough to pass up. This investigation showed me however that when choosing that path one needs to be very careful when crafting their SQL queries and be cognizant of the number of individual calls being made to avoid performance pitfalls.</p>
+</div><a class="u-url"
+       href="/unixbsdshell/a-tale-of-performance-and-bad-sql-usage/"
+       hidden></a>
+</article>
+        </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url"
+          href="/unixbsdshell/"></data>
+
+    <div class="wrapper">
+
+        <div class="footer-col-wrapper">
+            <div class="footer-col">
+                <h2 class="footer-heading">UnixBSDShell</h2>
+                <p>A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others</p>
+            </div>
+            <div class="footer-col">
+                <p>&copy; Copyright unixwinbsd</p>
+                <p>
+                    <a href="/privacy-policy/">Privacy Policy</a>
+                    &bull;
+                    <a href="/license/">License</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+
+    </div>
+
+</footer>
+</body>
+
+</html>

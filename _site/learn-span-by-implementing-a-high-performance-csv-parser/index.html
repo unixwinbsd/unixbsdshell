@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible"
+            content="IE=edge">
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/icon/apple-touch-icon.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/icon/favicon-32x32.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/icon/favicon-16x16.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/assets/icon/favicon-96x96.png" />
+<link rel="manifest"
+      href="/assets/icon/site.webmanifest" />
+<meta name="msapplication-TileColor"
+      content="#00a300" />
+<meta name="theme-color"
+      content="#ffffff" />
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Learn Span by Implementing a high-performance CSV Parser | UnixBSDShell</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Learn Span by Implementing a high-performance CSV Parser" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Ever since I first heard about Span&lt;T&gt;, I’ve been wanting play around with using it. It’s a ref struct, so the semantics of using this type and the restrictions that go along with it are best understood by actually trying to use it. So I decided to build a simple CSV parser and see how the performance compared to other mainstream CSV parsers." />
+<meta property="og:description" content="Ever since I first heard about Span&lt;T&gt;, I’ve been wanting play around with using it. It’s a ref struct, so the semantics of using this type and the restrictions that go along with it are best understood by actually trying to use it. So I decided to build a simple CSV parser and see how the performance compared to other mainstream CSV parsers." />
+<link rel="canonical" href="http://192.168.5.71:4000/unixbsdshell/learn-span-by-implementing-a-high-performance-csv-parser/" />
+<meta property="og:url" content="http://192.168.5.71:4000/unixbsdshell/learn-span-by-implementing-a-high-performance-csv-parser/" />
+<meta property="og:site_name" content="UnixBSDShell" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-07-19T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Learn Span by Implementing a high-performance CSV Parser" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2018-07-19T00:00:00+07:00","datePublished":"2018-07-19T00:00:00+07:00","description":"Ever since I first heard about Span&lt;T&gt;, I’ve been wanting play around with using it. It’s a ref struct, so the semantics of using this type and the restrictions that go along with it are best understood by actually trying to use it. So I decided to build a simple CSV parser and see how the performance compared to other mainstream CSV parsers.","headline":"Learn Span by Implementing a high-performance CSV Parser","mainEntityOfPage":{"@type":"WebPage","@id":"http://192.168.5.71:4000/unixbsdshell/learn-span-by-implementing-a-high-performance-csv-parser/"},"url":"http://192.168.5.71:4000/unixbsdshell/learn-span-by-implementing-a-high-performance-csv-parser/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet"
+            href="/unixbsdshell/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://192.168.5.71:4000/unixbsdshell/feed.xml" title="UnixBSDShell" /></head><body><header class="site-header">
+
+    <div class="wrapper">
+        <a class="site-title"
+           rel="author"
+           href="/unixbsdshell/">UnixBSDShell</a>
+
+        <nav class="site-nav">
+            <input type="checkbox"
+                   id="nav-trigger"
+                   class="nav-trigger" />
+            <label for="nav-trigger">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 18 15"
+                         width="18px"
+                         height="15px">
+                        <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+                    </svg>
+                </span>
+            </label>
+
+            <div class="trigger"><a class="page-link"
+                   href="/unixbsdshell/categories/">Categories</a><a class="page-link"
+                   href="/unixbsdshell/about/">About</a></div>
+        </nav>
+
+        <a href="/unixbsdshell/"
+           class="site-banner">
+            <img src="/unixbsdshell/assets/banner.png"
+                 alt="David's Blog">
+        </a>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+    </div>
+</header><main class="page-content"
+          aria-label="Content">
+        <div class="wrapper">
+            <div class="post-nav"><span class="post-previous">
+        <a href="/a-tale-of-performance-and-bad-sql-usage/"
+           rel="prev">← Previous Post</a>
+    </span><span class="post-next">
+        <a href="/migrating-from-webcore-to-home-assistant/"
+           rel="next">Next Post →</a>
+    </span></div>
+
+<article class="post h-entry"
+         itemscope
+         itemtype="http://schema.org/BlogPosting">
+
+    <header class="post-header">
+        <h1 class="post-title p-name"
+            itemprop="name headline">Learn Span&lt;T&gt; by Implementing a high-performance CSV Parser</h1>
+        <p class="post-meta">
+            <time class="dt-published"
+                  datetime="2018-07-19T00:00:00+07:00"
+                  itemprop="datePublished">
+                Jul 19, 2018
+            </time>• Posted in
+            
+            <a href="/categories/#.net">.NET</a></p>
+    </header>
+
+    <div class="post-content e-content"
+         itemprop="articleBody">
+        <p>Ever since I <a href="https://channel9.msdn.com/Events/Connect/2017/T125" target="_blank">first</a> <a href="https://msdn.microsoft.com/en-us/magazine/mt814808.aspx?f=255&amp;MSPPError=-2147217396" target="_blank">heard</a> <a href="https://github.com/dotnet/corefxlab/blob/master/docs/specs/span.md" target="_blank">about</a> <a href="http://adamsitnik.com/Span/" target="_blank"><code class="language-plaintext highlighter-rouge">Span&lt;T&gt;</code></a>, I’ve been wanting play around with using it. It’s a <a href="https://docs.microsoft.com/en-us/dotnet/csharp/reference-semantics-with-value-types#ref-struct-type" target="_blank"><code class="language-plaintext highlighter-rouge">ref struct</code></a>, so the semantics of using this type and the restrictions that go along with it are best understood by actually trying to use it. So I decided to build a simple CSV parser and see how the performance compared to other mainstream CSV parsers.</p>
+
+<p>You can find the full code on <a href="https://github.com/dfederm/DelimiterSeparatedTextParser" target="_blank">GitHub</a> and reference the package from <a href="https://www.nuget.org/packages/DelimiterSeparatedTextParser" target="_blank">NuGet</a>.</p>
+
+<p>As the main goal of this project was to exercise <code class="language-plaintext highlighter-rouge">Span&lt;T&gt;</code> and, as we’ll later see, <code class="language-plaintext highlighter-rouge">Memory&lt;T&gt;</code>, so for the initial version I decided to ignore some of the details around CSV parsing such as <a href="https://github.com/dfederm/DelimiterSeparatedTextParser/issues/1" target="_blank">handling quotes</a>, <a href="https://github.com/dfederm/DelimiterSeparatedTextParser/issues/2" target="_blank">trimming values</a>, and <a href="https://github.com/dfederm/DelimiterSeparatedTextParser/issues/3" target="_blank">handling comments</a>.</p>
+
+<h2 id="initial-implementation">Initial Implementation</h2>
+
+<p>For my initial implementation of a parser, I simply created a class which took a <code class="language-plaintext highlighter-rouge">ReadOnlyMemory&lt;char&gt;</code> as the content and two <code class="language-plaintext highlighter-rouge">ReadOnlySpan&lt;char&gt;</code>s as the value and record delimiters for example a comma and newline respectively for a CSV. Then in the constructor I would walk the entire content saving the index and length for each value in each row as a <code class="language-plaintext highlighter-rouge">List&lt;List&lt;long&gt;&gt;</code>. Finally, There are members on the class to allow getting the number of records, the number of values in a particular record, and a particular value. Already you may have some questions, so let’s dig into the details.</p>
+
+<p>Firstly, I needed to use a <code class="language-plaintext highlighter-rouge">ReadOnlyMemory&lt;char&gt;</code> to store the content, as <code class="language-plaintext highlighter-rouge">ref struct</code>s like <code class="language-plaintext highlighter-rouge">Span&lt;T&gt;</code> are stack-only and so can only be used in method parameters and local variables, while <code class="language-plaintext highlighter-rouge">Memory&lt;T&gt;</code> is a “regular” struct which can be stored on the heap. <code class="language-plaintext highlighter-rouge">ReadOnlyMemory&lt;T&gt;</code> can be sliced just as <code class="language-plaintext highlighter-rouge">Span&lt;T&gt;</code> can be without allocating or copying buffers around.</p>
+
+<p>I wanted the parser to allow random-access into the values of the CSV, so I needed to store the index where each value started in the content, as well the length. To save on memory, I decided to store this data in <code class="language-plaintext highlighter-rouge">List&lt;List&lt;long&gt;&gt;</code> where the outer list represented a list of the records, the inner list represented the list of the values within a record, and the <code class="language-plaintext highlighter-rouge">long</code> (<code class="language-plaintext highlighter-rouge">int64</code>) store for each value was constructed by fusing the index and length data, both <code class="language-plaintext highlighter-rouge">int</code>s (<code class="language-plaintext highlighter-rouge">int32</code>), using <a href="https://stackoverflow.com/a/33325313/7065632" target="_blank">bit shifting</a>.</p>
+
+<p>After running some <a href="https://github.com/dfederm/DelimiterSeparatedTextParser/tree/f651f1a107fbbaed9c869725fa2e8231da03b198#benchmark-results" target="_blank">benchmarks</a>, I found that already this implementation was better than other libraries, both in terms of speed and allocations.</p>
+
+<p>Benchmark results after iteration 1:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Data Size</th>
+      <th style="text-align: right">Mean</th>
+      <th style="text-align: right">Scaled</th>
+      <th style="text-align: right">Allocated</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Large</strong></td>
+      <td style="text-align: right"><strong>1,221.2610 us</strong></td>
+      <td style="text-align: right"><strong>0.59</strong></td>
+      <td style="text-align: right"><strong>16111.39 KB</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Large</td>
+      <td style="text-align: right">93,149.630 us</td>
+      <td style="text-align: right">1.00</td>
+      <td style="text-align: right">85937.55 KB</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Large</td>
+      <td style="text-align: right">169,713.472 us</td>
+      <td style="text-align: right">1.82</td>
+      <td style="text-align: right">25072.83 KB</td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Large</td>
+      <td style="text-align: right">63,043.752 us</td>
+      <td style="text-align: right">0.68</td>
+      <td style="text-align: right">47227.2 KB</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Large</td>
+      <td style="text-align: right">109,165.716 us</td>
+      <td style="text-align: right">1.17</td>
+      <td style="text-align: right">182031.39 KB</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Large</td>
+      <td style="text-align: right">206,209.245 us</td>
+      <td style="text-align: right">2.21</td>
+      <td style="text-align: right">173448.95 KB</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Large</td>
+      <td style="text-align: right">278,066.185 us</td>
+      <td style="text-align: right">2.99</td>
+      <td style="text-align: right">83321.9 KB</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Medium</strong></td>
+      <td style="text-align: right"><strong>307.973 us</strong></td>
+      <td style="text-align: right"><strong>0.76</strong></td>
+      <td style="text-align: right"><strong>157.07 KB</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Medium</td>
+      <td style="text-align: right">404.962 us</td>
+      <td style="text-align: right">1.00</td>
+      <td style="text-align: right">859.36 KB</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">2,406.140 us</td>
+      <td style="text-align: right">5.94</td>
+      <td style="text-align: right">322.31 KB</td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">717.625 us</td>
+      <td style="text-align: right">1.77</td>
+      <td style="text-align: right">796.22 KB</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">1,066.085 us</td>
+      <td style="text-align: right">2.63</td>
+      <td style="text-align: right">1820.45 KB</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Medium</td>
+      <td style="text-align: right">2,050.169 us</td>
+      <td style="text-align: right">5.06</td>
+      <td style="text-align: right">1747.09 KB</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Medium</td>
+      <td style="text-align: right">2,069.213 us</td>
+      <td style="text-align: right">5.11</td>
+      <td style="text-align: right">851.4 KB</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Small</strong></td>
+      <td style="text-align: right"><strong>3.269 us</strong></td>
+      <td style="text-align: right"><strong>0.84</strong></td>
+      <td style="text-align: right"><strong>1.96 KB</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Small</td>
+      <td style="text-align: right">3.890 us</td>
+      <td style="text-align: right">1.00</td>
+      <td style="text-align: right">8.58 KB</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Small</td>
+      <td style="text-align: right">1,059.621 us</td>
+      <td style="text-align: right">272.45</td>
+      <td style="text-align: right">74.74 KB</td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Small</td>
+      <td style="text-align: right">22.811 us</td>
+      <td style="text-align: right">5.87</td>
+      <td style="text-align: right">203.89 KB</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Small</td>
+      <td style="text-align: right">10.769 us</td>
+      <td style="text-align: right">2.77</td>
+      <td style="text-align: right">18.34 KB</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Small</td>
+      <td style="text-align: right">22.715 us</td>
+      <td style="text-align: right">5.84</td>
+      <td style="text-align: right">28.7 KB</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Small</td>
+      <td style="text-align: right">687.064 us</td>
+      <td style="text-align: right">176.66</td>
+      <td style="text-align: right">31.07 KB</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="splitting-out-a-no-allocation-reader">Splitting Out a No-allocation Reader</h2>
+
+<p>Next I decided to extract the reader from the parser so that scenarios which didn’t need random-access to the data didn’t need the allocations from the index data. Basically the reader would advance the memory as the consumer read it, much like an <code class="language-plaintext highlighter-rouge">IEnumerator&lt;T&gt;</code> or <code class="language-plaintext highlighter-rouge">TextReader</code>. Additionally, the parser was simplified as it could use the reader to enumerate the values and simply worry about building up the index and length data for random-access.</p>
+
+<p>After categorizing the benchmarks into Readers vs Parsers, the <a href="https://github.com/dfederm/DelimiterSeparatedTextParser/tree/10e5d738e0e897bfcdf1db384231238c8a178c0e#benchmark-results" target="_blank">results</a> showed that the reader implementation was far and away better than other libraries which exposed reader-like APIs. The closest contender was for a large data set using <a href="https://www.nuget.org/packages/FastCsvParser/" target="_blank">FastCsvParser</a>, which only has a couple hundred downloads on NuGet.org as of this writing and still was took 3.5x longer to read the data. It requires zero allocations as it simply just stores and advances a span as well as a few other scalar fields.</p>
+
+<p>Benchmark results after iteration 2:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Data Size</th>
+      <th style="text-align: right">Mean</th>
+      <th style="text-align: right">Scaled</th>
+      <th style="text-align: right">Allocated</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>My Reader</strong></td>
+      <td><strong>Large</strong></td>
+      <td style="text-align: right"><strong>16,349.969 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>0 B</strong></td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Large</td>
+      <td style="text-align: right">57,649.310 us</td>
+      <td style="text-align: right">3.53</td>
+      <td style="text-align: right">48360656 B</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Large</td>
+      <td style="text-align: right">103,398.356 us</td>
+      <td style="text-align: right">6.32</td>
+      <td style="text-align: right">186400144 B</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Large</td>
+      <td style="text-align: right">194,618.607 us</td>
+      <td style="text-align: right">11.90</td>
+      <td style="text-align: right">177611728 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Large</strong></td>
+      <td style="text-align: right"><strong>53,862.981 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>16498940 B</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Large</td>
+      <td style="text-align: right">87,535.705 us</td>
+      <td style="text-align: right">1.63</td>
+      <td style="text-align: right">88000046 B</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Large</td>
+      <td style="text-align: right">157,429.493 us</td>
+      <td style="text-align: right">2.92</td>
+      <td style="text-align: right">25674400 B</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Large</td>
+      <td style="text-align: right">259,745.145 us</td>
+      <td style="text-align: right">4.82</td>
+      <td style="text-align: right">85322480 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Reader</strong></td>
+      <td><strong>Medium</strong></td>
+      <td style="text-align: right"><strong>161.729 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>0 B</strong></td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">640.133 us</td>
+      <td style="text-align: right">3.96</td>
+      <td style="text-align: right">815328 B</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">1,024.653 us</td>
+      <td style="text-align: right">6.34</td>
+      <td style="text-align: right">1864144 B</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Medium</td>
+      <td style="text-align: right">1,953.924 us</td>
+      <td style="text-align: right">12.08</td>
+      <td style="text-align: right">1789016 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Medium</strong></td>
+      <td style="text-align: right"><strong>321.522 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>160840 B</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Medium</td>
+      <td style="text-align: right">382.312 us</td>
+      <td style="text-align: right">1.19</td>
+      <td style="text-align: right">879984 B</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">2,249.190 us</td>
+      <td style="text-align: right">7.00</td>
+      <td style="text-align: right">330045 B</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Medium</td>
+      <td style="text-align: right">1,901.365 us</td>
+      <td style="text-align: right">5.91</td>
+      <td style="text-align: right">871837 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Reader</strong></td>
+      <td><strong>Small</strong></td>
+      <td style="text-align: right"><strong>1.647 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>0 B</strong></td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Small</td>
+      <td style="text-align: right">22.443 us</td>
+      <td style="text-align: right">13.62</td>
+      <td style="text-align: right">208784 B</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Small</td>
+      <td style="text-align: right">10.202 us</td>
+      <td style="text-align: right">6.19</td>
+      <td style="text-align: right">18784 B</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Small</td>
+      <td style="text-align: right">21.441 us</td>
+      <td style="text-align: right">13.02</td>
+      <td style="text-align: right">29392 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Small</strong></td>
+      <td style="text-align: right"><strong>3.385 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>2008 B</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Small</td>
+      <td style="text-align: right">3.703 us</td>
+      <td style="text-align: right">1.09</td>
+      <td style="text-align: right">8784 B</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Small</td>
+      <td style="text-align: right">1,018.881 us</td>
+      <td style="text-align: right">301.01</td>
+      <td style="text-align: right">76532 B</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Small</td>
+      <td style="text-align: right">664.814 us</td>
+      <td style="text-align: right">196.41</td>
+      <td style="text-align: right">31812 B</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="to-ref-struct-or-not-to-ref-struct">To <code class="language-plaintext highlighter-rouge">ref struct</code> or not to <code class="language-plaintext highlighter-rouge">ref struct</code></h2>
+<p>I found that using the reader API was fairly difficult, and I was unable to write convenience subclasses (eg. CSV reader, TSV reader) due to the fact that the reader was defined as a <code class="language-plaintext highlighter-rouge">ref struct</code> so that it could hold other <code class="language-plaintext highlighter-rouge">ref struct</code>s like <code class="language-plaintext highlighter-rouge">ReadOnlySpan&lt;char&gt;</code>. Because of this, the reader is unable to be stored as a field in a class, used in async APIs, or be on the heap in any other way. I decided that instead it could just hold a <code class="language-plaintext highlighter-rouge">ReadOnlyMemory&lt;char&gt;</code> and become a class for easier usage.</p>
+
+<p>Unfortunately, based on the <a href="https://github.com/dfederm/DelimiterSeparatedTextParser/tree/11012e179e267da4b4a3999e5c3402a2849eedac#benchmark-results" target="_blank">benchmark results</a>, this affected performance non-trivially and slowed down the reader by ~50%. The reader was still faster than the other implementations I tested against, but it was interesting to see just how optimized <code class="language-plaintext highlighter-rouge">Span&lt;T&gt;</code> and <code class="language-plaintext highlighter-rouge">ref struct</code> in general are.</p>
+
+<p>Because of this, I may consider bringing back the <code class="language-plaintext highlighter-rouge">ref struct</code> implementation for usages which aren’t limited by it.</p>
+
+<p>Benchmark results after iteration 3:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Data Size</th>
+      <th style="text-align: right">Mean</th>
+      <th style="text-align: right">Scaled</th>
+      <th style="text-align: right">Allocated</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>My Reader</strong></td>
+      <td><strong>Large</strong></td>
+      <td style="text-align: right"><strong>24,929.372 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>0 B</strong></td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Large</td>
+      <td style="text-align: right">58,659.486 us</td>
+      <td style="text-align: right">2.35</td>
+      <td style="text-align: right">48360656 B</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Large</td>
+      <td style="text-align: right">105,256.008 us</td>
+      <td style="text-align: right">4.22</td>
+      <td style="text-align: right">186400144 B</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Large</td>
+      <td style="text-align: right">196,541.906 us</td>
+      <td style="text-align: right">7.89</td>
+      <td style="text-align: right">177611728 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Large</strong></td>
+      <td style="text-align: right"><strong>59,266.792 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>16499337 B</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Large</td>
+      <td style="text-align: right">89,254.220 us</td>
+      <td style="text-align: right">1.51</td>
+      <td style="text-align: right">88000057 B</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Large</td>
+      <td style="text-align: right">160,947.603 us</td>
+      <td style="text-align: right">2.72</td>
+      <td style="text-align: right">25674926 B</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Large</td>
+      <td style="text-align: right">265,223.622 us</td>
+      <td style="text-align: right">4.48</td>
+      <td style="text-align: right">85322864 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Reader</strong></td>
+      <td><strong>Medium</strong></td>
+      <td style="text-align: right"><strong>244.256 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>96 B</strong></td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">686.830 us</td>
+      <td style="text-align: right">2.81</td>
+      <td style="text-align: right">815328 B</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">1,050.241 us</td>
+      <td style="text-align: right">4.30</td>
+      <td style="text-align: right">1864144 B</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Medium</td>
+      <td style="text-align: right">1,957.324 us</td>
+      <td style="text-align: right">8.01</td>
+      <td style="text-align: right">1789016 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Medium</strong></td>
+      <td style="text-align: right"><strong>375.222 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>160936 B</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Medium</td>
+      <td style="text-align: right">394.238 us</td>
+      <td style="text-align: right">1.05</td>
+      <td style="text-align: right">879984 B</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Medium</td>
+      <td style="text-align: right">2,311.955 us</td>
+      <td style="text-align: right">6.16</td>
+      <td style="text-align: right">330044 B</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Medium</td>
+      <td style="text-align: right">2,014.732 us</td>
+      <td style="text-align: right">5.37</td>
+      <td style="text-align: right">871837 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Reader</strong></td>
+      <td><strong>Small</strong></td>
+      <td style="text-align: right"><strong>2.494 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>96 B</strong></td>
+    </tr>
+    <tr>
+      <td>FastCsvParser</td>
+      <td>Small</td>
+      <td style="text-align: right">22.896 us</td>
+      <td style="text-align: right">9.18</td>
+      <td style="text-align: right">208784 B</td>
+    </tr>
+    <tr>
+      <td>CsvTextFieldParser</td>
+      <td>Small</td>
+      <td style="text-align: right">10.506 us</td>
+      <td style="text-align: right">4.21</td>
+      <td style="text-align: right">18784 B</td>
+    </tr>
+    <tr>
+      <td>CsvHelper</td>
+      <td>Small</td>
+      <td style="text-align: right">21.624 us</td>
+      <td style="text-align: right">8.67</td>
+      <td style="text-align: right">29392 B</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+      <td style="text-align: right"> </td>
+    </tr>
+    <tr>
+      <td><strong>My Parser</strong></td>
+      <td><strong>Small</strong></td>
+      <td style="text-align: right"><strong>3.985 us</strong></td>
+      <td style="text-align: right"><strong>1.00</strong></td>
+      <td style="text-align: right"><strong>2104 B</strong></td>
+    </tr>
+    <tr>
+      <td>StringSplit</td>
+      <td>Small</td>
+      <td style="text-align: right">3.825 us</td>
+      <td style="text-align: right">0.96</td>
+      <td style="text-align: right">8784 B</td>
+    </tr>
+    <tr>
+      <td>TinyCsvParser</td>
+      <td>Small</td>
+      <td style="text-align: right">1,050.156 us</td>
+      <td style="text-align: right">263.60</td>
+      <td style="text-align: right">76532 B</td>
+    </tr>
+    <tr>
+      <td>FileHelpers</td>
+      <td>Small</td>
+      <td style="text-align: right">680.903 us</td>
+      <td style="text-align: right">170.91</td>
+      <td style="text-align: right">31812 B</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="next-steps">Next Steps</h2>
+<p>While analyzing these benchmarks, I was surprised to find that, the simple and obvious <code class="language-plaintext highlighter-rouge">string.Split</code> implementation was better than most the other libraries I tested against. One explanation could be that those libraries are optimized for usability rather than performance, for example mapping the records to a class. However, at least in some cases this case be explained by “streamability”. In my benchmarks, I loaded the entire content into memory as one big string prior to running each benchmark. I suspect that in real-world conditions like parsing the content from the disk or network, some of these libraries would perform much better. In fact, my implementation suffers from the same problem since it requires the entire buffer at once.</p>
+
+<p>So the next step is to continue this exploration using <a href="https://blogs.msdn.microsoft.com/dotnet/2018/07/09/system-io-pipelines-high-performance-io-in-net/" target="_blank">System.IO.Pipelines</a>. Stay tuned for a follow up post about that!</p>
+</div><a class="u-url"
+       href="/unixbsdshell/learn-span-by-implementing-a-high-performance-csv-parser/"
+       hidden></a>
+</article>
+        </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url"
+          href="/unixbsdshell/"></data>
+
+    <div class="wrapper">
+
+        <div class="footer-col-wrapper">
+            <div class="footer-col">
+                <h2 class="footer-heading">UnixBSDShell</h2>
+                <p>A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others</p>
+            </div>
+            <div class="footer-col">
+                <p>&copy; Copyright unixwinbsd</p>
+                <p>
+                    <a href="/privacy-policy/">Privacy Policy</a>
+                    &bull;
+                    <a href="/license/">License</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+
+    </div>
+
+</footer>
+</body>
+
+</html>
