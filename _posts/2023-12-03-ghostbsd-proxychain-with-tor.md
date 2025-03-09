@@ -2,7 +2,7 @@
 layout: post
 title: Use Proxy Chains with Tor To Surf Anonymously on GhostBSD
 categories: [Anonymous]
-tags: [Anonymous]
+tags: [tor, cmd, proxy, proxy chain, bsd, unix, ghostbsd, freebsd]
 comments: true
 ---
 
