@@ -2,8 +2,8 @@
 title: UnixBSDShell
 email: datainchi@gmail.com
 description: A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others
-baseurl: ""
-url: "https://unixwinbsd.github.io/unixbsdshell/"
+baseurl: "/unixbsdshell"
+url: "https://unixwinbsd.github.io"
 
 # Site settings
 permalink: /:title/
