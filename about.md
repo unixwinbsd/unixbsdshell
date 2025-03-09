@@ -5,7 +5,7 @@ order: 2
 ---
 
 <p>
-<img src="/assets/IwanSetiawan.jpg" width="200" alt="Iwan Setiawan" style="float: left; margin: 0 1.5em 15px 0; min-width: 150px; max-width: 45%" />
+<img src="[/assets/IwanSetiawan.jpg](https://raw.githubusercontent.com/unixwinbsd/unixbsdshell/refs/heads/gh-pages/assets/IwanSetiawan.jpg)" width="200" alt="Iwan Setiawan" style="float: left; margin: 0 1.5em 15px 0; min-width: 150px; max-width: 45%" />
 
 My name is Iwan Setiawan. I'm a programmer, gamer, and generally an all-around nerd. I currently live in the Seattle, WA area and have worked for Microsoft since 2010, although the content and opinions on this blog are completely my own. I blog about technology in general with an emphasis on programming, specifically web technologies and .NET/C#. I'm originally from Texas and went to school at the University of Texas at Austin.
 <br style="clear:both;" />
