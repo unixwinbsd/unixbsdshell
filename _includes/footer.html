@@ -1,0 +1,28 @@
+<footer class="site-footer h-card">
+    <data class="u-url"
+          href="{{ "/" | relative_url }}"></data>
+
+    <div class="wrapper">
+
+        <div class="footer-col-wrapper">
+            <div class="footer-col">
+                <h2 class="footer-heading">{{ site.title | escape }}</h2>
+                <p>{{ site.description | escape }}</p>
+            </div>
+            <div class="footer-col">
+                <p>&copy; Copyright unixwinbsd</p>
+                <p>
+                    <a href="{% link privacy-policy.md %}">Privacy Policy</a>
+                    &bull;
+                    <a href="{% link license.md %}">License</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="social-links">
+            {%- include social.html -%}
+        </div>
+
+    </div>
+
+</footer>

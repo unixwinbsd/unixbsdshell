@@ -1,0 +1,26 @@
+# Site information
+title: UnixBSDShell
+email: datainchi@gmail.com
+description: A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others
+baseurl: "/unixbsdshell"
+url: "https://unixwinbsd.github.io"
+
+# Site settings
+permalink: /:title/
+markdown: kramdown
+paginate: 5
+paginate_path: "/:num/"
+date_format: "%b %-d, %Y"
+
+disqus:
+  shortname: dfederm
+
+google_analytics: G-RWLWYNFRW0
+google_ads: ca-pub-3920572614703029
+
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - github-pages
