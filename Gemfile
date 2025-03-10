@@ -5,12 +5,15 @@ source "https://rubygems.org"
 # Check github versions: https://pages.github.com/versions/
 gem "jekyll", "~> 3.10.0"
 gem "github-pages", "~> 232", group: :jekyll_plugins
+gem "rake", "~> 12"
 
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.17.0"
   gem 'jekyll-paginate'
   gem "jekyll-seo-tag", "~> 2.8.0"
-  gem "jekyll-sitemap", "~> 1.4.0"  
+  gem "jekyll-sitemap", "~> 1.4.0"
+  gem "jekyll-compose", "~> 0.5"
+  gem "jekyll-redirect-from", "~> 0.16.0"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
