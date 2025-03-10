@@ -25,5 +25,15 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - github-pages
+  - jekyll-compose
+  - jekyll-redirect-from
+
+exclude:
+  - vendor
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - README.md
+  - Rakefile
 
 destination: ./docs
