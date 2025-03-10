@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible"
+            content="IE=edge">
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/icon/apple-touch-icon.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/icon/favicon-32x32.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/icon/favicon-16x16.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/assets/icon/favicon-96x96.png" />
+<link rel="manifest"
+      href="/assets/icon/site.webmanifest" />
+<meta name="msapplication-TileColor"
+      content="#00a300" />
+<meta name="theme-color"
+      content="#ffffff" />
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Testing asynchronous code: async vs fake async | UnixBSDShell</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Testing asynchronous code: async vs fake async" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the last post I explored implementing a mock which tested asynchronous code in a “fake” asynchronous way, and I promised to dive a little deeper into that concept and compare it with testing in an asynchronous way." />
+<meta property="og:description" content="In the last post I explored implementing a mock which tested asynchronous code in a “fake” asynchronous way, and I promised to dive a little deeper into that concept and compare it with testing in an asynchronous way." />
+<link rel="canonical" href="http://192.168.5.71:4000/unixbsdshell/testing-asynchronous-code-async-vs-fake-async/" />
+<meta property="og:url" content="http://192.168.5.71:4000/unixbsdshell/testing-asynchronous-code-async-vs-fake-async/" />
+<meta property="og:site_name" content="UnixBSDShell" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-02-04T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Testing asynchronous code: async vs fake async" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2018-02-04T00:00:00+07:00","datePublished":"2018-02-04T00:00:00+07:00","description":"In the last post I explored implementing a mock which tested asynchronous code in a “fake” asynchronous way, and I promised to dive a little deeper into that concept and compare it with testing in an asynchronous way.","headline":"Testing asynchronous code: async vs fake async","mainEntityOfPage":{"@type":"WebPage","@id":"http://192.168.5.71:4000/unixbsdshell/testing-asynchronous-code-async-vs-fake-async/"},"url":"http://192.168.5.71:4000/unixbsdshell/testing-asynchronous-code-async-vs-fake-async/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet"
+            href="/unixbsdshell/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://192.168.5.71:4000/unixbsdshell/feed.xml" title="UnixBSDShell" /></head><body><header class="site-header">
+
+    <div class="wrapper">
+        <a class="site-title"
+           rel="author"
+           href="/unixbsdshell/">UnixBSDShell</a>
+
+        <nav class="site-nav">
+            <input type="checkbox"
+                   id="nav-trigger"
+                   class="nav-trigger" />
+            <label for="nav-trigger">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 18 15"
+                         width="18px"
+                         height="15px">
+                        <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+                    </svg>
+                </span>
+            </label>
+
+            <div class="trigger"><a class="page-link"
+                   href="/unixbsdshell/categories/">Categories</a><a class="page-link"
+                   href="/unixbsdshell/about/">About</a></div>
+        </nav>
+
+        <a href="/unixbsdshell/"
+           class="site-banner">
+            <img src="/unixbsdshell/assets/banner.png"
+                 alt="David's Blog">
+        </a>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+    </div>
+</header><main class="page-content"
+          aria-label="Content">
+        <div class="wrapper">
+            <div class="post-nav"><span class="post-previous">
+        <a href="/httpclient-and-unit-testing/"
+           rel="prev">← Previous Post</a>
+    </span><span class="post-next">
+        <a href="/setting-up-a-roaming-developer-console/"
+           rel="next">Next Post →</a>
+    </span></div>
+
+<article class="post h-entry"
+         itemscope
+         itemtype="http://schema.org/BlogPosting">
+
+    <header class="post-header">
+        <h1 class="post-title p-name"
+            itemprop="name headline">Testing asynchronous code: async vs fake async</h1>
+        <p class="post-meta">
+            <time class="dt-published"
+                  datetime="2018-02-04T00:00:00+07:00"
+                  itemprop="datePublished">
+                Feb 4, 2018
+            </time>• Posted in
+            
+            <a href="/categories/#angular">Angular</a>, 
+            <a href="/categories/#typescript">Typescript</a></p>
+    </header>
+
+    <div class="post-content e-content"
+         itemprop="articleBody">
+        <p>In the <a href="/httpclient-and-unit-testing/">last post</a> I explored implementing a mock which tested asynchronous code in a “fake” asynchronous way, and I promised to dive a little deeper into that concept and compare it with testing in an asynchronous way.</p>
+
+<p>I say “fake” here because it’s still using async/await, but the way of testing is more of a step by step approach where the unit test ends up effectively waiting on each task or promise to finish before moving on.</p>
+
+<p>Angular has really clear examples of each pattern, so let’s see the differences and compare the pros and cons for each.</p>
+
+<h2 id="async">Async</h2>
+
+<p>This is the patterns I think C# developers are more familiar with, although I’ve seen it used in TypeScript as well. It generally involves the three traditional sections: . Here’s an example of a test using this pattern:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">should display some links when the user is not logged in</span><span class="dl">"</span><span class="p">,</span> <span class="k">async</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// Arrange (some arranging was already done in beforeEach as well)</span>
+    <span class="kd">let</span> <span class="nx">authenticationService</span> <span class="o">=</span> <span class="nx">TestBed</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">AuthenticationService</span><span class="p">)</span> <span class="k">as</span> <span class="nx">AuthenticationService</span><span class="p">;</span>
+    <span class="nx">spyOn</span><span class="p">(</span><span class="nx">authenticationService</span><span class="p">,</span> <span class="dl">"</span><span class="s2">userInfo</span><span class="dl">"</span><span class="p">).</span><span class="nx">and</span><span class="p">.</span><span class="nx">returnValue</span><span class="p">(</span><span class="k">new</span> <span class="nx">BehaviorSubject</span><span class="p">(</span><span class="nx">notLoggedInUser</span><span class="p">));</span>
+
+    <span class="c1">// Act (detectChanges ends up triggering ngOnInit which actually does the work we're testing)</span>
+    <span class="nx">fixture</span><span class="p">.</span><span class="nx">detectChanges</span><span class="p">();</span>
+    <span class="nx">fixture</span><span class="p">.</span><span class="nx">whenStable</span><span class="p">().</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">fixture</span><span class="p">.</span><span class="nx">detectChanges</span><span class="p">();</span>
+
+        <span class="c1">// Assert</span>
+        <span class="kd">let</span> <span class="na">expectedLinks</span><span class="p">:</span> <span class="p">{</span> <span class="na">text</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="na">url</span><span class="p">:</span> <span class="kr">string</span> <span class="p">}[]</span> <span class="o">=</span> <span class="p">[</span> <span class="cm">/* Omitted for brevity */</span> <span class="p">];</span>
+        <span class="kd">let</span> <span class="nx">navItems</span> <span class="o">=</span> <span class="nx">fixture</span><span class="p">.</span><span class="nx">debugElement</span><span class="p">.</span><span class="nx">queryAll</span><span class="p">(</span><span class="nx">By</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="dl">"</span><span class="s2">.nav-item</span><span class="dl">"</span><span class="p">));</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">navItems</span><span class="p">).</span><span class="nx">not</span><span class="p">.</span><span class="nx">toBeNull</span><span class="p">();</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">navItems</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expectedLinks</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">navItems</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">link</span> <span class="o">=</span> <span class="nx">navItems</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">query</span><span class="p">(</span><span class="nx">By</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="dl">"</span><span class="s2">.nav-link</span><span class="dl">"</span><span class="p">));</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">link</span><span class="p">).</span><span class="nx">not</span><span class="p">.</span><span class="nx">toBeNull</span><span class="p">();</span>
+
+            <span class="kd">let</span> <span class="nx">expectations</span> <span class="o">=</span> <span class="nx">expectedLinks</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">link</span><span class="p">.</span><span class="nx">nativeElement</span><span class="p">.</span><span class="nx">innerText</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expectations</span><span class="p">.</span><span class="nx">text</span><span class="p">);</span>
+            <span class="nx">expect</span><span class="p">(</span><span class="nx">link</span><span class="p">.</span><span class="nx">attributes</span><span class="p">.</span><span class="nx">href</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expectations</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">authenticationService</span><span class="p">.</span><span class="nx">userInfo</span><span class="p">).</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>
+    <span class="p">});</span>
+<span class="p">}));</span>
+</code></pre></div></div>
+
+<p>I won’t go into detail about the test as it was pulled from a real example, but the pattern should look familiar. You start in the Arrange section mocking calls and setting up the test, then you trigger the code that’s actually being tested, then finally you assert your expectations on any results or side-effects.</p>
+
+<p>A minor note for those unfamiliar with the use of <code class="language-plaintext highlighter-rouge">async</code> here, it’s equivalent to using the <code class="language-plaintext highlighter-rouge">done</code> construct and calling <code class="language-plaintext highlighter-rouge">done</code> after the last expectation. Or for any C# developers, it’s equivalent to returning a <code class="language-plaintext highlighter-rouge">Task</code> from your test. The test framework just waits for all async work to finish before the test ends.</p>
+
+<h2 id="fake-async">Fake Async</h2>
+
+<p>This pattern is used pretty widely in Angular apps, especially when mocking http calls. It’s also how I implemented my <a href="https://www.nuget.org/packages/Testing.HttpClient" target="_blank">Testing.HttpClient</a> C# library. It differs from the usual “Arrange, Act, and Assert” and instead interleaves and combines all three. Here’s an example:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">it</span><span class="p">(</span><span class="dl">"</span><span class="s2">should return some data</span><span class="dl">"</span><span class="p">,</span> <span class="nx">fakeAsync</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// Act</span>
+    <span class="kd">let</span> <span class="na">response</span><span class="p">:</span> <span class="nx">IUser</span><span class="p">;</span>
+    <span class="kd">let</span> <span class="na">error</span><span class="p">:</span> <span class="nx">HttpErrorResponse</span><span class="p">;</span>
+    <span class="nx">userService</span><span class="p">.</span><span class="nx">getUser</span><span class="p">(</span><span class="nx">userName</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="na">r</span><span class="p">:</span> <span class="nx">IUser</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">r</span><span class="p">)</span>
+        <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="na">e</span><span class="p">:</span> <span class="nx">HttpErrorResponse</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">error</span> <span class="o">=</span> <span class="nx">e</span><span class="p">);</span>
+
+    <span class="c1">// Arrange, with some implicit assertions</span>
+    <span class="kd">let</span> <span class="na">expectedResponse</span><span class="p">:</span> <span class="nx">IUser</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">someName</span><span class="dl">"</span> <span class="p">};</span>
+    <span class="kd">let</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">httpMock</span><span class="p">.</span><span class="nx">expectOne</span><span class="p">({</span> <span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">get</span><span class="dl">"</span><span class="p">,</span> <span class="na">url</span><span class="p">:</span> <span class="s2">`/api/users/</span><span class="p">${</span><span class="nx">userName</span><span class="p">}</span><span class="s2">`</span> <span class="p">});</span>
+    <span class="nx">request</span><span class="p">.</span><span class="nx">flush</span><span class="p">(</span><span class="nx">expectedResponse</span><span class="p">);</span>
+    <span class="nx">tick</span><span class="p">();</span>
+
+    <span class="c1">// Assert</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">response</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expectedResponse</span><span class="p">,</span> <span class="dl">"</span><span class="s2">should return the expected response</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">error</span><span class="p">).</span><span class="nx">toBeUndefined</span><span class="p">();</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">httpErrorHandlerService</span><span class="p">.</span><span class="nx">logError</span><span class="p">).</span><span class="nx">not</span><span class="p">.</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">httpErrorHandlerService</span><span class="p">.</span><span class="nx">getValidationErrors</span><span class="p">).</span><span class="nx">not</span><span class="p">.</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>
+<span class="p">}));</span>
+</code></pre></div></div>
+
+<p>In this example, the test being called is made immediately (although there is some setup in a <code class="language-plaintext highlighter-rouge">beforeEach</code> not shown). It returns a promise, but the promise is unresolved at that point. Next there is an implicit assertion about what a request that the <code class="language-plaintext highlighter-rouge">userService.getUser</code> looked like and a mock response is provided. Then the promises are flushed, which is why these are <em>fake</em> async tests. Finally, assertions are made.</p>
+
+<h2 id="comparing-the-two">Comparing the two</h2>
+
+<p>Ironically, the Async pattern more closely follows how you should test synchronous code. Both tend to follow the “Arrange, Act, and Assert” structure. This pattern set up a bunch of mocks and rules beforehand to “wind up” the test, then lets the code under test run to completion, the expectations are checked. This pattern is good for testing how code behaves to inputs and the results it produces.</p>
+
+<p>The fake async pattern is a lot more granular as you essentially interleaves the test code with the code being tested. It’s like stepping through a debugger and providing mocks and asserting as you go, line by line. This pattern is better at testing code that creates side-effects, or code that needs to be done in a specific order. Anecdotally though, the granularity can come at a cost of brittleness. Refactoring can easily break tests even though the code remained functionally correct, so you can end up wasting time fixing tests.</p>
+
+<p>One downside of the fake async pattern is that it tends to require extra code to get the async parts of the code flushed. In Angular tests, the <code class="language-plaintext highlighter-rouge">tick</code> function does this magic for you, as Angular is able to wrap all Promises and so <code class="language-plaintext highlighter-rouge">tick</code> can wait for their completion for you. In C#, this is fairly cumbersome, as there isn’t a way to provide a replacement to the default <code class="language-plaintext highlighter-rouge">TaskFactory</code>, so you end up having to expose <code class="language-plaintext highlighter-rouge">TaskCompletionSource</code> objects from all your mocks to provide the flushing functionality.</p>
+
+<p>Additionally, given the right tools, any fake sync test could be made into an async test. In Angular instead of using the <code class="language-plaintext highlighter-rouge">HttpTestingController</code>, you could provide your own mock <code class="language-plaintext highlighter-rouge">HttpClient</code> object and use spies to both match specific request patterns and provide responses.</p>
+
+<h2 id="verdict">Verdict</h2>
+
+<p>When writing up these examples, I actually had attempted to use the same test written in each pattern, but one would always feel a little awkward. There is definitely something to be said about using the right tool for the job, so in Angular tests if you find yourself testing code that makes http calls or uses timers, feel free to use the fake async pattern. The magic is provided for you, so you might as well use it.</p>
+
+<p>However, I also feel that usage of fake async is fairly niche. It doesn’t work well in all scenarios, and it’s not even a very common pattern in some languages like C#. The async pattern on the other hand works well in almost all cases, and so it’s the pattern I’d suggest any well-rounded software engineer to master. It’s a commonly used, widely applicable, well-known, and well-understood pattern.</p>
+
+<p>tl;dr if I was stuck on a desert island with only one unit testing pattern, I’d pick the async pattern over the fake async one.</p>
+</div><a class="u-url"
+       href="/unixbsdshell/testing-asynchronous-code-async-vs-fake-async/"
+       hidden></a>
+</article>
+        </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url"
+          href="/unixbsdshell/"></data>
+
+    <div class="wrapper">
+
+        <div class="footer-col-wrapper">
+            <div class="footer-col">
+                <h2 class="footer-heading">UnixBSDShell</h2>
+                <p>A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others</p>
+            </div>
+            <div class="footer-col">
+                <p>&copy; Copyright unixwinbsd</p>
+                <p>
+                    <a href="/privacy-policy/">Privacy Policy</a>
+                    &bull;
+                    <a href="/license/">License</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+
+    </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible"
+            content="IE=edge">
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/icon/apple-touch-icon.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/icon/favicon-32x32.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/icon/favicon-16x16.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/assets/icon/favicon-96x96.png" />
+<link rel="manifest"
+      href="/assets/icon/site.webmanifest" />
+<meta name="msapplication-TileColor"
+      content="#00a300" />
+<meta name="theme-color"
+      content="#ffffff" />
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Migrating from WebCORE to Home Assistant | UnixBSDShell</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Migrating from WebCORE to Home Assistant" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="About a month ago I decided to migrate all my home automation from WebCORE to Home Assistant. I liked the idea of all my home automation being local and inside my house, both from a security and reliability perspective. Furthermore it just seemed like a fun project to tinker with, and in general seemed like it would add a bunch of flexibility to my home automation. In this post I’ll describe my experience with the migration, the good and the bad." />
+<meta property="og:description" content="About a month ago I decided to migrate all my home automation from WebCORE to Home Assistant. I liked the idea of all my home automation being local and inside my house, both from a security and reliability perspective. Furthermore it just seemed like a fun project to tinker with, and in general seemed like it would add a bunch of flexibility to my home automation. In this post I’ll describe my experience with the migration, the good and the bad." />
+<link rel="canonical" href="http://192.168.5.71:4000/unixbsdshell/migrating-from-webcore-to-home-assistant/" />
+<meta property="og:url" content="http://192.168.5.71:4000/unixbsdshell/migrating-from-webcore-to-home-assistant/" />
+<meta property="og:site_name" content="UnixBSDShell" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-07-11T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Migrating from WebCORE to Home Assistant" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2019-07-11T00:00:00+07:00","datePublished":"2019-07-11T00:00:00+07:00","description":"About a month ago I decided to migrate all my home automation from WebCORE to Home Assistant. I liked the idea of all my home automation being local and inside my house, both from a security and reliability perspective. Furthermore it just seemed like a fun project to tinker with, and in general seemed like it would add a bunch of flexibility to my home automation. In this post I’ll describe my experience with the migration, the good and the bad.","headline":"Migrating from WebCORE to Home Assistant","mainEntityOfPage":{"@type":"WebPage","@id":"http://192.168.5.71:4000/unixbsdshell/migrating-from-webcore-to-home-assistant/"},"url":"http://192.168.5.71:4000/unixbsdshell/migrating-from-webcore-to-home-assistant/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet"
+            href="/unixbsdshell/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://192.168.5.71:4000/unixbsdshell/feed.xml" title="UnixBSDShell" /></head><body><header class="site-header">
+
+    <div class="wrapper">
+        <a class="site-title"
+           rel="author"
+           href="/unixbsdshell/">UnixBSDShell</a>
+
+        <nav class="site-nav">
+            <input type="checkbox"
+                   id="nav-trigger"
+                   class="nav-trigger" />
+            <label for="nav-trigger">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 18 15"
+                         width="18px"
+                         height="15px">
+                        <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+                    </svg>
+                </span>
+            </label>
+
+            <div class="trigger"><a class="page-link"
+                   href="/unixbsdshell/categories/">Categories</a><a class="page-link"
+                   href="/unixbsdshell/about/">About</a></div>
+        </nav>
+
+        <a href="/unixbsdshell/"
+           class="site-banner">
+            <img src="/unixbsdshell/assets/banner.png"
+                 alt="David's Blog">
+        </a>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+    </div>
+</header><main class="page-content"
+          aria-label="Content">
+        <div class="wrapper">
+            <div class="post-nav"><span class="post-previous">
+        <a href="/learn-span-by-implementing-a-high-performance-csv-parser/"
+           rel="prev">← Previous Post</a>
+    </span><span class="post-next">
+        <a href="/authoring-msbuild-project-sdks/"
+           rel="next">Next Post →</a>
+    </span></div>
+
+<article class="post h-entry"
+         itemscope
+         itemtype="http://schema.org/BlogPosting">
+
+    <header class="post-header">
+        <h1 class="post-title p-name"
+            itemprop="name headline">Migrating from WebCORE to Home Assistant</h1>
+        <p class="post-meta">
+            <time class="dt-published"
+                  datetime="2019-07-11T00:00:00+07:00"
+                  itemprop="datePublished">
+                Jul 11, 2019
+            </time>• Posted in
+            
+            <a href="/categories/#home%20automation">Home Automation</a>, 
+            <a href="/categories/#self%20hosting">Self Hosting</a></p>
+    </header>
+
+    <div class="post-content e-content"
+         itemprop="articleBody">
+        <p>About a month ago I decided to migrate all my home automation from <a href="https://www.webcore.co/" target="_blank">WebCORE</a> to <a href="https://home-assistant.io" target="_blank">Home Assistant</a>. I liked the idea of all my home automation being local and inside my house, both from a security and reliability perspective. Furthermore it just seemed like a fun project to tinker with, and in general seemed like it would add a bunch of flexibility to my home automation. In this post I’ll describe my experience with the migration, the good and the bad.</p>
+
+<p>However I do want to start with saying that I think the migration was worth it for me, but it had quite a few challenges and I have quite a few criticisms for Home Assistant. It was a significant time investment and required a lot of tinkering and trial and error, so if you’re considering doing this yourself just be aware of that.</p>
+
+<h2 id="initial-state">Initial state</h2>
+<p>First to describe my initial setup. For equipment I have:</p>
+<ul>
+  <li>SmartThings hub</li>
+  <li>Hue hub</li>
+  <li>Three Alexa dots</li>
+  <li>Ten Z-Wave light switches</li>
+  <li>Ten Hue lights</li>
+  <li>Two Z-Wave door locks</li>
+  <li>Motion sensor</li>
+</ul>
+
+<p>Additionally, I have a handful of pistons configured with WebCORE (that’s what it calls its automations) and presence sensors using the SmartThings app on my wife’s phone and my phone to trigger the “Home” and “Away” home states.</p>
+
+<h2 id="installation-of-home-assistant">Installation of Home Assistant</h2>
+<p>I wanted to start with the easiest and most hand-holding Home Assistant configuration possible, so I bought a <a href="https://www.amazon.com/gp/product/B07BCC8PK7?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=10c93503e3e1c8fa6069d1103e696798&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">Raspberry Pi starter kit</a> ($80). I knew that I could get it cheaper if I got the parts separately, but as this was my first experience with a Raspberry Pi, I decided to go with a kit. Assembling the Raspberry Pi was definitely a smooth and easy process.</p>
+
+<p>I then proceeded to <a href="https://www.home-assistant.io/getting-started/#installing-hassio" target="_blank">install Hass.io</a>. The instructions are easy enough to follow, but on first boot I ended up getting stuck. It might have been a patience issue, but eventually after a combination of restarts of the Pi, trying to access via IP address, and flushing my computer’s DNS lead to successfully being able to access the web UI.</p>
+
+<h2 id="add-ons">Add-ons</h2>
+<p>Next I wanted to set up some of the basic add-ons. I wanted remote access (especially from my phone), so I installed the DuckDNS addon and it was one of the smoother steps in this process. It just worked, although I did change my mind on the DuckDNS subdomain to use and Hass.io seemed to get confused by that. Uninstalling and reinstalling the add-on fixed everything up.</p>
+
+<p>I also wanted to more easily edit my configuration files in a text-editor so installed the Samba add-on. The config UI was unclear to me (a common criticism during this whole process) and so I had a little trouble with the configuration, compounded by an extremely unclear error message (another common criticism), but eventually after going to the documentation for the <a href="https://www.home-assistant.io/addons/samba/" target="_blank">Samba</a> add-on, the configuration became more clear and was easy to set up from there. As a side note, personally I’m just not a fan of yaml. I know it’s the go-to for configuration, but I just find it hard to read and edit.</p>
+
+<h2 id="integrations-and-components">Integrations and Components</h2>
+<p>At this point I wanted to actually start setting up my smart devices and controlling them from Home Assistant. Most my devices were managed through SmartThings, so I started there. I have to say that this was probably the most challenging part of this process. The first step in setting up the integration is to provide a SmartThings PAT, which I did, but ended up with the error: “<em>The <code class="language-plaintext highlighter-rouge">base_url</code> for the <code class="language-plaintext highlighter-rouge">http</code> component must be configured and start with <code class="language-plaintext highlighter-rouge">https://</code>.</em>” Looking back, now that I understand Home Assistant better, I can parse it better, but to a newbie I was lost. Eventually I found that I needed to add some <a href="https://www.home-assistant.io/components/http#base_url" target="_blank">configuration</a> to my configuration.yaml. The next problem I ran into was adding the SmartApp in SmartThings. Every time I tried adding it, it told me it could not connect. Eventually I turned off DNS66 (Host-based adblocker for Android) and it seemed to make progress. At that point I could control my SmartThings devices from Home Assistant, but for whatever reason I could not get Home Assistant to update the status when I turned lights on or off outside of Home Assistant (manually, via Alexa, or via SmartThings). I saw errors about unregistered webhooks, so I suspect SmartThings was attempting to update Home Assistant, but Home Assistant lost some configuration about the webhook SmartThings was using. I eventually just removed and re-added the integration and things started working from there.</p>
+
+<p>Phillips Hue was much more straightforward and after SmartThings this integration was extremely easy to set up.</p>
+
+<p>Next I tried setting up presence, called device trackers in Home Assistant. The Getting Started docs were fairly hard to follow, but I eventually successfully enabled OwnTracks after lots of guesswork. After a few days I noticed that OwnTracks is pretty inaccurate, so using a fairly large radius for Zones is important. Don’t expect to walk to your neighbors’ and expect it to detect you as away. I looked into the Google Maps Location Sharing component instead, but the setup is pretty hacky (involves setting up a dummy Google account) and at the end of the day I just couldn’t get it working at all. After tweaking the OwnTracks settings over a week or two and learning its limitations, I feel like it’s now in a usable state. I’ve learned that reliable and accurate presence using your phone’s GPS is just a hard problem to solve (unless you want to just kill your phone’s battery), so in the future I may look into layering in other presence signals like Wifi connection to my router. This is possible with the fairly recent addition of the <a href="https://www.home-assistant.io/components/person/" target="_blank">Person</a> component.</p>
+
+<p>Related to presence, I set up <a href="https://www.home-assistant.io/components/zone/" target="_blank">Zones</a> for Home, Work, and my in-laws’ house. It would be nice to have a better UI, for example just typing in an address and it giving you the lat/long, but you can do that through Google/Bing maps as well. It just would be nice to do it within Home Assistant directly. Besides that and the earlier mentioned need to have a larger-than-expected radius, Zones are pretty easy to work with and I find it quite useful.</p>
+
+<p>As this process took a month, my wife and I ended up impulse purchasing an <a href="https://www.ecobee.com/ecobee3-lite/" target="_blank">ecobee3 lite</a> from Costco since it was on sale. The setup of the thermostat itself and the integration into Home Assistant were both very easy and I have no complaints.</p>
+
+<h2 id="automations">Automations</h2>
+<p>Next I wanted to to what the title of this post suggests, actually migrate my automations from WebCORE to Home Assistant. I found that the UI for this really sucks and found myself very quickly just dealing with the yaml directly. I did find the documentation very hard to dig through, but eventually figured out the basic syntax. Still, the logging and debugging for automations is not great and I think that’s one advantage WebCORE has over Home Assistant.</p>
+
+<p>Global state is also a little more awkward to manage in Home Assistant than WebCORE. In WebCORE there is a notion of global variables directly, but in Home Assistant you have to fake it using an input one would typically use in the UI to control you devices.</p>
+
+<p>I also found that Home Assistant’s templating leaves a bit to be desired. It’s not documented in a very helpful way and I found myself needing to do lots of trial and error in the Developer Tools Templates page. Specifically, I have an automation to cap the brightness level for my dimable lights to 80% (ie. if their brightness changes to &gt; 80%, set it to 80%). In WebCORE this was fairly straightforward, but in Home Assistant it’s something more like…</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">alias</span><span class="pi">:</span> <span class="s">Max light brightness</span>
+  <span class="na">hide_entity</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="na">initial_state</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">... long list of lights ...</span>
+  <span class="na">condition</span><span class="pi">:</span>
+    <span class="na">condition</span><span class="pi">:</span> <span class="s">template</span>
+    <span class="na">value_template</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">(100</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">trigger.to_state.attributes.brightness|float</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">255)</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">states.input_number.max_brightness.state|float</span><span class="nv"> </span><span class="s">}}"</span>
+  <span class="na">action</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">light.turn_on</span>
+      <span class="na">data_template</span><span class="pi">:</span>
+        <span class="na">brightness_pct</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">states.input_number.max_brightness.state</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">int</span><span class="nv"> </span><span class="s">}}"</span>
+        <span class="na">entity_id</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">trigger.entity_id</span><span class="nv"> </span><span class="s">}}"</span>
+</code></pre></div></div>
+
+<p>It might just be my inexperience with Home Assistant, but I found it very difficult to simply check if the brightness of the triggering device was above some configured max and if so set it to that configured max.</p>
+
+<h2 id="lovelace-ui">Lovelace UI</h2>
+<p>I haven’t had a chance to heavily customize the UI, but from what I have done so far, and from what the demos show me I can do, it looks extremely powerful and flexible. This alone adds a ton of value to Home Assistant as it opens up so many scenarios, such as mounting a tablet running a browser in kiosk mode as a control panel for your home. Another scenario being to flash the WyzeCams I currently have (which are currently not really connected to the rest of my smart home in any way) with the firmware which supports RTSP and adding them to the Home Assistant UI. There are a ton of possibilities here and I’m pretty excited to explore this are more in the future.</p>
+
+<h2 id="hassio-updates">Hass.io Updates</h2>
+<p>I also noticed over the past month that Home Assistant updates are a little destabilizing. It’s really great that updates are frequent and as a software developer myself I appreciate the quick updates and even the need to deprecate features in favor of better ways to do things, but I did find that the updates did break things for me from time to time. Perhaps if some migration scripts would run automatically, or there were clear instructions on the blog of how to migrate it wouldn’t be so bad, but I found that it was more like “this is deprecated in favor of that, figure it out yourself”. Specifically in my case I believe my OwnTracks device trackers were duplicated (suffixed with “_2”) and the originals were just stuck in their last state. This led to presence detection just being broken until I went in, deleted the originals, and renamed the dupes. Little things like that could use a little more polish I think.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+<p>My initial goal was to migrate from WebCore to Home Assistant, which I succeeded in, but I realized that I do need to take it a bit further to really get what I wanted out of it. For example, my devices are still primarily controlled through SmartThings, and Home Assistant talks to SmartThings via the SmartThings cloud (as opposed to directly talking to the hub on my LAN…), so my dream of everything being 100% local isn’t quite realized. Automations can still be delayed as SmartThings devices signal to my hub to update the cloud to webhook back to my house in Home Assistant and finally trigger the automation, which take action on a SmartThings device which has to make another trip through the internet.</p>
+
+<p>The full list of my future plans include:</p>
+<ol>
+  <li>Migrate from SmartThings to a local Z-Wave controller (USB stick plugged into my Hass.io RPi, likely the <a href="https://www.amazon.com/Aeotec-Z-Stick-Z-Wave-create-gateway/dp/B00X0AWA6E?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=869c4575443e0b07f2c392ad2e544376&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">Aeotech Z-Stick</a>) and managed completely locally my Home Assistant.</li>
+  <li>Alexa integration with Home Assistant (via <a href="https://github.com/auchter/haaska" target="_blank">Haaska</a>), a likely pre-req for moving to the local Z-Wave controller.</li>
+  <li>Migrate my ADT wireless-but-not-smart security system to Home Assistant. Both so I have more control (ADT really doesn’t want me fiddling with the devices <strong>I own</strong>), better expandability (integration with my existing smart locks), and because ADT just charges way too much for what they provide ($66/month for basic burglar monitoring, no smart devices, no cameras, no fire/smoke). I’ll likely move to <a href="https://noonlight.com/" target="_blank">Noonlight</a> which I read costs only $3/month and they provide integrations like IFTTT that I can trigger however I want to get them to contact the police for me.</li>
+  <li>Integrate my WyzeCams into my Home Assistant by flashing them with the RTSP-enabled firmware</li>
+  <li>Alexa TTS (if possible) to use Alexa as a general-purpose speaker to announce things like people in my home arriving.</li>
+  <li>Generally explore more in the home automation space
+But those are for a future blog post!</li>
+</ol>
+<p class="amazon-disclosure">
+            Disclosure: As an Amazon Associate, I earn from qualifying purchases. This adds no extra cost to you, but helps me in a small way if you choose to purchase a product linked in this post.
+        </p></div><a class="u-url"
+       href="/unixbsdshell/migrating-from-webcore-to-home-assistant/"
+       hidden></a>
+</article>
+        </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url"
+          href="/unixbsdshell/"></data>
+
+    <div class="wrapper">
+
+        <div class="footer-col-wrapper">
+            <div class="footer-col">
+                <h2 class="footer-heading">UnixBSDShell</h2>
+                <p>A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others</p>
+            </div>
+            <div class="footer-col">
+                <p>&copy; Copyright unixwinbsd</p>
+                <p>
+                    <a href="/privacy-policy/">Privacy Policy</a>
+                    &bull;
+                    <a href="/license/">License</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+
+    </div>
+
+</footer>
+</body>
+
+</html>
