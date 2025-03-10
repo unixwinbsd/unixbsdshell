@@ -2,6 +2,7 @@
 title: UnixBSDShell
 email: datainchi@gmail.com
 description: A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others
+domain: unixwinbsd.github.io
 baseurl: "/unixbsdshell"
 url: "https://unixwinbsd.github.io"
 
@@ -24,3 +25,5 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - github-pages
+
+destination: ./docs
