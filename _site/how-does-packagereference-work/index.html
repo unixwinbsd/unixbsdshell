@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible"
+            content="IE=edge">
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/icon/apple-touch-icon.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/icon/favicon-32x32.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/icon/favicon-16x16.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/assets/icon/favicon-96x96.png" />
+<link rel="manifest"
+      href="/assets/icon/site.webmanifest" />
+<meta name="msapplication-TileColor"
+      content="#00a300" />
+<meta name="theme-color"
+      content="#ffffff" />
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>How does PackageReference work? | UnixBSDShell</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="How does PackageReference work?" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="PackageReference has replaced packages.config as the primary mechanism for consuming NuGet packages. For those looking to migrate, there is documentation available to help you. But how does it actually work under the hood?" />
+<meta property="og:description" content="PackageReference has replaced packages.config as the primary mechanism for consuming NuGet packages. For those looking to migrate, there is documentation available to help you. But how does it actually work under the hood?" />
+<link rel="canonical" href="http://192.168.5.71:4000/unixbsdshell/how-does-packagereference-work/" />
+<meta property="og:url" content="http://192.168.5.71:4000/unixbsdshell/how-does-packagereference-work/" />
+<meta property="og:site_name" content="UnixBSDShell" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-06-06T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="How does PackageReference work?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-06-06T00:00:00+07:00","datePublished":"2022-06-06T00:00:00+07:00","description":"PackageReference has replaced packages.config as the primary mechanism for consuming NuGet packages. For those looking to migrate, there is documentation available to help you. But how does it actually work under the hood?","headline":"How does PackageReference work?","mainEntityOfPage":{"@type":"WebPage","@id":"http://192.168.5.71:4000/unixbsdshell/how-does-packagereference-work/"},"url":"http://192.168.5.71:4000/unixbsdshell/how-does-packagereference-work/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet"
+            href="/unixbsdshell/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://192.168.5.71:4000/unixbsdshell/feed.xml" title="UnixBSDShell" /></head><body><header class="site-header">
+
+    <div class="wrapper">
+        <a class="site-title"
+           rel="author"
+           href="/unixbsdshell/">UnixBSDShell</a>
+
+        <nav class="site-nav">
+            <input type="checkbox"
+                   id="nav-trigger"
+                   class="nav-trigger" />
+            <label for="nav-trigger">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 18 15"
+                         width="18px"
+                         height="15px">
+                        <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+                    </svg>
+                </span>
+            </label>
+
+            <div class="trigger"><a class="page-link"
+                   href="/unixbsdshell/categories/">Categories</a><a class="page-link"
+                   href="/unixbsdshell/about/">About</a></div>
+        </nav>
+
+        <a href="/unixbsdshell/"
+           class="site-banner">
+            <img src="/unixbsdshell/assets/banner.png"
+                 alt="David's Blog">
+        </a>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+    </div>
+</header><main class="page-content"
+          aria-label="Content">
+        <div class="wrapper">
+            <div class="post-nav"><span class="post-previous">
+        <a href="/did-you-forget-to-set-the-alarm/"
+           rel="prev">← Previous Post</a>
+    </span><span class="post-next">
+        <a href="/async-mutex/"
+           rel="next">Next Post →</a>
+    </span></div>
+
+<article class="post h-entry"
+         itemscope
+         itemtype="http://schema.org/BlogPosting">
+
+    <header class="post-header">
+        <h1 class="post-title p-name"
+            itemprop="name headline">How does PackageReference work?</h1>
+        <p class="post-meta">
+            <time class="dt-published"
+                  datetime="2022-06-06T00:00:00+07:00"
+                  itemprop="datePublished">
+                Jun 6, 2022
+            </time>• Posted in
+            
+            <a href="/categories/#.net">.NET</a>, 
+            <a href="/categories/#msbuild">MSBuild</a>, 
+            <a href="/categories/#nuget">NuGet</a></p>
+    </header>
+
+    <div class="post-content e-content"
+         itemprop="articleBody">
+        <p><a href="https://docs.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files" target="_blank"><code class="language-plaintext highlighter-rouge">PackageReference</code></a> has replaced <a href="https://docs.microsoft.com/en-us/nuget/reference/packages-config" target="_blank"><code class="language-plaintext highlighter-rouge">packages.config</code></a> as the primary mechanism for consuming NuGet packages. For those looking to migrate, there is <a href="https://docs.microsoft.com/en-us/nuget/consume-packages/migrate-packages-config-to-package-reference" target="_blank">documentation</a> available to help you. But how does it actually work under the hood?</p>
+
+<p>Historically with <code class="language-plaintext highlighter-rouge">packages.config</code> files, NuGet’s role was simply to download the exact packages at the exact versions you specified, and then copy the packages into a repository-relative path configured in your <a href="https://docs.microsoft.com/en-us/nuget/reference/nuget-config-file" target="_blank"><code class="language-plaintext highlighter-rouge">NuGet.Config</code></a> file, usually <code class="language-plaintext highlighter-rouge">/packages</code>. Actually consuming the package contents was ultimately up to the consuming projects, however the Visual Studio Package Manager UI would help update the relevant project with various <code class="language-plaintext highlighter-rouge">&lt;Import&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;Reference&gt;</code>, and <code class="language-plaintext highlighter-rouge">&lt;Content&gt;</code> elements based on convention.</p>
+
+<p>With <code class="language-plaintext highlighter-rouge">PackageReference</code>, <a href="https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package#from-a-convention-based-working-directory" target="_blank">these conventions</a> have been effectively codified. It becomes very cumbersome to consume packages these days which do not conform to the conventions. Additionally <code class="language-plaintext highlighter-rouge">PackageReference</code> adds much-needed quality-of-life features, such as automatically pulling in dependencies and unifying package versions.</p>
+
+<h2 id="restore">Restore</h2>
+
+<p>As I hinted earlier, NuGet’s job previously was to download packages only, so a <code class="language-plaintext highlighter-rouge">nuget restore</code> of a packages.config file did that and only that. Now with <code class="language-plaintext highlighter-rouge">PackageReference</code>, the restore process does not only that but also generates files per-project which describe the contents of each consumed package and is used during the build to dynamically add the equivalents of the previous <code class="language-plaintext highlighter-rouge">&lt;Import&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;Reference&gt;</code>, and <code class="language-plaintext highlighter-rouge">&lt;Content&gt;</code> elements which were present in projects.</p>
+
+<p>One benefit of these generated files is that the project files are left much cleaner. The project file simply has a <code class="language-plaintext highlighter-rouge">PackageReference</code>, rather than consuming a bunch of stuff which happens to all be from a path inside that package with lots of duplication.</p>
+
+<p>Another benefit is that the copy of all package contents from the <a href="https://docs.microsoft.com/en-us/nuget/Consume-Packages/managing-the-global-packages-and-cache-folders" target="_blank">global package cache</a> to the repository-relative <code class="language-plaintext highlighter-rouge">/packages</code> directory is no longer necessary as the generated files can point directly into the global package cache. This can save a lot of disk space and a lot of restore time (at least in a clean repository). Note that the global package cache is <code class="language-plaintext highlighter-rouge">%UserProfile%\.nuget\packages</code> by default on Windows machines, but can be redirected as desired, for example to the same drive as your code which is ideally an SSD, by setting <code class="language-plaintext highlighter-rouge">%NUGET_PACKAGES%</code>.</p>
+
+<p>These generated files are output to <code class="language-plaintext highlighter-rouge">$(RestoreOutputPath)</code>, which by default is <code class="language-plaintext highlighter-rouge">$(MSBuildProjectExtensionsPath)</code>, which by default is <code class="language-plaintext highlighter-rouge">$(BaseIntermediateOutputPath)</code>, which by default is <code class="language-plaintext highlighter-rouge">obj\</code> (Phew). The notable generated files are <code class="language-plaintext highlighter-rouge">project.assets.json</code>, <code class="language-plaintext highlighter-rouge">&lt;project-file&gt;.nuget.g.props</code>, and <code class="language-plaintext highlighter-rouge">&lt;project-file&gt;.nuget.g.targets</code>.</p>
+
+<p>An interesting but important note is that <code class="language-plaintext highlighter-rouge">PackageReference</code> items are only used during the restore. During the build, any package related information comes from the files generated during the restore.</p>
+
+<p>Let’s start with the generated props and targets files as they’re more straightforward.</p>
+
+<h2 id="generated-props-and-targets">Generated props and targets</h2>
+
+<p>These generated props file is imported by this line in <a href="https://github.com/dotnet/msbuild/blob/main/src/Tasks/Microsoft.Common.props" target="_blank"><code class="language-plaintext highlighter-rouge">Microsoft.Common.props</code></a> (which is imported by <a href="https://github.com/dotnet/sdk" target="_blank"><code class="language-plaintext highlighter-rouge">Microsoft.NET.Sdk</code></a>):</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;Import</span> <span class="na">Project=</span><span class="s">"$(MSBuildProjectExtensionsPath)$(MSBuildProjectFile).*.props"</span> <span class="na">Condition=</span><span class="s">"'$(ImportProjectExtensionProps)' == 'true' and exists('$(MSBuildProjectExtensionsPath)')"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<p>Similarly, the targets file is imported by a similar like in <a href="https://github.com/dotnet/msbuild/blob/main/src/Tasks/Microsoft.Common.targets" target="_blank"><code class="language-plaintext highlighter-rouge">Microsoft.Common.targets</code></a>.</p>
+
+<p>The props file always defines a few properties which NuGet uses at build time like <code class="language-plaintext highlighter-rouge">$(ProjectAssetsFile)</code>, but the interesting part to a consumer is that the <code class="language-plaintext highlighter-rouge">&lt;Import&gt;</code> elements into packages which used to be directly in the projects are generated to these files, the packages’ <code class="language-plaintext highlighter-rouge">build\&lt;package-name&gt;.props</code> in the <code class="language-plaintext highlighter-rouge">&lt;project-file&gt;.nuget.g.props</code> and the <code class="language-plaintext highlighter-rouge">build\&lt;package-name&gt;.targets</code> in the <code class="language-plaintext highlighter-rouge">&lt;project-file&gt;.nuget.g.targets</code>.</p>
+
+<p>As an example, you’ll see a section similar to this in the generated props file for a unit test project using <a href="https://xunit.net/" target="_blank">xUnit</a>:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;ImportGroup</span> <span class="na">Condition=</span><span class="s">"'$(ExcludeRestorePackageImports)' != 'true'"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;Import</span> <span class="na">Project=</span><span class="s">"$(NuGetPackageRoot)xunit.runner.visualstudio\2.4.3\build\netcoreapp2.1\xunit.runner.visualstudio.props"</span> <span class="na">Condition=</span><span class="s">"Exists('$(NuGetPackageRoot)xunit.runner.visualstudio\2.4.3\build\netcoreapp2.1\xunit.runner.visualstudio.props')"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Import</span> <span class="na">Project=</span><span class="s">"$(NuGetPackageRoot)xunit.core\2.4.1\build\xunit.core.props"</span> <span class="na">Condition=</span><span class="s">"Exists('$(NuGetPackageRoot)xunit.core\2.4.1\build\xunit.core.props')"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Import</span> <span class="na">Project=</span><span class="s">"$(NuGetPackageRoot)microsoft.testplatform.testhost\17.1.0\build\netcoreapp2.1\Microsoft.TestPlatform.TestHost.props"</span> <span class="na">Condition=</span><span class="s">"Exists('$(NuGetPackageRoot)microsoft.testplatform.testhost\17.1.0\build\netcoreapp2.1\Microsoft.TestPlatform.TestHost.props')"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Import</span> <span class="na">Project=</span><span class="s">"$(NuGetPackageRoot)microsoft.codecoverage\17.1.0\build\netstandard1.0\Microsoft.CodeCoverage.props"</span> <span class="na">Condition=</span><span class="s">"Exists('$(NuGetPackageRoot)microsoft.codecoverage\17.1.0\build\netstandard1.0\Microsoft.CodeCoverage.props')"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Import</span> <span class="na">Project=</span><span class="s">"$(NuGetPackageRoot)microsoft.net.test.sdk\17.1.0\build\netcoreapp2.1\Microsoft.NET.Test.Sdk.props"</span> <span class="na">Condition=</span><span class="s">"Exists('$(NuGetPackageRoot)microsoft.net.test.sdk\17.1.0\build\netcoreapp2.1\Microsoft.NET.Test.Sdk.props')"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/ImportGroup&gt;</span>
+</code></pre></div></div>
+
+<p>Note that <code class="language-plaintext highlighter-rouge">$(NuGetPackageRoot)</code> is the global package cache directory as described earlier and is defined earlier in the same generated props file.</p>
+
+<p>The generated props file also defines properties which point to package root directories for packages which have the <a href="https://docs.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#generatepathproperty" target="_blank"><code class="language-plaintext highlighter-rouge">GeneratePathProperty</code></a> metadata defined. These properties look like <code class="language-plaintext highlighter-rouge">$(PkgNormalized_Package_Name)</code> and are mostly used as an escape valve for package which don’t properly follow the conventions and using custom build logic in the project file to reach into the package is required.</p>
+
+<p>Next we’ll explore the <code class="language-plaintext highlighter-rouge">project.assets.json</code> file.</p>
+
+<h2 id="project-assets-file">Project Assets File</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">project.assets.json</code> file contains a boatload of information. It describes the full package dependency graph for each target framework the project targets, a list of the contents of all packages in the graph, the package folders the packages exist at, the list of project references, and various other miscellany.</p>
+
+<p>Here is an example of the basic structure, with many omissions for brevity:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"targets"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"net6.0"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"xunit/2.4.1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"package"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"xunit.analyzers"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.10.0"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"xunit.assert"</span><span class="p">:</span><span class="w"> </span><span class="s2">"[2.4.1]"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"xunit.core"</span><span class="p">:</span><span class="w"> </span><span class="s2">"[2.4.1]"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"xunit.analyzers/0.10.0"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"package"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"ExampleClassLibrary/1.0.0"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"project"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"framework"</span><span class="p">:</span><span class="w"> </span><span class="s2">".NETCoreApp,Version=v6.0"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="err">//</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">dependency</span><span class="w"> </span><span class="err">project's</span><span class="w"> </span><span class="err">package</span><span class="w"> </span><span class="err">dependencies</span><span class="w"> </span><span class="err">...</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="err">//</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="err">all</span><span class="w"> </span><span class="err">other</span><span class="w"> </span><span class="err">transitive</span><span class="w"> </span><span class="err">package</span><span class="w"> </span><span class="err">and</span><span class="w"> </span><span class="err">project</span><span class="w"> </span><span class="err">dependencies</span><span class="w"> </span><span class="err">...</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"libraries"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"xunit/2.4.1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"sha512"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XNR3Yz9QTtec16O0aKcO6+baVNpXmOnPUxDkCY97J+8krUYxPvXT1szYYEUdKk4sB8GOI2YbAjRIOm8ZnXRfzQ=="</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"package"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xunit/2.4.1"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"files"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">".nupkg.metadata"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">".signature.p7s"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"xunit.2.4.1.nupkg.sha512"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"xunit.nuspec"</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"ExampleClassLibrary/1.0.0"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"project"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"../src/ExampleClassLibrary.csproj"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"msbuildProject"</span><span class="p">:</span><span class="w"> </span><span class="s2">"../src/ExampleClassLibrary.csproj"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="err">//</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="err">all</span><span class="w"> </span><span class="err">other</span><span class="w"> </span><span class="err">transitive</span><span class="w"> </span><span class="err">package</span><span class="w"> </span><span class="err">dependencies'</span><span class="w"> </span><span class="err">contents</span><span class="w"> </span><span class="err">and</span><span class="w"> </span><span class="err">transitive</span><span class="w"> </span><span class="err">project</span><span class="w"> </span><span class="err">dependencies'</span><span class="w"> </span><span class="err">paths</span><span class="w"> </span><span class="err">...</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"projectFileDependencyGroups"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"net6.0"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="s2">"ExampleClassLibrary &gt;= 1.0.0"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"Microsoft.NET.Test.Sdk &gt;= 17.2.0"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"xunit &gt;= 2.4.1"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"xunit.runner.visualstudio &gt;= 2.4.5"</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"packageFolders"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"C:\\Users\\David\\.nuget\\packages\\"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w">
+    </span><span class="nl">"C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w">
+    </span><span class="nl">"C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"project"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span><span class="w">
+    </span><span class="err">//</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="err">various</span><span class="w"> </span><span class="err">information</span><span class="w"> </span><span class="err">about</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">project</span><span class="w"> </span><span class="err">...</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Examples of why one might want to look at this file are be to understand where a dependency is coming from or why a dependency version is resolving the way that it is.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">ResolvePackageAssets</code> target reads the <code class="language-plaintext highlighter-rouge">project.assets.json</code> file to translate its contents into various items, like <code class="language-plaintext highlighter-rouge">ResolvedAnalyzers</code>, <code class="language-plaintext highlighter-rouge">_TransitiveProjectReferences</code>, <code class="language-plaintext highlighter-rouge">ResolvedCompileFileDefinitions</code> (which end up becoming <code class="language-plaintext highlighter-rouge">Analyzer</code>, <code class="language-plaintext highlighter-rouge">ProjectReference</code>, and <code class="language-plaintext highlighter-rouge">Reference</code> items respectively), and everything else which is used from a package.</p>
+
+<p>Now why the <code class="language-plaintext highlighter-rouge">ResolvePackageAssets</code> target exists as opposed to NuGet just generating these items in the generated props and targets files is anyone’s guess. It seems like that would be much simpler, straightforward, and performant. A complaint I have which I also see from others is that there is too much black-box magic, especially in <code class="language-plaintext highlighter-rouge">ResolvePackageAssets</code>, but it is what it is.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I hope this helps shed some light on how <code class="language-plaintext highlighter-rouge">PackageReference</code> works, explains why it’s better than the legacy <code class="language-plaintext highlighter-rouge">packages.config</code>, and provides some of the details which can help with understanding and debugging your build.</p>
+</div><a class="u-url"
+       href="/unixbsdshell/how-does-packagereference-work/"
+       hidden></a>
+</article>
+        </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url"
+          href="/unixbsdshell/"></data>
+
+    <div class="wrapper">
+
+        <div class="footer-col-wrapper">
+            <div class="footer-col">
+                <h2 class="footer-heading">UnixBSDShell</h2>
+                <p>A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others</p>
+            </div>
+            <div class="footer-col">
+                <p>&copy; Copyright unixwinbsd</p>
+                <p>
+                    <a href="/privacy-policy/">Privacy Policy</a>
+                    &bull;
+                    <a href="/license/">License</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+
+    </div>
+
+</footer>
+</body>
+
+</html>

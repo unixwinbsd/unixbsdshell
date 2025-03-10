@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible"
+            content="IE=edge">
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/icon/apple-touch-icon.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/icon/favicon-32x32.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/icon/favicon-16x16.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/assets/icon/favicon-96x96.png" />
+<link rel="manifest"
+      href="/assets/icon/site.webmanifest" />
+<meta name="msapplication-TileColor"
+      content="#00a300" />
+<meta name="theme-color"
+      content="#ffffff" />
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Setting up a Security System with Home Assistant | UnixBSDShell</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Setting up a Security System with Home Assistant" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Update Jun 3, 2020: Adjusted for breaking changes in version 0.110." />
+<meta property="og:description" content="Update Jun 3, 2020: Adjusted for breaking changes in version 0.110." />
+<link rel="canonical" href="http://192.168.5.71:4000/unixbsdshell/setting-up-a-security-system-with-home-assistant/" />
+<meta property="og:url" content="http://192.168.5.71:4000/unixbsdshell/setting-up-a-security-system-with-home-assistant/" />
+<meta property="og:site_name" content="UnixBSDShell" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-25T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Setting up a Security System with Home Assistant" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-04-25T00:00:00+07:00","datePublished":"2020-04-25T00:00:00+07:00","description":"Update Jun 3, 2020: Adjusted for breaking changes in version 0.110.","headline":"Setting up a Security System with Home Assistant","mainEntityOfPage":{"@type":"WebPage","@id":"http://192.168.5.71:4000/unixbsdshell/setting-up-a-security-system-with-home-assistant/"},"url":"http://192.168.5.71:4000/unixbsdshell/setting-up-a-security-system-with-home-assistant/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet"
+            href="/unixbsdshell/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://192.168.5.71:4000/unixbsdshell/feed.xml" title="UnixBSDShell" /></head><body><header class="site-header">
+
+    <div class="wrapper">
+        <a class="site-title"
+           rel="author"
+           href="/unixbsdshell/">UnixBSDShell</a>
+
+        <nav class="site-nav">
+            <input type="checkbox"
+                   id="nav-trigger"
+                   class="nav-trigger" />
+            <label for="nav-trigger">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 18 15"
+                         width="18px"
+                         height="15px">
+                        <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+                    </svg>
+                </span>
+            </label>
+
+            <div class="trigger"><a class="page-link"
+                   href="/unixbsdshell/categories/">Categories</a><a class="page-link"
+                   href="/unixbsdshell/about/">About</a></div>
+        </nav>
+
+        <a href="/unixbsdshell/"
+           class="site-banner">
+            <img src="/unixbsdshell/assets/banner.png"
+                 alt="David's Blog">
+        </a>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+    </div>
+</header><main class="page-content"
+          aria-label="Content">
+        <div class="wrapper">
+            <div class="post-nav"><span class="post-previous">
+        <a href="/authoring-msbuild-project-sdks/"
+           rel="prev">← Previous Post</a>
+    </span><span class="post-next">
+        <a href="/building-a-console-app-with-.net-generic-host/"
+           rel="next">Next Post →</a>
+    </span></div>
+
+<article class="post h-entry"
+         itemscope
+         itemtype="http://schema.org/BlogPosting">
+
+    <header class="post-header">
+        <h1 class="post-title p-name"
+            itemprop="name headline">Setting up a Security System with Home Assistant</h1>
+        <p class="post-meta">
+            <time class="dt-published"
+                  datetime="2020-04-25T00:00:00+07:00"
+                  itemprop="datePublished">
+                Apr 25, 2020
+            </time>• Posted in
+            
+            <a href="/categories/#home%20automation">Home Automation</a>, 
+            <a href="/categories/#self%20hosting">Self Hosting</a></p>
+    </header>
+
+    <div class="post-content e-content"
+         itemprop="articleBody">
+        <p><strong>Update Jun 3, 2020:</strong> Adjusted for breaking changes in version 0.110.</p>
+
+<p>I’ve been <a href="/migrating-from-webcore-to-home-assistant/">dabbling with home automation</a> for a while, and one thing that bugged me was that my home security system didn’t integrate with it at all. Doors and windows being opened seemed like something I would want to be available to me in <a href="https://www.home-assistant.io/" target="_blank">Home Assistant</a>, but the ADT system I had was completely closed despite being wireless. Instead of duplicating the sensors, I decided to ditch ADT and just completely do it myself. As a bonus, it’s saving me $50/month (although to be fair they offered a substantial discount to entice me to stay upon cancelling).</p>
+
+<h2 id="devices">Devices</h2>
+<p>Admittedly, there was a bit of an up front cost in buying all the devices to replace my existing ones, especially since I decided to go with <a href="https://www.z-wave.com/" target="_blank">Z-Wave</a> devices for my home, which are a little more expensive than <a href="https://zigbeealliance.org/" target="_blank">Zigbee</a> ones. However, this can be mitigated by prioritizing the important sensors first and adding on over time. Also, for me at least it more than made up for the cost in just a few months after cancelling my monthly bill with ADT.</p>
+
+<p>My original security system was pretty basic, so I just ended up mimicking it. The devices I bought were:</p>
+<ul>
+  <li><a href="https://www.amazon.com/gp/product/B01GK5D1PE?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=31f9576650a63bc0b982ca71eef12db4&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">Aeotec Door/Window Sensors</a> - At the time I bought the Gen5 ones which no longer seem available, and the Gen6 ones looks pretty bulky and expensive. Any basic window/door sensor would do here though.</li>
+  <li><a href="https://www.amazon.com/gp/product/B01DSRGGXQ?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=2ac28a9b977d33ef0fe4dc213e41709c&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">GoControl Glass Break Detector</a> - The living room and kitchen are connected and have quite a few windows, so my old system had a glass break sensor which I used this to replace. Honestly I’m not sure how well this works, and in general I had a hard time finding a Z-Wave glass break detector. Looking back it may have been better to bite the bullet and just buy a few extra window sensors instead of this.</li>
+  <li><a href="https://www.amazon.com/gp/product/B00PKKM2HO?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=394b9599d6742dc1aa8ec7484eec5090&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">Aeotec Siren</a> - This thing works great. It’s quite loud and has a battery backup so you can’t just unplug it from the wall to get it to stop. It’s configurable enough too in terms of loudness and the tones it uses. I originally was hoping to use it as a door/window chime for when the alarm was not set, but it doesn’t quite work for that and I went with a different solution instead.</li>
+</ul>
+
+<p>Some relevant devices I already had before this project are:</p>
+<ul>
+  <li><a href="https://www.raspberrypi.org/products/raspberry-pi-3-model-b-plus/" target="_blank">Raspberry Pi 3 B+</a> - Runs <a href="https://www.home-assistant.io/" target="_blank">Home Assistant</a></li>
+  <li><a href="https://www.amazon.com/Aeotec-Z-Stick-Z-Wave-create-gateway/dp/B00X0AWA6E?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=869c4575443e0b07f2c392ad2e544376&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">Aeotec Z-Stick</a> - Hub for my <a href="https://www.z-wave.com/" target="_blank">Z-Wave</a> devices, plugged into the Pi</li>
+  <li><a href="https://www.amazon.com/gp/product/B00AGK9KOG?th=1&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=b78bcd5a0f6aeab045efd9674f1f29bd&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">Schlage Z-Wave Connect Locks</a> - These work great. They’re battery powered but last at least a year. Made by a company specializing in locks and they feel solid and secure.</li>
+  <li><a href="https://www.amazon.com/Echo-Dot/dp/B07FZ8S74R?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=6c61d099f0b1d43cdc9c60dee736a021&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">Alexa Echo Dot</a> - Used with the <a href="https://github.com/custom-components/alexa_media_player" target="_blank">alexa_media_player</a> custom component for voice notifications.</li>
+</ul>
+
+<h2 id="home-assistant-configuration">Home Assistant configuration</h2>
+<p><a href="https://www.home-assistant.io/" target="_blank">Home Assistant</a> has a built-in <a href="https://www.home-assistant.io/integrations/manual" target="_blank">Manual Alarm Control Panel</a> which allows you to display a keypad in the lovelace UI as well as use automations to arms and disarm the alarm.</p>
+
+<h3 id="the-basics">The basics</h3>
+
+<p>The alarm configuration is a little complicated, but basically it’s just a state machine. At any given time, the alarm can be <code class="language-plaintext highlighter-rouge">disarmed</code>, <code class="language-plaintext highlighter-rouge">arming</code>, <code class="language-plaintext highlighter-rouge">armed_home</code>, <code class="language-plaintext highlighter-rouge">armed_away</code>, <code class="language-plaintext highlighter-rouge">pending</code>, or <code class="language-plaintext highlighter-rouge">triggered</code>. The difference between <code class="language-plaintext highlighter-rouge">armed_away</code> and <code class="language-plaintext highlighter-rouge">armed_home</code> is that <code class="language-plaintext highlighter-rouge">armed_away</code> gives you some time to leave the house and also some time to disarm when you come back. I chose to give a 2 minute delay when leaving the house and a 1 minute delay when coming home. The <code class="language-plaintext highlighter-rouge">arming</code> and <code class="language-plaintext highlighter-rouge">pending</code> states are what it’s in during these delays. <code class="language-plaintext highlighter-rouge">disarmed</code> and <code class="language-plaintext highlighter-rouge">triggered</code> should be obvious; they’re when the alarm is turned off and “the alarm is sounding”, respectively.</p>
+
+<p>You can use my <code class="language-plaintext highlighter-rouge">alarm_control_panel</code> configuration as a starting point, which looks like this:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">alarm_control_panel</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">manual</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">Alarm</span>
+    <span class="na">code</span><span class="pi">:</span> <span class="kt">!secret</span> <span class="s">alarm_control_panel_code</span>
+    <span class="c1"># Don't require the code to arm the alarm</span>
+    <span class="na">code_arm_required</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="c1"># Arm again after triggering</span>
+    <span class="na">disarm_after_trigger</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="c1"># Delay from arming and becoming armed, eg. to leave the house.</span>
+    <span class="na">arming_time</span><span class="pi">:</span> <span class="m">120</span>
+    <span class="c1"># Allow time to disarm the alarm before it triggers, eg. when arriving home</span>
+    <span class="na">delay_time</span><span class="pi">:</span> <span class="m">60</span>
+    <span class="c1"># Amount of time the alarm is triggered for</span>
+    <span class="na">trigger_time</span><span class="pi">:</span> <span class="m">600</span>
+    <span class="na">disarmed</span><span class="pi">:</span>
+      <span class="c1"># Ensure the alarm can never be directly triggered when disarmed</span>
+      <span class="na">trigger_time</span><span class="pi">:</span> <span class="m">0</span>
+    <span class="na">armed_home</span><span class="pi">:</span>
+      <span class="c1"># Leave no delay between arming -&gt; armed</span>
+      <span class="na">arming_time</span><span class="pi">:</span> <span class="m">0</span>
+      <span class="c1"># Leave no delay between pending -&gt; triggered</span>
+      <span class="na">delay_time</span><span class="pi">:</span> <span class="m">0</span>
+</code></pre></div></div>
+
+<p>Now that you have the alarm configuration, you need to set up some automations to actually handle transitioning between the states. For example, if the alarm is armed and a door opens, you want to trigger the alarm. Also one the alarm triggers, you want to set off sirens, send notifications, call the police, etc.</p>
+
+<p>Note that you do not want to directly start sending notifications and turning on sirens when the alarm is armed and a door is opened. You may be in <code class="language-plaintext highlighter-rouge">armed_away</code> state and should give some time to disarm the alarm. Thus is best to separate the automation to trigger the alarm and the automation to take actions when the alarm is triggered.</p>
+
+<p>Here are some basic automations to get you started. Note that I use a separate automations.yaml file, so your tabbing may be off and you need the <code class="language-plaintext highlighter-rouge">automation:</code> header if you have it directly in your <code class="language-plaintext highlighter-rouge">configuration.yaml</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">alias</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Alarm</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Trigger</span><span class="nv"> </span><span class="s">when</span><span class="nv"> </span><span class="s">sensors</span><span class="nv"> </span><span class="s">go</span><span class="nv"> </span><span class="s">off"</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">binary_sensor.front_door</span>
+      <span class="na">to</span><span class="pi">:</span> <span class="s2">"</span><span class="s">on"</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">binary_sensor.garage_entry</span>
+      <span class="na">to</span><span class="pi">:</span> <span class="s2">"</span><span class="s">on"</span>
+    <span class="c1"># Add more triggers here for other doors/windows</span>
+  <span class="na">condition</span><span class="pi">:</span>
+    <span class="c1"># Only trigger the alarm if it's armed</span>
+    <span class="na">condition</span><span class="pi">:</span> <span class="s">or</span>
+    <span class="na">conditions</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">condition</span><span class="pi">:</span> <span class="s">state</span>
+        <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+        <span class="na">state</span><span class="pi">:</span> <span class="s">armed_home</span>
+      <span class="pi">-</span> <span class="na">condition</span><span class="pi">:</span> <span class="s">state</span>
+        <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+        <span class="na">state</span><span class="pi">:</span> <span class="s">armed_away</span>
+  <span class="na">action</span><span class="pi">:</span>
+    <span class="na">service</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm_trigger</span>
+    <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+
+<span class="pi">-</span> <span class="na">alias</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Alarm</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Triggered"</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+      <span class="na">to</span><span class="pi">:</span> <span class="s2">"</span><span class="s">triggered"</span>
+  <span class="na">action</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">homeassistant.turn_on</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">switch.siren</span>
+
+<span class="pi">-</span> <span class="na">alias</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Alarm</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Disarmed"</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+      <span class="na">to</span><span class="pi">:</span> <span class="s2">"</span><span class="s">disarmed"</span>
+  <span class="na">action</span><span class="pi">:</span>
+    <span class="c1"># Turn off the siren once the alarm is disarmed</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">homeassistant.turn_off</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">switch.siren</span>
+</code></pre></div></div>
+
+<p>Personally, I don’t have the Z-Wave locks auto-arm/disarm the alarm, although you could do that if you wish.</p>
+
+<p>Finally, just add an Alarm Panel card to your Lovelace which points to your <code class="language-plaintext highlighter-rouge">alarm_control_panel</code>.</p>
+
+<p><img src="/assets/alarm-ui.png" alt="Alarm Control Panel UI" class="center" /></p>
+
+<p>And that’s it! At least for the basics. A few more pieces were needed to fully replace my old system and pass the “wife test”.</p>
+
+<h3 id="monitoring-with-noonlight">Monitoring with Noonlight</h3>
+
+<p>One of the primary advantages to paying a security company is that if your alarm goes off, there’s a real human being who will notice and call you to make sure everything is OK, and call the police if it’s not.</p>
+
+<p>Luckily, there’s a company out there called <a href="https://www.noonlight.com/" target="_blank">Noonlight</a> which will do that for free! I’ve tested the system many times, usually accidentally, and they’re incredibly quick (sometimes TOO quick for my many false alarms…) to call to make sure everything is OK. I honestly don’t know how they make money.</p>
+
+<p>To configure this, you’ll first need to add Noonlight to your <a href="https://ifttt.com/" target="_blank">IFTTT</a> account, and enable the <a href="https://www.home-assistant.io/integrations/ifttt/" target="_blank">IFTTT integration in Home Assistant</a> for sending events. For the latter, the configuration should look like:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">ifttt</span><span class="pi">:</span>
+  <span class="na">key</span><span class="pi">:</span> <span class="kt">!secret</span> <span class="s">ifttt_key</span>
+</code></pre></div></div>
+
+<p>Then, to set up the IFTTT applet, you’ll want to use Webhooks “Receive a web request” as the trigger, and Noonlight’s “Trigger alarm with address” as the action. Be sure to note the Webhooks event name you use. Im my case, I use “alarm_triggered”.</p>
+
+<p>Now you simply need to add this IFTTT trigger action with the correct event name to your alarm trigger automation. Adding to the example used earlier, it looks like this:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">alias</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Alarm</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Triggered"</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+      <span class="na">to</span><span class="pi">:</span> <span class="s2">"</span><span class="s">triggered"</span>
+  <span class="na">action</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">homeassistant.turn_on</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">switch.siren</span>
+    <span class="c1"># Trigger IFTTT applet to notify Noonlight</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">ifttt.trigger</span>
+      <span class="na">data_template</span><span class="pi">:</span>
+        <span class="na">event</span><span class="pi">:</span> <span class="s2">"</span><span class="s">alarm_triggered"</span>
+</code></pre></div></div>
+
+<h3 id="voice-warnings">Voice warnings</h3>
+
+<p>My old alarm system would emit an audible tone when we came home to warn us that the alarm would be triggering within a minute or two. Originally when I replaced this with the solution described above, my wife and I would forget about it sometimes and then suddenly the siren would go off.</p>
+
+<p>To help remind us, I implemented a warning system when we come home which announces through our Alexa Dot.</p>
+
+<p>To get Alexa voice announcements, I use the <a href="https://github.com/custom-components/alexa_media_player" target="_blank">alexa_media_player</a> custom component.</p>
+
+<p>I decided to get a little fancier with the automation and it warns multiple times during the delay period. To do this I added a timer. I also have an automation to announce when doors and windows open, so I had to add some delays in the warning so that those other automations would run first and not cause Alexa to get interrupted.</p>
+
+<p>Basically when the alarm goes from <code class="language-plaintext highlighter-rouge">armed_away</code> to <code class="language-plaintext highlighter-rouge">pending</code>, I delay for 5 seconds (for the other announce automation not shown here), announce that the alarm needs to be disarmed, then start a timer. That timer is set for 10 seconds and when it triggers it repeats the warning a bit more forcefully and will continue to repeat every 10 seconds until the alarm is disarmed.</p>
+
+<p>Here’s what my revised automations from above look like with these additions.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">alias</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Alarm</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Pending"</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+      <span class="na">from</span><span class="pi">:</span> <span class="s2">"</span><span class="s">armed_away"</span> <span class="c1"># No need for armed_home, there's no pending delay there.</span>
+      <span class="na">to</span><span class="pi">:</span> <span class="s2">"</span><span class="s">pending"</span>
+  <span class="na">action</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">delay</span><span class="pi">:</span> <span class="s">00:00:05</span> <span class="c1"># Small delay for "Announce" automation to run.</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">notify.alexa_media</span>
+      <span class="na">data</span><span class="pi">:</span>
+        <span class="na">target</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">media_player.kitchen</span>
+        <span class="na">data</span><span class="pi">:</span>
+          <span class="na">type</span><span class="pi">:</span> <span class="s">announce</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Please</span><span class="nv"> </span><span class="s">disarm</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">alarm"</span>
+    <span class="c1"># Start a timer to repeat the warning</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">timer.start</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">timer.alarm_pending</span>
+
+<span class="pi">-</span> <span class="na">alias</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Alarm</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Pending</span><span class="nv"> </span><span class="s">Repeat"</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">event</span>
+      <span class="na">event_type</span><span class="pi">:</span> <span class="s">timer.finished</span>
+      <span class="na">event_data</span><span class="pi">:</span>
+        <span class="na">entity_id</span><span class="pi">:</span> <span class="s">timer.alarm_pending</span>
+  <span class="na">condition</span><span class="pi">:</span>
+    <span class="na">condition</span><span class="pi">:</span> <span class="s">state</span>
+    <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+    <span class="na">state</span><span class="pi">:</span> <span class="s">pending</span>
+  <span class="na">action</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">notify.alexa_media</span>
+      <span class="na">data</span><span class="pi">:</span>
+        <span class="na">target</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">media_player.kitchen</span>
+        <span class="na">data</span><span class="pi">:</span>
+          <span class="na">type</span><span class="pi">:</span> <span class="s">announce</span>
+        <span class="na">message</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Disarm</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">alarm</span><span class="nv"> </span><span class="s">now!"</span>
+    <span class="c1"># Restart the timer</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">timer.start</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">timer.alarm_pending</span>
+
+<span class="pi">-</span> <span class="na">alias</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Alarm</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Disarmed"</span>
+  <span class="na">trigger</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">platform</span><span class="pi">:</span> <span class="s">state</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">alarm_control_panel.alarm</span>
+      <span class="na">to</span><span class="pi">:</span> <span class="s2">"</span><span class="s">disarmed"</span>
+  <span class="na">action</span><span class="pi">:</span>
+    <span class="c1"># Turn off the siren once the alarm is disarmed</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">homeassistant.turn_off</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">switch.siren</span>
+    <span class="c1"># Stop the warning repeat timer</span>
+    <span class="pi">-</span> <span class="na">service</span><span class="pi">:</span> <span class="s">timer.cancel</span>
+      <span class="na">entity_id</span><span class="pi">:</span> <span class="s">timer.alarm_pending</span>
+</code></pre></div></div>
+
+<p>The timer looks like this (directly in configuration.yaml).</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">timer</span><span class="pi">:</span>
+  <span class="c1"># Used to repeat notifications that the alarm needs to be disarmed</span>
+  <span class="na">alarm_pending</span><span class="pi">:</span>
+    <span class="na">duration</span><span class="pi">:</span> <span class="s2">"</span><span class="s">00:00:10"</span>
+</code></pre></div></div>
+
+<h2 id="mounted-alarm-panel">Mounted alarm panel</h2>
+
+<p>The final step in this project was to set up a wall panel so that we didn’t have to use our phones to disarm the alarm.</p>
+
+<p><img src="/assets/alarm-panel-mounted.jpg" alt="Mounted alarm panel" class="center" /></p>
+
+<p>For this, I bought another Raspberry Pi 3 B+, as well as a <a href="https://www.amazon.com/gp/product/B0153R2A9I?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=1bf8af125902da507a8ec5b33c13a48c&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">touch screen Display</a> and
+<a href="https://www.amazon.com/gp/product/B01GQFUWIC?&amp;_encoding=UTF8&amp;tag=dfederm-20&amp;linkCode=ur2&amp;linkId=3264a494aada7c4006f0b79b44f8a97c&amp;camp=1789&amp;creative=9325" target="_blank" rel="nofollow">touch screen Case</a>. Mounting a tablet probably would have been just as easy and cheaper if I already had an old one lying around, but I didn’t.</p>
+
+<p>There are plenty of guides out there for setting up a Raspberry Pi in kiosk mode, and I honestly wouldn’t consider myself an expert in this area, but the gist is that I installed Raspbian Lite, setup ssh for easy remoting, installed <code class="language-plaintext highlighter-rouge">chromium-browser</code>, and added the following to <code class="language-plaintext highlighter-rouge">~/.config/lxsession/LXDE/autostart</code>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Prevent screen blanking</span>
+@xset s off
+@xset <span class="nt">-dpms</span>
+@xset s noblank
+
+<span class="c"># Ensure chromium thinks it shut down cleanly, even if it didn't to prevent tab restore warnings.</span>
+@sed <span class="nt">-i</span> <span class="s1">'s/"exited_cleanly": false/"exited_cleanly": true/'</span> ~/.config/chromium/Default/Preferences
+@sed <span class="nt">-i</span> <span class="s1">'s/"exit_type":"Crashed"/"exit_type":"Normal"/'</span> ~/.config/chromium/Default/Preferences
+
+<span class="c"># Launch the web browser in kiosk mode</span>
+@chromium-browser <span class="nt">--kiosk</span> <span class="nt">--disable-translate</span> <span class="nt">--noerrdialogs</span> <span class="nt">--disable-pinch</span> https://&lt;url-to-my-home-assistant&gt;/lovelace/1
+</code></pre></div></div>
+
+<p>Note the url used when launching chromium. I used my external hostname so that chromium doesn’t complain about the SSL cert, but I use a <a href="https://pi-hole.net/" target="_blank">Pi-hole</a> to redirect that host to the local IP anyway so it’s not actually calling externally. There might have been an easier way to bypass the cert error and use the local IP directly, but this worked for me. Also note that the <code class="language-plaintext highlighter-rouge">/lovelace/1</code> path is so that it shows my 2nd Lovelace tab, which is the one I have the alarm panel card on.</p>
+
+<p>Upon first boot you’ll have to log in, so be sure to attach a keyboard and mouse before mounting. I set up a separate user in Home Assistant to log into the alarm panel so that it didn’t run as my user, an Administrator (although Home Assistant doesn’t have very granular permissions; maybe in the future). And although I haven’t set it up yet, now that Home Assistant has <a href="https://www.home-assistant.io/blog/2020/03/18/release-107/#hello-multiple-lovelace-dashboards" target="_blank">multiple Lovelace dashboards</a>, I could easily add a specific dashboard for this scenario.</p>
+<p class="amazon-disclosure">
+            Disclosure: As an Amazon Associate, I earn from qualifying purchases. This adds no extra cost to you, but helps me in a small way if you choose to purchase a product linked in this post.
+        </p></div><a class="u-url"
+       href="/unixbsdshell/setting-up-a-security-system-with-home-assistant/"
+       hidden></a>
+</article>
+        </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url"
+          href="/unixbsdshell/"></data>
+
+    <div class="wrapper">
+
+        <div class="footer-col-wrapper">
+            <div class="footer-col">
+                <h2 class="footer-heading">UnixBSDShell</h2>
+                <p>A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others</p>
+            </div>
+            <div class="footer-col">
+                <p>&copy; Copyright unixwinbsd</p>
+                <p>
+                    <a href="/privacy-policy/">Privacy Policy</a>
+                    &bull;
+                    <a href="/license/">License</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+
+    </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible"
+            content="IE=edge">
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/icon/apple-touch-icon.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/icon/favicon-32x32.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/icon/favicon-16x16.png" />
+<link rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/assets/icon/favicon-96x96.png" />
+<link rel="manifest"
+      href="/assets/icon/site.webmanifest" />
+<meta name="msapplication-TileColor"
+      content="#00a300" />
+<meta name="theme-color"
+      content="#ffffff" />
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Removing unused dependencies with ReferenceTrimmer | UnixBSDShell</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Removing unused dependencies with ReferenceTrimmer" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="It’s been a while since I first introduced ReferenceTrimmer and a lot has changed." />
+<meta property="og:description" content="It’s been a while since I first introduced ReferenceTrimmer and a lot has changed." />
+<link rel="canonical" href="http://192.168.5.71:4000/unixbsdshell/removing-unused-dependencies-with-referencetrimmer/" />
+<meta property="og:url" content="http://192.168.5.71:4000/unixbsdshell/removing-unused-dependencies-with-referencetrimmer/" />
+<meta property="og:site_name" content="UnixBSDShell" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-02-12T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Removing unused dependencies with ReferenceTrimmer" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-02-12T00:00:00+07:00","datePublished":"2023-02-12T00:00:00+07:00","description":"It’s been a while since I first introduced ReferenceTrimmer and a lot has changed.","headline":"Removing unused dependencies with ReferenceTrimmer","mainEntityOfPage":{"@type":"WebPage","@id":"http://192.168.5.71:4000/unixbsdshell/removing-unused-dependencies-with-referencetrimmer/"},"url":"http://192.168.5.71:4000/unixbsdshell/removing-unused-dependencies-with-referencetrimmer/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet"
+            href="/unixbsdshell/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://192.168.5.71:4000/unixbsdshell/feed.xml" title="UnixBSDShell" /></head><body><header class="site-header">
+
+    <div class="wrapper">
+        <a class="site-title"
+           rel="author"
+           href="/unixbsdshell/">UnixBSDShell</a>
+
+        <nav class="site-nav">
+            <input type="checkbox"
+                   id="nav-trigger"
+                   class="nav-trigger" />
+            <label for="nav-trigger">
+                <span class="menu-icon">
+                    <svg viewBox="0 0 18 15"
+                         width="18px"
+                         height="15px">
+                        <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z" />
+                    </svg>
+                </span>
+            </label>
+
+            <div class="trigger"><a class="page-link"
+                   href="/unixbsdshell/categories/">Categories</a><a class="page-link"
+                   href="/unixbsdshell/about/">About</a></div>
+        </nav>
+
+        <a href="/unixbsdshell/"
+           class="site-banner">
+            <img src="/unixbsdshell/assets/banner.png"
+                 alt="David's Blog">
+        </a>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+    </div>
+</header><main class="page-content"
+          aria-label="Content">
+        <div class="wrapper">
+            <div class="post-nav"><span class="post-previous">
+        <a href="/async-mutex/"
+           rel="prev">← Previous Post</a>
+    </span><span class="post-next">
+        <a href="/scripting-machine-setup/"
+           rel="next">Next Post →</a>
+    </span></div>
+
+<article class="post h-entry"
+         itemscope
+         itemtype="http://schema.org/BlogPosting">
+
+    <header class="post-header">
+        <h1 class="post-title p-name"
+            itemprop="name headline">Removing unused dependencies with ReferenceTrimmer</h1>
+        <p class="post-meta">
+            <time class="dt-published"
+                  datetime="2023-02-12T00:00:00+07:00"
+                  itemprop="datePublished">
+                Feb 12, 2023
+            </time>• Posted in
+            
+            <a href="/categories/#.net">.NET</a>, 
+            <a href="/categories/#msbuild">MSBuild</a></p>
+    </header>
+
+    <div class="post-content e-content"
+         itemprop="articleBody">
+        <p>It’s <a href="/trimming-unnecessary-dependencies-from-projects/">been a while</a> since I first introduced <a href="https://github.com/dfederm/ReferenceTrimmer" target="_blank">ReferenceTrimmer</a> and a lot has changed.</p>
+
+<p>For background, ReferenceTrimmer is a <a href="https://www.nuget.org/packages/ReferenceTrimmer" target="_blank">NuGet package</a> which helps identify unused dependencies which can be safely removed from your C# projects. Whether it’s old style <code class="language-plaintext highlighter-rouge">&lt;Reference&gt;</code>, other projects in your repository referenced via <code class="language-plaintext highlighter-rouge">&lt;ProjectReference&gt;</code>, or NuGet’s <code class="language-plaintext highlighter-rouge">&lt;PackageReference&gt;</code>, ReferenceTrimmer will help determine what isn’t required and simplify your dependency graph. This can lead to faster builds, smaller outputs, and better maintainability for your repository.</p>
+
+<p>Most notably among the changes are that it’s now implemented as a combination of an <a href="https://learn.microsoft.com/en-us/visualstudio/msbuild/msbuild-tasks" target="_blank">MSBuild task</a> and a <a href="https://learn.microsoft.com/en-us/visualstudio/code-quality/roslyn-analyzers-overview" target="_blank">Roslyn analyzer</a> which seamlessly hook into your build process. A close second, and very related to the first, is that it uses the <a href="https://learn.microsoft.com/en-us/dotnet/api/microsoft.codeanalysis.compilation.getusedassemblyreferences" target="_blank"><code class="language-plaintext highlighter-rouge">GetUsedAssemblyReferences</code></a> Roslyn API to determine exactly which references the compiler used during compilation.</p>
+
+<h2 id="getting-started">Getting started</h2>
+
+<p>Because of the implementation being in an MSBuild task and Roslyn analyzer, the bulk of the work to use ReferenceTrimmer is to simply add a <code class="language-plaintext highlighter-rouge">PackageReference</code> to the <a href="https://www.nuget.org/packages/ReferenceTrimmer" target="_blank">ReferenceTrimmer NuGet package</a>. That will automatically enable its logic as part of your build. It’s recommended to add this to your <code class="language-plaintext highlighter-rouge">Directory.Build.props</code> or <code class="language-plaintext highlighter-rouge">Directory.Build.targets</code>, or if you’re using NuGet’s <a href="https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management" target="_blank">Central Package Management</a>, which I highly recommend, your <code class="language-plaintext highlighter-rouge">Directory.Packages.props</code> file at the root of your repo.</p>
+
+<p>For better results, <a href="https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0005" target="_blank">IDE0005</a> (Remove unnecessary using directives) should also be enabled, and unfortunately to enable this rule you need to enable <a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/xmldoc/" target="_blank">XML documentation comments</a> (xmldoc) due to <a href="https://github.com/dotnet/roslyn/issues/41640" target="_blank">dotnet/roslyn issue 41640</a>. This causes many new analyzers to kick in which you may have many violations for, so those would need to be fixed or suppressed. To enable xmldoc, set the <code class="language-plaintext highlighter-rouge">&lt;GenerateDocumentationFile&gt;</code> property to <code class="language-plaintext highlighter-rouge">true</code>.</p>
+
+<p>And that’s it, ReferenceTrimmer should now run as part of your build!</p>
+
+<h2 id="how-it-works">How it works</h2>
+
+<p>ReferenceTrimmer consists of two parts: an MSBuild task and a Roslyn analyzer.</p>
+
+<p>The task is named <code class="language-plaintext highlighter-rouge">CollectDeclaredReferencesTask</code> and as you can guess, its job is to gather the declared references. It gathers the list of references passed to the compiler and associates each of them with the <code class="language-plaintext highlighter-rouge">&lt;Reference&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;ProjectReference&gt;</code>, or <code class="language-plaintext highlighter-rouge">&lt;PackageReference&gt;</code> from which they originate. It also filters out references which are unavoidable such as implicitly defined references from the .NET SDK, as well as packages which contain build logic since that may be the true purpose of that packages as opposed to providing a referenced library.</p>
+
+<p>This information from the task is dumped into a file <code class="language-plaintext highlighter-rouge">_ReferenceTrimmer_DeclaredReferences.json</code> under the project’s intermediate output folder (usually <code class="language-plaintext highlighter-rouge">obj\Debug</code> or <code class="language-plaintext highlighter-rouge">obj\Release</code>) and this path is added as a <code class="language-plaintext highlighter-rouge">AdditionalFiles</code> item to <a href="https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Using%20Additional%20Files.md#in-a-project-file" target="_blank">pass it to the analyzer</a>.</p>
+
+<p>Next, as part of compilation, the analyzer named <code class="language-plaintext highlighter-rouge">ReferenceTrimmerAnalyzer</code> will call the <code class="language-plaintext highlighter-rouge">GetUsedAssemblyReferences</code> API as previously mentioned to get the used references and compare them to the compared references provided by the task. Any declared references which are not used will cause a warning to be raised.</p>
+
+<p>The warning code raised will depend on the originating reference type. It will be <code class="language-plaintext highlighter-rouge">RT0001</code> for <code class="language-plaintext highlighter-rouge">&lt;Reference&gt;</code> items, <code class="language-plaintext highlighter-rouge">RT0002</code> for <code class="language-plaintext highlighter-rouge">&lt;ProjectReference&gt;</code> items, or <code class="language-plaintext highlighter-rouge">RT0003</code> for <code class="language-plaintext highlighter-rouge">&lt;PackageReference&gt;</code> items. These are treated like any other compilation warning and so can be suppressed on a per-project basic with <code class="language-plaintext highlighter-rouge">&lt;NoWarn&gt;</code>. Additionally ReferenceTrimmer can be disabled entirely for a project by setting <code class="language-plaintext highlighter-rouge">$(EnableReferenceTrimmer)</code> to false.</p>
+
+<p>Note that because the warnings are raised as part of compilation, projects with other language types like C++ or even <a href="https://github.com/microsoft/MSBuildSdks/blob/main/src/NoTargets/README.md" target="_blank">NoTargets projects</a> will not cause warning to be raised nor need to be explicitly excluded from ReferenceTrimmer.</p>
+
+<h2 id="future-work">Future work</h2>
+
+<p>Ideas for future improvement include:</p>
+
+<ul>
+  <li>Better identifying <code class="language-plaintext highlighter-rouge">&lt;ProjectReference&gt;</code> which are required for runtime only. Or at least documenting explicit guidance around how to reference those properly such that the compiler doesn’t “see” them but the outputs are still copied.</li>
+  <li>Add the ability to exclude specific references from being warned on by adding some metadata to the reference. This would allow for more granular control rather than having to disable an entire rule for an entire project.</li>
+  <li>Add support for C++ projects.</li>
+  <li>Find and fix more edge-case bugs!</li>
+</ul>
+
+<p>Contributions and bug reports are always welcome on <a href="https://github.com/dfederm/ReferenceTrimmer" target="_blank">GitHub</a>, and I’m hopeful ReferenceTrimmer can be helpful in detangling your repos!</p>
+</div><a class="u-url"
+       href="/unixbsdshell/removing-unused-dependencies-with-referencetrimmer/"
+       hidden></a>
+</article>
+        </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url"
+          href="/unixbsdshell/"></data>
+
+    <div class="wrapper">
+
+        <div class="footer-col-wrapper">
+            <div class="footer-col">
+                <h2 class="footer-heading">UnixBSDShell</h2>
+                <p>A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others</p>
+            </div>
+            <div class="footer-col">
+                <p>&copy; Copyright unixwinbsd</p>
+                <p>
+                    <a href="/privacy-policy/">Privacy Policy</a>
+                    &bull;
+                    <a href="/license/">License</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="social-links"><ul class="social-media-list">
+    <li>
+        <a rel="me"
+           href="https://github.com/dfederm"
+           title="dfederm">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#github"></use>
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a href="/unixbsdshell/feed.xml"
+           title="Subscribe">
+            <svg class="svg-icon">
+                <use xlink:href="/unixbsdshell/assets/social-icons.svg#rss"></use>
+            </svg>
+        </a>
+    </li>
+</ul></div>
+
+    </div>
+
+</footer>
+</body>
+
+</html>
