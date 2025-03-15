@@ -6,43 +6,21 @@
     
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "url": "{{ site.url }}{{ page.url }}",
-  "name": "{{ page.title }}",
-  "headline": "{{ page.title }}",
-  "keywords": "{{ page.tags }}",
-  "description": "{{ page.excerpt }}",
-  "articleBody": "{{ page.content }}",
-  "datePublished": "{{ page.date }}",
-  "dateModified": "{{ page.last_modified_at }}",
-  "author": {
-    "@type": "Person",
-    "name": "{{ site.author_name }}",
-    "email": "{{ site.email }}"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "{{ site.title }}",
-    "url": "{{ site.url }}",
-    "logo": {
-      "@type": "ImageObject",
-      "width": 32,
-      "height": 32,
-      "url": "{{ site.url }}/icon/favicon.ico"
-    }
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "{{ site.url }}{{ page.url }}"
-  },
-  "image": {
-    "@type": "ImageObject",
-    "width": "{{ site.img_width }}",
-    "height": "{{ site.img_height }}",
-    "url": "{{ site.img_url }}"
-  }
+ "@context": "http://schema.org/", 
+ "@type": "Person",
+ "name": "{{ site.author | default: site.github.owner.name }}",
+ "email": "mailto:{{ site.email | default: site.github.owner.email }}",
+ "url": "{{ site.github.owner.blog }}",
+ "sameAs": [
+ "https://github.com/{{ site.github_username | default: social.github | cgi_escape | escape }}",
+ "https://instagram.com/{{ site.instagram_username | default: social.instagram | cgi_escape | escape }}",
+ "https://www.xing.com/profile/{{ site.xing_username | default: social.xing | cgi_escape | escape }}",
+ "https://m.youtube.com/channel/{{ site.youtube_username | default: social.youtube_channel | cgi_escape | escape }}",
+ "https://pgp.mit.edu/pks/lookup?op=get&search={{ site.gnupg_key | default: social.gnupg | cgi_escape | escape }}",
+ "{{ site.url }}"
+ ]
 }
+  
 </script>
 
     <!-- Google tag (gtag.js) -->
