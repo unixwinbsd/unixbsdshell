@@ -8,8 +8,8 @@
 {
   "@context": "http://schema.org",
   "@type": "WebSite",
-  "name": "{{ site.title }}",
-  "url": "{site.url}",
+  "name": "site.title",
+  "url": site.url,
   "description": "{{ site.description }}",
   "dateModified": "{{ site.time | date_to_xmlschema }}",
   "creator": {
