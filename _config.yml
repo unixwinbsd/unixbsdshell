@@ -9,7 +9,7 @@ author: "Iwan Setiawan"
 domain: penaadventure.com
 #baseurl: "/unixbsdshell"
 baseurl: "https://penaadventure.com"
-url: "https://penaadventure.com"
+url: https://penaadventure.com
 github_username: unixwinbsd
 timezone: Europe/Moscow
 permalink: pretty
