@@ -11,7 +11,7 @@ domain: penaadventure.com
 baseurl: "https://penaadventure.com"
 url: "https://penaadventure.com"
 github_username: unixwinbsd
-
+timezone: Europe/Moscow
 permalink: pretty
 #destination: ./_posts
 highlighter: rouge
