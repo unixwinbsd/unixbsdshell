@@ -1,0 +1,70 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<rss xmlns:yandex="http://news.yandex.ru"
+    xmlns:media="http://search.yahoo.com/mrss/"
+    xmlns:turbo="http://turbo.yandex.ru"
+    version="2.0">
+    <channel>
+        <!-- Information about the source site  -->
+        <title>UnixBSDShell</title>
+        <link>https://penaadventure.com/</link>
+        <description>A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others</description>
+        <language>ru</language>
+        <turbo:analytics>95806836</turbo:analytics>
+        <turbo:adNetwork></turbo:adNetwork>
+        <item turbo="true">
+            <!-- Page information -->
+            <turbo:extendedHtml>true</turbo:extendedHtml>
+            <link>https://penaadventure.com</link>
+            <turbo:source></turbo:source>
+            <turbo:topic></turbo:topic>
+            <pubDate>Tue, 20 Apr 2025 14:15:00 +0300
+            <author>Iwan Setiawan</author>
+            <metrics>
+                <yandex schema_identifier="https://penaadventure.com/#webpage">
+                    <breadcrumblist>
+                        <breadcrumb url="https://penaadventure.com/" text="UnixBSDShell"/>
+                        <breadcrumb url="https://penaadventure.com/" text="tags"/>
+                        <breadcrumb url="https://penaadventure.com/" text="page.title"/>
+                                            </breadcrumblist>
+                </yandex>
+            </metrics>
+            <yandex:related></yandex:related>
+            <turbo:content>
+                <![CDATA[
+                <header>
+<h1>UnixBSDShell</h1>
+  <a id="home" href="{{"/" | relative_url}}"><img src="{{ "/img/logo.png" | relative_url}}" alt="To the main page" /></a>
+</header>
+                ]]>
+            </turbo:content>
+        </item>
+        <item turbo="true">
+            
+            <turbo:content>
+     <nav id="menu">
+  <ul>
+    <li><a href="{{"/articles" | relative_url}}"><span class="icon-articles"></span> Articles</a></li>
+    <li><a href="{{"/posts" | relative_url}}"><span class="icon-blog"></span> Blog</a></li>
+  </ul>
+</nav>
+
+<main>
+  {{ content }}
+</main>
+
+<nav id="profiles">
+  <ul>
+    <li><a href="https://github.com/unixwinbsd"><span class="icon-github"></span> GitHub</a></li>
+    <li><a href="https://stackoverflow.com/users/27081768/unixbsdshell"><span class="icon-stackoverflow"></span> Stack Overflow</a></li>
+    <li><a href="https://rutube.ru/channel/31080076/"><span class="icon-youtube2"></span> RuTube</a></li>
+  </ul>
+</nav>
+
+<footer>
+  Write to me at <a href="tg://resolve?domain=markshevchenko"><img src="https://img.icons8.com/color/50/000000/telegram-app.png" style="width: auto; height: 1em" />Telegram</a>
+</footer>
+            </turbo:content>
+        </item>
+        
+    </channel>
+</rss>

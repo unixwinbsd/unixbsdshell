@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+  <meta charset="utf-8">
+  
+  <title>FreeBSD OpenSearch — настройка подключаемых модулей OpenSearch TLS и сертификатов с помощью OpenSSL  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="FreeBSD OpenSearch — настройка подключаемых модулей OpenSearch TLS и сертификатов с помощью OpenSSL"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2022/09/02/configuration-freebsd-opensearch-certificates-openssl/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2022/09/02/configuration-freebsd-opensearch-certificates-openssl/"><meta property="og:description" content="Opensearch можно объединить с платформами доставки данных Beat (Filebeat, Winlogbeat и т. д.), благодаря чему пользователи OpenSearch могут выстроить полный цикл управления журналами в виде сбора, систематизации и поиска."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="FreeBSD OpenSearch — настройка подключаемых модулей OpenSearch TLS и сертификатов с помощью OpenSSL">
+  <meta name="twitter:description" content="Opensearch можно объединить с платформами доставки данных Beat (Filebeat, Winlogbeat и т. д.), благодаря чему пользователи OpenSearch могут выстроить полный цикл управления журналами в виде сбора, систематизации и поиска.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2022/09/02/configuration-freebsd-opensearch-certificates-openssl/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2022-09-02T09:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2022/09/02/configuration-freebsd-opensearch-certificates-openssl/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div><nav class="breadcrumbs">
+  <ol itemscope itemtype="http://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comfreebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com2022" itemprop="item"><span itemprop="name">2022</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com09" itemprop="item"><span itemprop="name">09</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com02" itemprop="item"><span itemprop="name">02</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span><li class="current">FreeBSD OpenSearch — настройка подключаемых модулей OpenSearch TLS и сертификатов с помощью OpenSSL</li></ol>
+</nav><div id="main" role="main"><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="FreeBSD OpenSearch — настройка подключаемых модулей OpenSearch TLS и сертификатов с помощью OpenSSL"><meta itemprop="description" content="Opensearch можно объединить с платформами доставки данных Beat (Filebeat, Winlogbeat и т. д.), благодаря чему пользователи OpenSearch могут выстроить полный цикл управления журналами в виде сбора, систематизации и поиска."><meta itemprop="datePublished" content="2022-09-02"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2022-09-02T09:00:00+03:00">2022-09-02</time> </p><h1 class="page__title" itemprop="headline">FreeBSD OpenSearch — настройка подключаемых модулей OpenSearch TLS и сертификатов с помощью OpenSSL
+</h1></header><section class="page__content" itemprop="text">
+        <p>OpenSearch — это утилита с открытым исходным кодом, которая часто используется в качестве поисковой системы, а также как мощный инструмент для анализа данных. Opensearch написан на основе кодовой базы Elasticsearch 7.10.2. Системы Opensearch включают в себя:</p>
+<ul>
+  <li>Хранилище и поисковая система.</li>
+  <li>Веб-интерфейс.</li>
+  <li>Среда визуализации данных OpenSearch Dashboard.</li>
+  <li>А также дополнения, которые позволяют использовать ряд функций поисковой системы Elasticsearch.</li>
+</ul>
+
+<p>OpenSearch появился благодаря участию сообщества и поддержке крупных компаний, таких как Red Hat, SAP, Capital One и т. д. Система Opensearch часто используется для полнотекстового поиска на сайтах, поскольку она может хранить и анализировать логи, а также визуализировать и анализировать полученную информацию.</p>
+
+<p>Opensearch можно объединить с платформами доставки данных Beat (Filebeat, Winlogbeat и т. д.), благодаря чему пользователи OpenSearch могут выстроить полный цикл управления журналами в виде сбора, систематизации и поиска.</p>
+
+<h1 id="технические-характеристики-используемой-системы">Технические характеристики используемой системы</h1>
+<ul>
+  <li>OS: FreeBSD 13.3</li>
+  <li>Hostname: ns3</li>
+  <li>IP address: 192.168.5.2</li>
+  <li>Logstash version: logstash8-8.11.3</li>
+  <li>Opensearch version: Opensearch-2.11.1</li>
+  <li>Dependencies: bash jna</li>
+</ul>
+
+<p>Java version:</p>
+<ul>
+  <li>openjdk version “17.0.9” 2023-10-17</li>
+  <li>OpenJDK Runtime Environment (build 17.0.9+9-1)</li>
+  <li>OpenJDK 64-Bit Server VM (build 17.0.9+9-1, mixed mode, sharing)</li>
+</ul>
+
+<h2 id="а-настройка-транспортного-уровня-tls">А. Настройка транспортного уровня TLS</h2>
+<p>В этом разделе мы объясним, как настроить плагин безопасности Opensearch во FreeBSD. В Opensearch есть много плагинов, которые вы можете использовать, все эти плагины требуют SSL-сертификат, который может поддерживать множество дополнительных функций и методов настройки. Вы можете создать конфигурацию сертификата TLS, используя такие инструменты, как OpenSSL.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/etc/opensearch
+root@ns3:/usr/local/etc/opensearch # rm -f *pem
+</code></pre></div></div>
+
+<h3 id="а-сгенерировать-корневой-сертификат">а. Сгенерировать корневой сертификат</h3>
+<p>Прежде чем двигаться дальше, давайте сначала создадим закрытый ключ для корневого сертификата. Корневой сертификат используется для подписи других сертификатов.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl genrsa -out root-ca-key.pem 2048
+Generating RSA private key, 2048 bit long modulus (2 primes)
+.........................................+++++
+.............................+++++
+e is 65537 (0x010001)
+</code></pre></div></div>
+
+<p>После этого вы создаете самоподписанный корневой сертификат CA. Используйте параметр -subj, чтобы предоставить информацию, специфичную для вашего хоста.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl req -new -x509 -sha256 -key root-ca-key.pem -out root-ca.pem -days 730
+</code></pre></div></div>
+
+<h3 id="б-создать-сертификат-администратора">б. Создать сертификат администратора</h3>
+<p>Далее создайте сертификат для администратора. Чтобы создать сертификат администратора, сначала создайте новый ключ, чтобы администратор мог выполнять административные задачи, связанные с плагином безопасности.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl genrsa -out admin-key-temp.pem 2048
+</code></pre></div></div>
+
+<p>Чтобы сертификат администратора можно было использовать с программами Java, преобразуйте ключ в формат PKCS.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl pkcs8 -inform PEM -outform PEM -in admin-key-temp.pem -topk8 -nocrypt -v1 PBE-SHA1-3DES -out admin-key.pem
+</code></pre></div></div>
+
+<p>Далее создайте запрос на подпись сертификата (CSR) для сертификата администратора (Certificate Signing Request) на основе закрытого ключа. Этот файл действует как заявка в центр сертификации на подписанный вами сертификат.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl req -new -key admin-key.pem -out admin.csr
+</code></pre></div></div>
+
+<p>Теперь, когда закрытый ключ и запрос на подпись созданы, подпишите сертификат администратора, используя корневой сертификат и закрытый ключ, созданные ранее.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl x509 -req -in admin.csr -CA root-ca.pem -CAkey root-ca-key.pem -CAcreateserial -sha256 -out admin.pem -days 730
+</code></pre></div></div>
+
+<h3 id="c-создать-сертификат-узла">C. Создать сертификат узла</h3>
+<p>Создание узла сертификата практически идентично действиям по созданию сертификата администратора, описанным выше. В этом разделе мы сгенерируем ключи и CSR с новыми именами файлов для каждого узла и клиентского сертификата. Чтобы создать сертификат узла или клиента, сначала создайте новый ключ.</p>
+
+<p>Добавление сертификата TLS обеспечит дополнительную безопасность вашего хоста Opensearch. Сертификат TLS предоставит клиенту разрешение на проверку подлинности узла и шифрование трафика между клиентом и хостом. Сертификат TLS настраивается в файле opensearch.yml, и мы сохраним его в каталоге /usr/local/etc/opensearch. Чтобы создать самоподписанный сертификат, выполните следующие действия.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl genrsa -out node1-key-temp.pem 2048
+</code></pre></div></div>
+
+<p>Затем преобразуйте закрытый ключ в формат PKCS, чтобы его могли использовать приложения Java.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl pkcs8 -inform PEM -outform PEM -in node1-key-temp.pem -topk8 -nocrypt -v1 PBE-SHA1-3DES -out node1-key.pem
+</code></pre></div></div>
+
+<p>Затем создайте новый CSR для сертификата хоста на основе закрытого ключа.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl req -new -key node1-key.pem -out node1.csr
+</code></pre></div></div>
+<p>Для всех сертификатов хоста и клиента необходимо указать альтернативное имя субъекта (SAN). Перед созданием подписанного сертификата создайте файл расширения SAN, содержащий имя хоста и доменное имя.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # echo 'subjectAltName=DNS:node1.datainchi.com' &gt; node1.ext
+</code></pre></div></div>
+
+<p>Далее создайте сертификат.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl x509 -req -in node1.csr -CA root-ca.pem -CAkey root-ca-key.pem -CAcreateserial -sha256 -out node1.pem -days 730 -extfile node1.ext
+</code></pre></div></div>
+<p>После этого вы конвертируете корневой сертификат CA в формат .crt, чтобы корневой сертификат CA можно было установить на сервере Opensearch.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # openssl x509 -outform der -in root-ca.pem -out root-ca.crt
+</code></pre></div></div>
+
+<p>Измените владельца и разрешения каталога на opensearch:opensearch.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # chown -R opensearch:opensearch /usr/local/etc/opensearch/
+</code></pre></div></div>
+
+<h3 id="г-подготовка-сертификатов-для-opensearch">г. Подготовка сертификатов для Opensearch</h3>
+<p>После создания всех сертификатов приступайте к их установке и добавлению в файл конфигурации OpenSearch, а именно «opensearch.yml». Откройте «/usr/local/etc/opensearch/opensearch.yml» и в самом низу скрипта (в конце скрипта) добавьте приведенный ниже скрипт.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/opensearch # ee opensearch.yml
+plugins.security.ssl.transport.pemcert_filepath: /usr/local/etc/opensearch/node1.pem
+plugins.security.ssl.transport.pemkey_filepath: /usr/local/etc/opensearch/node1-key.pem
+plugins.security.ssl.transport.pemtrustedcas_filepath: /usr/local/etc/opensearch/root-ca.pem
+plugins.security.ssl.http.enabled: true
+plugins.security.ssl.http.pemcert_filepath: /usr/local/etc/opensearch/node1.pem
+plugins.security.ssl.http.pemkey_filepath: /usr/local/etc/opensearch/node1-key.pem
+plugins.security.ssl.http.pemtrustedcas_filepath: /usr/local/etc/opensearch/root-ca.pem
+plugins.security.allow_default_init_securityindex: true
+plugins.security.authcz.admin_dn:
+  - 'CN=A,OU=UNIT,O=ORG,L=TORONTO,ST=ONTARIO,C=CA'
+plugins.security.nodes_dn:
+  - 'CN=node1.datainchi.com,OU=UNIT,O=ORG,L=TORONTO,ST=ONTARIO,C=CA'
+plugins.security.audit.type: internal_opensearch
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+</code></pre></div></div>
+
+<h2 id="b-процесс-установки-плагинов">B. Процесс установки плагинов</h2>
+<p>Как мы знаем, Opensearch включает в себя несколько основных плагинов, входящих в состав его установочного пакета. В Opensearch плагины используются для улучшения основных функций и возможностей. Помимо основных плагинов, вы также можете писать свои собственные плагины, а на Github также доступны плагины, созданные сообществом.</p>
+
+<p>Для того чтобы функции плагина работали безупречно и подключались к Opensearch, все плагины должны иметь доступ к данным в кластере. Прежде чем использовать плагин, вы должны сначала понять его функции и преимущества. Итак, какие плагины доступны в Opensearch? Вы можете просмотреть доступные плагины, выполнив команду ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/lib/opensearch/bin
+root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin list
+analysis-extension
+analysis-fess
+analysis-icu
+configsync
+minhash
+opensearch-alerting
+opensearch-anomaly-detection
+opensearch-asynchronous-search
+opensearch-cross-cluster-replication
+opensearch-custom-codecs
+opensearch-geospatial
+opensearch-index-management
+opensearch-job-scheduler
+opensearch-knn
+opensearch-ml
+opensearch-neural-search
+opensearch-notifications
+opensearch-notifications-core
+opensearch-observability
+opensearch-performance-analyzer
+opensearch-reports-scheduler
+opensearch-security
+opensearch-security-analytics
+opensearch-sql
+</code></pre></div></div>
+
+<p>Полный список дополнительных поддерживаемых плагинов:</p>
+
+<ul>
+  <li>
+    <p>repository-gcs
+Добавлена ​​поддержка сервиса Google Cloud Storage в качестве хранилища снимков.</p>
+  </li>
+  <li>
+    <p>analysis-icu
+Добавлен модуль Lucene ICU с расширенной поддержкой Unicode и использованием библиотек ICU. Этот модуль обеспечивает улучшенный анализ азиатских языков, нормализацию Unicode, преобразование регистра Unicode, поддержку сопоставления и транслитерацию.</p>
+  </li>
+  <li>
+    <p>repository-azure
+Добавлена ​​поддержка хранилища BLOB-объектов Azure в качестве репозитория моментальных снимков.</p>
+  </li>
+  <li>
+    <p>analysis-kuromoji
+Добавлен модуль анализа куромодзи Lucene для японского языка.</p>
+  </li>
+  <li>
+    <p>analysis-nori
+Добавлен модуль анализа Lucene nori для Кореи.</p>
+  </li>
+  <li>
+    <p>analysis-phonetic
+Предоставляет фильтр токенов, который преобразует выражения в их фонетическое представление с помощью алгоритмов Soundex, Metaphone и других.</p>
+  </li>
+  <li>
+    <p>repository-s3
+Добавлена ​​поддержка AWS S3 в качестве репозитория снимков.</p>
+  </li>
+  <li>
+    <p>analysis-smartcn
+Добавлен модуль анализа Smart Chinese Lucene для китайского текста или смешанного китайско-английского текста.</p>
+  </li>
+  <li>
+    <p>analysis-stempel
+Добавлен модуль анализа штампов Lucene для польского языка.</p>
+  </li>
+  <li>
+    <p>ingest-attachment
+Извлекайте вложения файлов в распространенных форматах (таких как PPT, XLS и PDF) с помощью библиотеки извлечения текста Apache Tika.</p>
+  </li>
+  <li>
+    <p>mapper-annotated-text
+Индексирует текст, представляющий собой комбинацию обычного текста и специальной разметки. Эта комбинация используется для идентификации объектов, таких как люди или организации.</p>
+  </li>
+  <li>
+    <p>mapper-murmur3
+Вычисляет хэш значения поля на основе времени индекса и сохраняет его в индексе.</p>
+  </li>
+  <li>
+    <p>mapper-size
+Предоставляет размер поля метаданных, который индексирует размер источника в байтах.</p>
+  </li>
+  <li>
+    <p>repository-hdfs
+Добавлена ​​поддержка файловой системы HDFS в качестве репозитория снимков.</p>
+  </li>
+  <li>
+    <p>transport-nio
+Неблокируемая клиент-серверная сетевая библиотека, созданная с использованием Netty.</p>
+  </li>
+</ul>
+
+<h2 id="c-как-использовать-плагин-opensearch">C. Как использовать плагин Opensearch</h2>
+<p>Функциональность и возможности Opensearch можно расширить, добавив пользовательские плагины. Примеры использования плагинов, которые могут улучшить функциональность Opensearch, например, плагины, которые могут добавлять пользовательские типы сопоставлений, скрипты движка и т. д. В этом разделе мы узнаем, как использовать плагин Opensearch. Вот пример скрипта для установки плагина.</p>
+
+<p>/usr/local/lib/opensearch/bin/opensearch-plugin установить имя-плагина.</p>
+
+<p>Чтобы прояснить ваше понимание плагинов, здесь мы покажем пример того, как установить плагин.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/lib/opensearch/bin
+root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin install org.codelibs.opensearch:opensearch-analysis-fess:2.9.0
+root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin install org.codelibs.opensearch:opensearch-analysis-extension:2.9.0
+root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin install org.codelibs.opensearch:opensearch-minhash:2.9.0
+root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin install org.codelibs.opensearch:opensearch-configsync:2.9.0
+root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin install analysis-icu
+root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin install org.opensearch.plugin:opensearch-anomaly-detection:2.2.0.0
+</code></pre></div></div>
+
+<h2 id="d-как-удалить-плагины">D. Как удалить плагины</h2>
+<p>Как только вы научитесь устанавливать плагины, вам наверняка захочется узнать, как их удалять. Скрипт почти такой же, как и при установке плагина, вот синтаксис для удаления плагина.</p>
+
+<p>/usr/local/lib/opensearch/bin/opensearch-plugin удалить имя-плагина.</p>
+
+<p>Ниже мы покажем вам, как удалить плагины.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin remove org.codelibs.opensearch:opensearch-configsync:2.9.0
+root@ns3:/usr/local/lib/opensearch/bin # ./opensearch-plugin remove analysis-icu
+</code></pre></div></div>
+
+<p>В этой статье мы подробно объяснили процесс создания SSL-сертификата, а также как установить и удалить плагин Opensearch. Мы рекомендуем вам прочитать все страницы документации Opensearch, чтобы расширить свои знания и упростить использование функций и возможностей Opensearch.</p>
+</section>
+      <footer class="page__meta"><p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell' Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2022-09-02T09:00:00+03:00">2022-09-02</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#app" class="page__taxonomy-item" rel="tag">app</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#configuration" class="page__taxonomy-item" rel="tag">configuration</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#freebsd" class="page__taxonomy-item" rel="tag">freebsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#opensearch" class="page__taxonomy-item" rel="tag">opensearch</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openssl" class="page__taxonomy-item" rel="tag">openssl</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#certificate" class="page__taxonomy-item" rel="tag">certificate</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2022/06/29/freebsd-cyrus-sasl2-sysadmin-configuration/" class="pagination--pager" title="FREEBSD SYSADMIN Установка и настройка Cyrus-Sasl2
+">Previous</a><a href="https://penaadventure.com/ru/freebsd/2022/11/01/ghostbsd-proxychain-with-tor/" class="pagination--pager" title="Используйте цепочки прокси с Tor для анонимного серфинга в GhostBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://twitter.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About/Impressum/GDPR/No AI/ML</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

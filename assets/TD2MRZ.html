@@ -1,0 +1,314 @@
+<!doctype html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>TD2 MRZ Generator</title>
+  <style>
+    * {
+      font-family: sans-serif;
+    }
+    button {
+      color: black;
+      background-color: white;
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 0.5rem;
+      padding: 10px 10px;
+      transition-duration: 0.4s;
+      font-size: 1em;
+    }
+    button:hover {
+      background-color:green;
+      color:white;
+    }
+    h1, p, details {
+      padding: 0 0.5em;
+    }
+    input {
+      font-family: 'Courier New', Courier, monospace;
+      border: gray solid 1px;
+    }
+    input:invalid {
+      border: red solid 1px;
+      background-color: lightpink;
+    }
+    input:user-valid {
+      border: green solid 1px;
+    }
+    textarea {
+      border: gray solid 1px;
+    }
+    .form-wrapper {
+      background-color: whitesmoke;
+      list-style-type: none;
+      padding: 0;
+      border-radius: .5em;
+      max-width: 770px;
+      margin: 0.5em auto;
+    }
+    .form-wrapper > div {
+      justify-content:right;
+      font-weight: bold;
+      padding: 0.5em 1em 0 0;
+      flex: 1;
+    }
+    .form-row {
+      display: flex;
+      justify-content:center;
+      padding: .5em;
+    }
+    .form-row > label {
+      justify-content: flex-end;
+      font-size: 1em;
+      flex: 1;
+    }
+    .form-row > input {
+      padding: .5em;
+      font-size: 1em;
+      flex: 2;
+    }
+    .form-row > textarea {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.2em;
+      font-weight: bold;
+      flex: 2;
+    }
+    .form-row > button {
+      margin: .25em;
+    }
+    @media screen and (min-width: 400px) {
+      .form-row > input {
+      flex: 2;  
+      }
+    }
+    @media screen and (min-width: 800px) {
+      .form-row > input {
+        flex: 3;  
+      }
+    }
+  </style>
+  <script>
+    document.addEventListener('keydown', e => {
+      if (e.key == 'Enter') {
+        e.preventDefault();
+        TD2MRZ();
+        document.getElementById('mrz1').focus();
+      }
+    });
+
+    // Helper function: generate random ID with only 0-9 and A-Z
+    function makeid(length) {
+      let result = '';
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      const charactersLength = characters.length;
+      let counter = 0;
+      while (counter < length) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
+      }
+      return result;
+    }
+
+    // Helper function: generate random secondary identifier (Given Name)
+    function SecName(){
+      let firstname = ["KAI", "ELIANA MARY", "JADEN", "MUHAMMED", "LUCA", "SOAIRSE", "NOVA STELLAR", "ANN KATHRIN", "AALIYAH", "HELENA"];
+      return firstname [ Math.floor(Math.random()*firstname.length) ];
+    }
+
+    // Helper function: generate random primary identifier (Surname)
+    function PrimName(){
+      let lastname= ["SMITH", "MUELLER HANSEN", "MAYER", "AL AKBU", "SANDAYASINNA", "LOPEZ GARCIA", "CARTER", "NIEMEYER", "RODRIGUEZ", "PATERNOSTER"];
+      return lastname [ Math.floor(Math.random()*lastname.length) ];
+    }
+
+    // Helper function: generate random date
+    function RandDate(){
+      let pad="00";
+      let ryear= [ Math.floor(Math.random()*99) ];
+      let rmonth= [ Math.floor(Math.random()*12) ];
+      let rday= [ Math.floor(Math.random()*29) ];
+      return '' + ('00'+ryear).slice(-2) + ('00'+rmonth).slice(-2) + ('00'+rday).slice(-2);
+    }
+
+    // Helper function: generate random nationality
+    function CountryOrg(){
+      let code= [ "ABW", "AFG", "AGO", "AIA", "ALA", "ALB", "AND", "ARE", "ARG", "ARM", "ASM", "ATA", "ATF", "ATG", "AUS", "AUT", "AZE", "BDI", "BEL", "BEN", "BES", "BFA", "BGD", "BGR", "BHR", "BHS", "BIH", "BLM", "BLR", "BLZ", "BMU", "BOL", "BRA", "BRB", "BRN", "BTN", "BVT", "BWA", "CAF", "CAN", "CCK", "CHE", "CHL", "CHN", "CIV", "CMR", "COD", "COG", "COK", "COL", "COM", "CPV", "CRI", "CUB", "CUW", "CXR", "CYM", "CYP", "CZE", "DEU", "DJI", "DMA", "DNK", "DOM", "DZA", "ECU", "EGY", "ERI", "ESH", "ESP", "EST", "ETH", "FIN", "FJI", "FLK", "FRA", "FRO", "FSM", "GAB", "GBR", "GEO", "GGY", "GHA", "GIB", "GIN", "GLP", "GMB", "GNB", "GNQ", "GRC", "GRD", "GRL", "GTM", "GUF", "GUM", "GUY", "HKG", "HMD", "HND", "HRV", "HTI", "HUN", "IDN", "IMN", "IND", "IOT", "IRL", "IRN", "IRQ", "ISL", "ISR", "ITA", "JAM", "JEY", "JOR", "JPN", "KAZ", "KEN", "KGZ", "KHM", "KIR", "KNA", "KOR", "KWT", "LAO", "LBN", "LBR", "LBY", "LCA", "LIE", "LKA", "LSO", "LTU", "LUX", "LVA", "MAC", "MAF", "MAR", "MCO", "MDA", "MDG", "MDV", "MEX", "MHL", "MKD", "MLI", "MLT", "MMR", "MNE", "MNG", "MNP", "MOZ", "MRT", "MSR", "MTQ", "MUS", "MWI", "MYS", "MYT", "NAM", "NCL", "NER", "NFK", "NGA", "NIC", "NIU", "NLD", "NOR", "NPL", "NRU", "NZL", "OMN", "PAK", "PAN", "PCN", "PER", "PHL", "PLW", "PNG", "POL", "PRI", "PRK", "PRT", "PRY", "PSE", "PYF", "QAT", "REU", "ROU", "RUS", "RWA", "SAU", "SDN", "SEN", "SGP", "SGS", "SHN", "SJM", "SLB", "SLE", "SLV", "SMR", "SOM", "SPM", "SRB", "SSD", "STP", "SUR", "SVK", "SVN", "SWE", "SWZ", "SXM", "SYC", "SYR", "TCA", "TCD", "TGO", "THA", "TJK", "TKL", "TKM", "TLS", "TON", "TTO", "TUN", "TUR", "TUV", "TWN", "TZA", "UGA", "UKR", "UMI", "URY", "USA", "UZB", "VAT", "VCT", "VEN", "VGB", "VIR", "VNM", "VUT", "WLF", "WSM", "YEM", "ZAF", "ZMB", "ZWE", "EUE", "UNO", "UNA", "UNK", "XXA", "XXB", "XXC", "XXX", "XBA", "XIM", "XCC", "XCE", "XCO", "XEC", "XPO", "XES", "XMP", "XOM", "UTO" ];
+      return code [ Math.floor(Math.random()*code.length) ];
+    }
+
+    // Helper function: reset the whole form
+    function TD2RESET () {
+      document.getElementById('iss').value = '';
+      document.getElementById('docno').value = '';
+      document.getElementById('exp').value = '';
+      document.getElementById('opt1').value = '';
+      document.getElementById('land').value = '';
+      document.getElementById('primary').value = '';
+      document.getElementById('secondary').value = '';
+      document.getElementById('dob').value = '';
+      document.getElementById('gender').value = '';
+      document.getElementById('mrz').value = '';
+    }
+
+    // Helper function: generate random data for the form
+    function TD2SAMPLE () {
+      document.getElementById('iss').value = 'UTO';
+      document.getElementById('docno').value = makeid(9);
+      document.getElementById('exp').value = '350101';
+      document.getElementById('opt1').value = makeid(7);
+      document.getElementById('land').value = CountryOrg ();
+      document.getElementById('primary').value = PrimName ();
+      document.getElementById('secondary').value = SecName ();
+      document.getElementById('dob').value = RandDate ();
+      document.getElementById('gender').value = 'X';
+      document.getElementById('mrz').value = '';
+    }
+
+  /* The ICAO9303-3 Check Digit algorithm
+
+    - Take the input, character by character.
+    - 0-9, A-Z and '<'' are the only characters allowed
+    - Transform the character into a number between 10 (A) and 35 (Z), '<'' becomes 0
+    - Multiply the number with a weight, starting with 7 for ghe first character, 3 for the next character,1 for the next, repeat
+    - Add the results
+    - The remainder of modulo 10 on the sum is the check digit
+
+    Example: 123AF is the string. The respective numbers thus are
+    1,2,3,10,15. 1*7=7, 2*3=6, 3*1=3, 10*7=70, 15*3=45.
+    7+6+3+70+45=131. The remainder of 131 modulo 10 is 1.
+
+    The MRTD check digit for 123AF is 1
+
+  */
+    function check_digit(str) {
+      let weights = [7,3,1];
+      let sum = 0;
+
+      for (let i=0; i < str.length; i++) {
+        let c = str[i];
+        let ord = str.charCodeAt(i);
+        if (c == '<')
+          c = 0;
+        else if (ord >= 65 && ord <= 90)
+          c = ord - 55;
+        
+        sum += c * weights[i%3];
+      }
+
+      return sum % 10;
+    }
+
+  /* Get and mangle the input, build the output and check digits */
+    function TD2MRZ() {
+
+      // Fields
+      let	iss = document.getElementById('iss').value,
+        primary = document.getElementById('primary').value,
+        secondary = document.getElementById('secondary').value,
+        docno = document.getElementById('docno').value,
+        land = document.getElementById('land').value,
+        dob = document.getElementById('dob').value,
+        gender = document.getElementById('gender').value,
+        exp = document.getElementById('exp').value,
+        opt1 = document.getElementById('opt1').value;
+
+        // Pad everything with < to make check digits and output correct
+        docno = docno.padEnd(9,'<');
+        opt1 = opt1.padEnd(7,'<');
+
+        // Build the check digits needed
+        let check1 = check_digit(docno);
+        let check2 = check_digit(dob);
+        let check3 = check_digit(exp);
+        let check4 = check_digit('' + docno + check1 + dob + check2 + exp + check3 + opt1 );
+      
+      // Build line 1
+        let line1 = ('I<' + iss.padEnd(3,'<') + primary + '<<' + secondary)
+        .replaceAll("'", "")
+        .replaceAll(' ', '<')
+        .replace(/[^A-Z0-9<]/, '<')
+        .substring(0,36)
+        .padEnd(36,'<');
+
+      // Build line 2
+      let line2 = (''+ docno + check1 + land.padEnd(3,'<') + dob + check2 + gender + exp + check3 + opt1 + check4 );
+
+      // Put result in the form
+      document.getElementById('mrz').value = '' + line1 +'\n' + line2;
+    }
+  </script>
+</head>
+<body>
+  <form>
+    <div class="form-wrapper">
+      <p>Last updated: 2025-01-05 by <a href="https://social.wildeboer.net/@jwildeboer">jwildeboer</a></p>
+      <h1>TD2 MRZ Generator ICAO9303 Part 6</h1>
+      <details>
+        <summary>TD2 Form Remarks (click to open)</summary>
+        <p>Form to generate the Machine Readable Zone for a TD2 travel document.</p>
+        <ul>
+          <li>Expects correctly transliterated names in uppercase A-Z only. See <a href="https://www.icao.int/publications/pages/publication.aspx?docnum=9303">ICAO 9303 Part 3</a>, chapter 6 and Appendix B for rules of transliteration.</li>
+          <li>If a name consists of several parts, they MUST be separated with exactly one space character. So Müller-Thurgau becomes MUELLER THURGAU.</li>
+          <li>Dates MUST be YYMMDD.</li>
+          <li>Gender can be M (Male),F (Female) or X (unspecified).</li>
+          <li>The Optional Data Element can have a maximum of 7 characters that can only be 0-9 and A-Z with < as filler for unused positions.</li>
+          <li>Input only uppercase letters A-Z, numbers 0-9, or the <kbd>&lt;</kbd> filler character.</li>
+        </ul>
+      </details>
+    </div>
+    <ul class="form-wrapper">
+      <div class="form-row">ISSUER DETAILS</div>
+      <li class="form-row">
+        <label for="iss">Issuer Org Code: </label>
+        <input id='iss' type='text' maxlength='3' pattern='[A-Z]{1,3}' placeholder='Ex: NLD, XOM, BRA' />
+      </li>
+      <li class="form-row">
+        <label for="docno">Document Number: </label>
+        <input id='docno' type='text' maxlength='9' pattern='[A-Z0-9<]{0,9}' placeholder='9 Characters Max' />
+      </li>
+      <li class="form-row">
+        <label for="exp">Expiration Date: </label>
+        <input id='exp' type='text' maxlength='6' pattern='[0-9]{6}' placeholder='YYMMDD' />
+      </li>
+      <li class="form-row">
+        <label for="opt1">Optional Data Element: </label>
+        <input id='opt1' type='text' maxlength='7' pattern='[A-Z0-9<]{0,14}' placeholder='7 Characters Max' />
+      </li>
+    </ul>
+    <ul class="form-wrapper">
+      <div class="form-row">HOLDER DETAILS</div>
+      <li class="form-row">
+        <label for="land">Nationality/Citizenship: </label>
+        <input id='land' type='text' maxlength='3' pattern='[A-Z]{3}' placeholder='Ex: NLD, XOM, BRA' />
+      </li>
+      <li class="form-row">
+        <label for="primary">Primary/Family Name: </label>
+        <input id='primary' type='text' pattern='[A-Z0-9 <]*' placeholder='Family Name(s)' />
+      </li>
+      <li class="form-row">
+        <label for="secondary">Secondary/Given Name: </label>
+        <input id='secondary' type='text' pattern='[A-Z0-9 <]*' placeholder='Given Name(s)' />
+      </li>
+      <li class="form-row">
+        <label for="dob">Date of Birth: </label>
+        <input id='dob' type='text' maxlength='6' pattern='[0-9]{6}' placeholder='YYMMDD' />
+      </li>
+      <li class="form-row">
+        <label for="gender">Gender: </label>
+        <input id='gender' type='text' maxlength='1' pattern='[MFX<]' placeholder='M, F or X' />
+      </li>
+    </ul>
+    <ul class="form-wrapper">
+        <li class="form-row">
+          <button type='button' onclick='TD2SAMPLE()'>SAMPLE DATA</button>
+          <button type='button' onclick='TD2RESET()'>RESET</button>
+          <button type='button' onclick='TD2MRZ()'>GENERATE MRZ</button>
+      </li>
+    </ul>
+    <ul class="form-wrapper">
+      <div class="form-row">MRZ</div>
+      <li class="form-row">
+        <textarea id='mrz' rows='2' cols='44' onclick='this.select()' readonly></textarea>
+      </li>
+    </ul>
+  </form>
+</body>

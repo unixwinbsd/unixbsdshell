@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+  <meta charset="utf-8">
+  
+  <title>Установка DNS-сервера ISC Bind с использованием OpenBSD  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Установка DNS-сервера ISC Bind с использованием OpenBSD"><link rel="canonical" href="https://penaadventure.com/ru/openbsd/2024/12/01/install-isc-dns-bind-on-openbsd/">
+  <meta property="og:url" content="https://penaadventure.com/ru/openbsd/2024/12/01/install-isc-dns-bind-on-openbsd/"><meta property="og:description" content="Принцип работы кэширующего DNS-сервера заключается в том, что когда DNS-сервер находит запрошенный вами DNS-адрес, он немедленно отправляет его тому, кто запросил DNS-адрес, а затем сохраняет DNS-адрес в своей базе данных."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Установка DNS-сервера ISC Bind с использованием OpenBSD">
+  <meta name="twitter:description" content="Принцип работы кэширующего DNS-сервера заключается в том, что когда DNS-сервер находит запрошенный вами DNS-адрес, он немедленно отправляет его тому, кто запросил DNS-адрес, а затем сохраняет DNS-адрес в своей базе данных.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/openbsd/2024/12/01/install-isc-dns-bind-on-openbsd/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-12-01T17:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/openbsd/2024/12/01/install-isc-dns-bind-on-openbsd/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div><nav class="breadcrumbs">
+  <ol itemscope itemtype="http://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comopenbsd" itemprop="item"><span itemprop="name">Openbsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com12" itemprop="item"><span itemprop="name">12</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span><li class="current">Установка DNS-сервера ISC Bind с использованием OpenBSD</li></ol>
+</nav><div id="main" role="main"><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Установка DNS-сервера ISC Bind с использованием OpenBSD"><meta itemprop="description" content="Принцип работы кэширующего DNS-сервера заключается в том, что когда DNS-сервер находит запрошенный вами DNS-адрес, он немедленно отправляет его тому, кто запросил DNS-адрес, а затем сохраняет DNS-адрес в своей базе данных."><meta itemprop="datePublished" content="2024-12-01"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-12-01T17:00:00+03:00">2024-12-01</time> </p><h1 class="page__title" itemprop="headline">Установка DNS-сервера ISC Bind с использованием OpenBSD
+</h1></header><section class="page__content" itemprop="text">
+        <p>Для тех из вас, у кого медленный интернет, кэширование DNS-сервера является разумным решением для увеличения скорости интернет-серфинга. В общем случае приложение DNS-сервера выполняет функцию преобразования имен в числа. Каждое введенное вами имя веб-сайта будет преобразовано в IP-адрес, поэтому веб-страница будет отображаться так, как вы ее видите в Google Chrome или Firefox.</p>
+
+<p>В целом существует несколько типов DNS-серверов. Кэширующий тип — это тип, который не содержит необработанного сопоставления имен с адресами. Этот тип называется авторитетным DNS-сервером, который можно разделить на главный, подчиненный и скрытый. Кэширующий DNS-сервер также называется рекурсивным сервером. Все типы DNS-серверов могут называться серверами имен.</p>
+
+<p>Принцип работы кэширующего сервера DNS заключается в том, что когда сервер DNS находит запрошенный вами адрес DNS, он немедленно отправляет его тому, кто запросил адрес DNS, а затем сохраняет адрес DNS в своей базе данных. Позже, когда ваш друг запросит тот же DNS-адрес, сервер кэширования DNS возьмет DNS-адрес из своей базы данных. Таким образом, это может ускорить время обработки DNS-запросов.</p>
+
+<p>Чем медленнее ваше интернет-соединение, тем полезнее кэш DNS-сервера для улучшения доступа в интернет. Для поддержания точности на сервере существует настраиваемое время истечения срока действия (время жизни/TTL), которое заставляет его периодически обращаться в Интернет за обновлениями.</p>
+
+<h2 id="1-как-установить-dns-сервер-isc-bind">1. Как установить DNS-сервер ISC Bind</h2>
+
+<p>Одним из преимуществ ISC Bind является то, что его можно установить на все операционные системы, такие как Windows, MacOS, Linux и BSD, включая OpenBSD. Однако каждая система имеет свой способ настройки. В этом разделе мы узнаем, как установить, настроить и использовать ISC Bind на сервере OpenBSD.</p>
+
+<p>Поскольку DNS Bind уже хорошо знаком, как и в других операционных системах, в OpenBSD ISC Bind уже доступен в репозитории pkg_add. Для установки ISC Bind на OpenBSD вы можете выполнить команду ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# pkg_add isc-bind-9.18.25v3
+</code></pre></div></div>
+
+<p>После завершения процесса установки приложение ISC Bind по умолчанию создает пользователя и группу с именем _bind:_bind. Этот пользователь будет очень полезен при настройке. Расположение каталога ISC Bind в OpenBSD немного отличается от расположения в FreeBSD. OpenBSD помещает приложение ISC Bind в /var/named. Все файлы конфигурации хранятся в этом каталоге.</p>
+
+<p>По умолчанию каталог /var/named содержит две папки, а именно /etc и /tmp, в процессе настройки мы добавим в этот каталог несколько папок, таких как /master, /standard и другие.</p>
+
+<h2 id="2-процесс-настройки">2. Процесс настройки</h2>
+
+<p>В этом разделе мы обсудим шаги по настройке ISC Bind. Файл конфигурации ISC Bind называется «named.conf». В этом файле вы можете задать все необходимые параметры кэширования DNS-сервера.</p>
+
+<h3 id="а-включение-привязки-isc">а. Включение привязки ISC</h3>
+<p>Перед настройкой ISC Bind сначала включите DNS-сервер Bind, выполнив команду ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# rcctl enable isc_named
+foo# rcctl restart isc_named
+isc_named(ok)
+isc_named(ok)
+</code></pre></div></div>
+
+<p>Приведенная выше команда включает ISC Bind и создает файл rndc.key. Попробуйте открыть содержимое файла скрипта rndc.key с помощью команды cat.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# cat /var/named/etc/rndc.key
+key "rndc-key" {
+        algorithm hmac-sha256;
+        secret "sLhSyJAo609lksFnU2Z0y5MbiSnoVJfTMz21foPVv3g=";
+};
+</code></pre></div></div>
+
+<h3 id="б-отредактируйте-файл-конфигурации-с-именем-conf">б. Отредактируйте файл конфигурации с именем .conf.</h3>
+<p>Мы будем использовать все содержимое файла скрипта rndc.key для настройки файла named.conf. Теперь откройте файл named.conf, затем удалите все содержимое скрипта и замените его скриптом, приведенным ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# nano /var/named/etc/named.conf
+key "rndc-key" {
+	algorithm hmac-sha256;
+	secret "sLhSyJAo609lksFnU2Z0y5MbiSnoVJfTMz21foPVv3g=";
+};
+
+ 
+ controls {
+ 	inet 127.0.0.1 port 953
+ 		allow { 127.0.0.1; } keys { "rndc-key"; };
+ };
+
+acl clients {
+	192.168.7.0/24;
+	127.0.0.1;
+};
+acl IP_LAN { 192.168.7.3; };
+
+options {
+	directory "/tmp";
+	version "dns foo.kursor.my.id";
+	listen-on port 53 { IP_LAN; };
+	#listen-on-v6 { any; };
+	allow-recursion { clients; };
+	allow-query { clients; };
+	allow-query-cache { clients; };
+        allow-transfer { none; };
+	empty-zones-enable yes;
+	recursion yes;
+	auth-nxdomain no;
+	dnssec-validation yes;
+};
+
+zone "localhost" {
+        type master;
+        file "standard/localhost";
+        allow-transfer { 127.0.0.1; };
+};
+
+zone "127.in-addr.arpa" {
+        type master;
+        file "standard/loopback";
+        allow-transfer { 127.0.0.1; };
+};
+
+zone "." {
+  type forward;
+  forward first;
+  forwarders { 1.1.1.1; 8.8.8.8; };
+};
+
+zone "kursor.my.id" in {
+        type master;
+        file "master/internal.lan";
+};
+
+zone "7.168.192.in-addr.arpa" in {
+        type master;
+        file "master/insternal.rev";
+};
+</code></pre></div></div>
+
+<h3 id="в-добавление-настроек-зоны">в. Добавление настроек зоны</h3>
+<p>В приведенном выше скрипте файла named.conf есть несколько зон, которые будут использоваться ISC Bind. Мы настроим создание зоны согласно приведенному выше сценарию. Первым шагом является создание каталога для зоны.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# mkdir -p /var/named/standard
+foo# mkdir -p /var/named/master
+foo# touch /var/named/standard/localhost
+foo# touch /var/named/standard/loopback
+foo# touch /var/named/master/internal.lan
+foo# touch /var/named/master/internal.rev
+</code></pre></div></div>
+
+<p>После этого в файл зоны добавляется скрипт, как в примере ниже. Как обычно, мы используем текстовый редактор nano.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# nano /var/named/standard/localhost
+$ORIGIN localhost.
+$TTL 6h
+
+@       IN      SOA     localhost. root.localhost. (
+                        1       ; serial
+                        1h      ; refresh
+                        30m     ; retry
+                        7d      ; expiration
+                        1h )    ; minimum
+
+                NS      localhost.
+                A       127.0.0.1
+                AAAA    ::1
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# nano /var/named/standard/loopback
+$ORIGIN 127.in-addr.arpa.
+$TTL 6h
+
+@       IN      SOA     localhost. root.localhost. (
+                        1       ; serial
+                        1h      ; refresh
+                        30m     ; retry
+                        7d      ; expiration
+                        1h )    ; minimum
+
+                NS      localhost.
+1.0.0           PTR     localhost.
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# nano /var/named/master/internal.lan
+$ORIGIN .
+$TTL    86400   ; 24 hours
+kursor.my.id    IN SOA  foo.kursor.my.id. root.foo.kursor.my.id. (
+                        2010022201 ; Serial
+                        86400           ; Refresh (24 hours)
+                        3600             ; Retry (1 hour)
+                        172800         ; Expire (48 hours)
+                        3600             ; Minimum (1 hour)
+                )
+kursor.my.id.		IN	NS      foo.kursor.my.id.
+
+$ORIGIN kursor.my.id.
+foo.kursor.my.id.	IN	A       192.168.7.3
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# nano /var/named/master/insternal.rev
+$ORIGIN .
+$TTL    86400   ; 24 hours
+7.168.192.in-addr.arpa	IN	SOA	foo.kursor.my.id. root.foo.kursor.my.id. (
+                                2010022201      ; Serial
+                                86400           ; Refresh (24 hours)
+                                3600            ; Retry (1 hour)
+                                172800          ; Expire (48 hours)
+                                3600            ; Minimum (1 hour)
+                                )
+	IN	NS      foo.kursor.my.id.
+
+$ORIGIN 7.168.192.in-addr.arpa.
+100	IN     PTR     foo.kursor.my.id.
+</code></pre></div></div>
+
+<h3 id="г-изменение-разрешений-и-права-собственности">г. Изменение разрешений и права собственности</h3>
+<p>Как мы объяснили выше, по умолчанию ISB Bind, работающий в OpenBSD, имеет пользователя и группу «_bind». Выполните команду ниже, чтобы узнать права доступа к файлу и права собственности.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# cd /var/named
+foo# chown -R _bind:_bind master standard var tmp
+</code></pre></div></div>
+
+<h3 id="е-файл-корневых-ссылок">е. Файл корневых ссылок</h3>
+<p>Файл корневых подсказок — это файл, содержащий имена и IP-адреса авторитетных серверов имен для корневой зоны, чтобы программное обеспечение могло инициировать процесс разрешения DNS. Вам следует загрузить этот файл из официального репозитория сайта Iana.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# wget https://www.internic.net/domain/named.root -P /var/named/etc
+</code></pre></div></div>
+
+<h3 id="ф-отредактируйте-файл-resolvconf">ф. Отредактируйте файл resolv.conf</h3>
+<p>Файл resolv.conf в OpenBSD используется для подключения сервера OpenBSD к системе доменных имен (DNS). Вам необходимо будет заполнить этот файл DNS, который вы будете использовать. Поскольку вы используете ISC Bind в качестве кэширующего DNS-сервера, мы заполним этот файл частными IP-адресами серверов OpenBSD.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# nano /etc/resolv.conf
+domain kursor.my.id
+nameserver 192.168.7.3
+</code></pre></div></div>
+
+<h3 id="г-зона-проверки">г. Зона проверки</h3>
+<p>Чтобы убедиться в отсутствии ошибок в созданных вами зонах, выполните проверку с помощью команды ниже. Сначала мы проверяем основной файл конфигурации с именем .conf.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# named-checkconf /var/named/etc/named.conf
+</code></pre></div></div>
+
+<p>Затем вы переходите к проверке зон, которые вы создали выше.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# named-checkzone kursor.my.id /var/named/master/internal.lan
+zone kursor.my.id/IN: loaded serial 2010022201
+OK
+foo# named-checkzone 7.168.192.in-addr.arpa /var/named/master/internal.rev
+zone 7.168.192.in-addr.arpa/IN: loaded serial 2010022201
+OK
+</code></pre></div></div>
+
+<h3 id="час-проверьте-dns-серверы-имен">час Проверьте DNS-серверы имен</h3>
+<p>Если все в порядке, продолжаем проверку сервера имен DNS. Данная проверка призвана гарантировать правильную работу DNS-сервера ISB Bind. Мы используем команду dig для проверки сервера имен DNS. Взгляните на примеры команд ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# dig yahoo.com
+
+; &lt;&lt;&gt;&gt; dig 9.10.8-P1 &lt;&lt;&gt;&gt; yahoo.com
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 59861
+;; flags: qr rd ra; QUERY: 1, ANSWER: 6, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;yahoo.com.                     IN      A
+
+;; ANSWER SECTION:
+yahoo.com.              1800    IN      A       74.6.231.21
+yahoo.com.              1800    IN      A       98.137.11.163
+yahoo.com.              1800    IN      A       74.6.143.25
+yahoo.com.              1800    IN      A       74.6.231.20
+yahoo.com.              1800    IN      A       98.137.11.164
+yahoo.com.              1800    IN      A       74.6.143.26
+
+;; Query time: 27 msec
+;; SERVER: 192.168.7.3#53(192.168.7.3)
+;; WHEN: Wed Apr 17 16:40:48 WIB 2024
+;; MSG SIZE  rcvd: 134
+</code></pre></div></div>
+
+<p>Вот несколько команд dig, которые можно использовать для проверки DNS-серверов ISC Bind.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# dig @192.168.7.3 azion.com
+foo# dig facebook.com +trace
+foo# dig -x 172.217.14.238
+foo# dig google.com +short
+forcesafesearch.google.com.
+216.239.38.120
+</code></pre></div></div>
+
+<p>Помимо команды dig, вы также можете использовать команду nslookup. Ниже мы приводим пример использования nslookup.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# nslookup -type=ns google.com
+Server:         192.168.7.3
+Address:        192.168.7.3#53
+
+Non-authoritative answer:
+google.com      nameserver = ns2.google.com.
+google.com      nameserver = ns3.google.com.
+google.com      nameserver = ns4.google.com.
+google.com      nameserver = ns1.google.com.
+
+Authoritative answers can be found from:
+ns1.google.com  internet address = 216.239.32.10
+ns2.google.com  internet address = 216.239.34.10
+ns3.google.com  internet address = 216.239.36.10
+ns4.google.com  internet address = 216.239.38.10
+ns1.google.com  has AAAA address 2001:4860:4802:32::a
+ns2.google.com  has AAAA address 2001:4860:4802:34::a
+ns3.google.com  has AAAA address 2001:4860:4802:36::a
+ns4.google.com  has AAAA address 2001:4860:4802:38::a
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>foo# nslookup -type=mx yahoo.com
+foo# nslookup -type=soa facebook.com
+foo# nslookup -type=txt google.com
+foo# nslookup google.com ns1.google.com
+</code></pre></div></div>
+
+<p>Следуя этому руководству, вы сможете использовать ISB Bind в качестве своего личного DNS-сервера. Вы можете использовать его на своем компьютере под управлением Windows, установив IP-адрес DNS-сервера на IP-адрес 192.168.7.3. Теперь оцените скорость доступа в Интернет с помощью DNS-сервера ISC Bind. Вы наверняка почувствуете разницу.</p>
+
+</section>
+      <footer class="page__meta"><p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell' Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-12-01T17:00:00+03:00">2024-12-01</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#configuration" class="page__taxonomy-item" rel="tag">configuration</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#dns" class="page__taxonomy-item" rel="tag">dns</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#freebsd" class="page__taxonomy-item" rel="tag">freebsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#https" class="page__taxonomy-item" rel="tag">https</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#isc" class="page__taxonomy-item" rel="tag">isc</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#lighttpd" class="page__taxonomy-item" rel="tag">lighttpd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openbsd" class="page__taxonomy-item" rel="tag">openbsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openssl" class="page__taxonomy-item" rel="tag">openssl</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#server" class="page__taxonomy-item" rel="tag">server</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#ssl" class="page__taxonomy-item" rel="tag">ssl</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#openbsd" class="page__taxonomy-item" rel="tag">OpenBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/" class="pagination--pager" title="Настройка FreeBSD Lighttpd CGI BIN для программ Perl
+">Previous</a><a href="https://penaadventure.com/ru/freebsd/2024/12/18/freebsd-knot-resover-dns-caching-resolver/" class="pagination--pager" title="FreeBSD Knot Resolver — реализация DNS Caching Resolver
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://twitter.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About/Impressum/GDPR/No AI/ML</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

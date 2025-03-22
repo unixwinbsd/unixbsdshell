@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+  <meta charset="utf-8">
+  
+  <title>Учебное пособие по FreeBSD — настройка Apache mod OpenSSL для HTTPS  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Учебное пособие по FreeBSD — настройка Apache mod OpenSSL для HTTPS"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2024/07/25/freebsd-tutorial-setuo-apache-mod-openssl-http/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2024/07/25/freebsd-tutorial-setuo-apache-mod-openssl-http/"><meta property="og:description" content="Веб-сервер Apache существует уже много лет, и теперь число его пользователей продолжает расти."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Учебное пособие по FreeBSD — настройка Apache mod OpenSSL для HTTPS">
+  <meta name="twitter:description" content="Веб-сервер Apache существует уже много лет, и теперь число его пользователей продолжает расти.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2024/07/25/freebsd-tutorial-setuo-apache-mod-openssl-http/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-07-25T19:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/07/25/freebsd-tutorial-setuo-apache-mod-openssl-http/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div><nav class="breadcrumbs">
+  <ol itemscope itemtype="http://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comfreebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com07" itemprop="item"><span itemprop="name">07</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com25" itemprop="item"><span itemprop="name">25</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span><li class="current">Учебное пособие по FreeBSD — настройка Apache mod OpenSSL для HTTPS</li></ol>
+</nav><div id="main" role="main"><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Учебное пособие по FreeBSD — настройка Apache mod OpenSSL для HTTPS"><meta itemprop="description" content="Веб-сервер Apache существует уже много лет, и теперь число его пользователей продолжает расти."><meta itemprop="datePublished" content="2024-07-25"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-07-25T19:00:00+03:00">2024-07-25</time> </p><h1 class="page__title" itemprop="headline">Учебное пособие по FreeBSD — настройка Apache mod OpenSSL для HTTPS
+</h1></header><section class="page__content" itemprop="text">
+        <p>Веб-сервер Apache существует уже много лет, и теперь число его пользователей продолжает расти. mod_ssl обеспечивает лучшую безопасность веб-сервера Apache и может быть установлен практически на все версии Apache и все операционные системы, такие как FreeBSD, Linux, MacOS и Windows.</p>
+
+<p>Протокол Secure Sockets Layer или часто называемый SSL — это протокол безопасности, который можно разместить между протоколом сетевого уровня TCP/IP и протоколом прикладного уровня HTTP. Мод SSL на Apache обеспечивает безопасную связь между клиентом и сервером. Этот мод будет выполнять аутентификацию и использовать цифровые подписи для целостности и шифрование для конфиденциальности. В настоящее время все еще используются две версии SSL, а именно версия 2 и версия 3.</p>
+
+<p>SSL/TLS использует криптографию с открытым ключом (PKC), известную как асимметричная криптография PKC. Криптография с открытым ключом используется в ситуациях, когда клиент и сервер не имеют общего секрета, например, между браузером и веб-сервером, но оба хотят построить систему безопасности с доверенным каналом для своих коммуникаций.</p>
+
+<p>Криптография с открытым ключом или PKC определяет алгоритм, который использует два ключа, каждый из которых может использоваться для шифрования сообщения. Если один ключ используется для шифрования сообщения, то другой ключ должен использоваться для его расшифровки. Этот процесс выполняется для получения защищенных сообщений путем публикации только одного ключа (открытого ключа) и сохранения другого ключа (закрытого ключа) в секрете.</p>
+
+<p>Открытый ключ может быть зашифрован кем угодно, но прочитать его может только владелец закрытого ключа. Например, Мэри отправляет личное сообщение владельцу пары ключей (например, вашему веб-серверу), затем сообщение от Мэри будет зашифровано с использованием открытого ключа, опубликованного вашим сервером. Только вы можете расшифровать его, используя соответствующий закрытый ключ.</p>
+
+<p>Руководство в этой статье поможет вам включить SSL mod для веб-сайтов, обслуживаемых веб-серверами Apache. Содержание этой статьи сосредоточено только на создании SSL на Apache с помощью приложения OpenSSL.</p>
+
+<h2 id="1-установите-openssl">1. Установите OpenSSL</h2>
+
+<p>OpenSSL — это утилита для протоколов Transport Layer Security (TLS) и Secure Sockets Layer (SSL). OpenSSL — это бесплатное приложение и наиболее широко используемая криптографическая библиотека. Основная цель создания приложений — защита соединений на серверах и в вашем программном обеспечении.</p>
+
+<p>Процесс установки OpenSSL на FreeBSD довольно прост, нет никаких настроек Start up rc.d, но настройка и реализация немного сложны и иногда запутанны. Пожалуйста, используйте шаги, описанные в этой статье.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # pkg install perl5
+</code></pre></div></div>
+
+<p>После установки Perl вы можете сразу установить OpenSSL. Мы рекомендуем использовать системные порты FreeBSD, чтобы процесс установки был более совершенным.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/ports/security/openssl
+root@ns3:/usr/ports/security/openssl # make config
+root@ns3:/usr/ports/security/openssl # make install clean
+</code></pre></div></div>
+
+<p>На FreeBSD есть много приложений, похожих на OpenSSL, например ca_root_nss, LibreSSL и другие. Чтобы FreeBSD по умолчанию использовала безопасность OpenSSL для шифрования и дешифрования, в /etc/make.conf введите следующую команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DEFAULT_VERSIONS+=ssl=openssl
+</code></pre></div></div>
+
+<h2 id="2-создайте-файл-servercrt-и-serverkey">2. Создайте файл server.crt и server.key</h2>
+<p>Первый шаг, который вам нужно сделать, чтобы Apache мог подключиться к OpenSSL, — создать файл server.key и server.crt. Для этого мы сначала создаем папку SSL.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/etc/apache24
+root@ns3:/usr/local/etc/apache24 # mkdir -p ssl
+root@ns3:/usr/local/etc/apache24 # cd ssl
+</code></pre></div></div>
+
+<p>Сгенерируйте server.key с помощью openssl.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/apache24/ssl # openssl genrsa -des3 -out server.key 1024
+Generating RSA private key, 1024 bit long modulus (2 primes)
+..+++++
+.............................................+++++
+e is 65537 (0x010001)
+Enter pass phrase for server.key:
+Verifying - Enter pass phrase for server.key:
+</code></pre></div></div>
+
+<p>Приведенная выше команда создаст файл server.key и запросит пароль. Обязательно запомните этот пароль. Он вам понадобится при следующем запуске Apache.</p>
+
+<p>Далее создайте файл запроса сертификата, а именно “server.csr”, процесс создания этого файла будет использовать файл server.key, указанный выше.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/apache24/ssl # openssl req -new -key server.key -out server.csr
+</code></pre></div></div>
+
+<p>Последний шаг — создание самоподписанного SSL-сертификата (server.crt) с использованием файлов server.key и server.csr, указанных выше.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/apache24/ssl # openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+</code></pre></div></div>
+
+<h2 id="3-включить-режим-ssl">3. Включить режим SSL</h2>
+<p>Приведенные ниже инструкции помогут вам включить режим SSL на Apache. Цель состоит в том, чтобы OpenSSL и Apache могли взаимодействовать друг с другом для защиты вашего веб-сервера.</p>
+
+<p>Почти во всех операционных системах файл конфигурации Apache называется “httpd.conf”, единственное отличие — расположение файла. В FreeBSD этот файл находится в каталоге “/usr/local/etc/apache24”, откройте файл и активируйте скрипт SSL в файле, как в примере ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LoadModule ssl_module libexec/apache24/mod_ssl.so
+LoadModule socache_shmcb_module libexec/apache24/mod_socache_shmcb.so
+Include etc/apache24/extra/httpd-ssl.conf
+</code></pre></div></div>
+
+<p>В скрипте выше мы активируем файл httpd-ssl.conf. Откройте файл и удалите все содержимое скрипта, затем вставьте скрипт ниже в файл “/usr/local/etc/apache24/extra/httpd-ssl.conf”.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Listen 443
+
+SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
+SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
+
+SSLHonorCipherOrder on 
+
+SSLProtocol all -SSLv3
+SSLProxyProtocol all -SSLv3
+
+SSLPassPhraseDialog  builtin
+SSLSessionCache        "shmcb:/var/run/ssl_scache(512000)"
+SSLSessionCacheTimeout  300
+
+&lt;VirtualHost _default_:443&gt;
+DocumentRoot "/usr/local/www/apache24/data"
+ServerName www.datainchi.com:443
+ServerAdmin datainchi@gmail.com
+ErrorLog "/var/log/httpd-error.log"
+TransferLog "/var/log/httpd-access.log"
+
+SSLEngine on
+
+SSLCertificateFile "/usr/local/etc/apache24/ssl/server.crt"
+SSLCertificateKeyFile "/usr/local/etc/apache24/ssl/server.key"
+
+&lt;FilesMatch "\.(cgi|shtml|phtml|php)$"&gt;
+    SSLOptions +StdEnvVars
+&lt;/FilesMatch&gt;
+&lt;Directory "/usr/local/www/apache24/cgi-bin"&gt;
+    SSLOptions +StdEnvVars
+&lt;/Directory&gt;
+
+BrowserMatch "MSIE [2-5]" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+CustomLog "/var/log/httpd-ssl_request.log" "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
+&lt;/VirtualHost&gt;
+</code></pre></div></div>
+
+<p>Обратите внимание на синий скрипт, скрипт — это файл OpenSSL, который мы создали выше. Чтобы протестировать все указанные выше конфигурации, перезапустите сервер Apache.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # service apache24 restart
+Performing sanity check on apache24 configuration:
+Syntax OK
+Stopping apache24.
+Waiting for PIDS: 36862.
+Performing sanity check on apache24 configuration:
+Syntax OK
+Starting apache24.
+Apache/2.4.58 mod_ssl (Pass Phrase Dialog)
+Some of your private key files are encrypted for security reasons.
+In order to read them you have to provide the pass phrases.
+
+Private key www.datainchi.com:443:0 (/usr/local/etc/apache24/ssl/server.key)
+Enter pass phrase:
+
+OK: Pass Phrase Dialog successful.
+</code></pre></div></div>
+
+<p>Вам будет предложено ввести пароль, введите пароль из файла OpenSSL, который вы создали выше.</p>
+
+<p>Следующий тест — открыть веб-браузер «Google Chrome» и ввести команду «https://192.168.5.2/».</p>
+
+<p>В этом руководстве показана базовая установка и использование mod_ssl на сервере Apache с OpenSSL. Несмотря на то, что команда очень проста, ее способность защищать веб-серверы очень надежна и доказана, поскольку многие люди используют OpenSSL в качестве системы безопасности SSL на серверах Apache.</p>
+</section>
+      <footer class="page__meta"><p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell' Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-07-25T19:00:00+03:00">2024-07-25</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#apache" class="page__taxonomy-item" rel="tag">apache</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#configuration" class="page__taxonomy-item" rel="tag">configuration</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#freebsd" class="page__taxonomy-item" rel="tag">freebsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#http" class="page__taxonomy-item" rel="tag">http</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#https" class="page__taxonomy-item" rel="tag">https</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#mod" class="page__taxonomy-item" rel="tag">mod</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openbsd" class="page__taxonomy-item" rel="tag">openbsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openssl" class="page__taxonomy-item" rel="tag">openssl</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#setup" class="page__taxonomy-item" rel="tag">setup</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#ssl" class="page__taxonomy-item" rel="tag">ssl</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2024/07/24/freebsd-guide-creating-custom-drupal-theme/" class="pagination--pager" title="Руководство FreeBSD по созданию пользовательской темы Drupal
+">Previous</a><a href="https://penaadventure.com/ru/freebsd/2024/08/30/installation-apache-ofbiz-crm-erp-freebsd/" class="pagination--pager" title="Установка и настройка FreeBSD Apache OFBiz Crm и Erp Platform
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://twitter.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About/Impressum/GDPR/No AI/ML</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

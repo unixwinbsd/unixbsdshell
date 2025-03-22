@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+  <meta charset="utf-8">
+  
+  <title>Как подключить FreeBSD к Windows с помощью Samba  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Как подключить FreeBSD к Windows с помощью Samba"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2024/01/26/samba-on-freebsd-connect-windows/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2024/01/26/samba-on-freebsd-connect-windows/"><meta property="og:description" content="С помощью Samba всю вашу работу можно легко выполнить в одной сети."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Как подключить FreeBSD к Windows с помощью Samba">
+  <meta name="twitter:description" content="С помощью Samba всю вашу работу можно легко выполнить в одной сети.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2024/01/26/samba-on-freebsd-connect-windows/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-01-26T19:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/01/26/samba-on-freebsd-connect-windows/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div><nav class="breadcrumbs">
+  <ol itemscope itemtype="http://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comfreebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com26" itemprop="item"><span itemprop="name">26</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span><li class="current">Как подключить FreeBSD к Windows с помощью Samba</li></ol>
+</nav><div id="main" role="main"><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Как подключить FreeBSD к Windows с помощью Samba"><meta itemprop="description" content="С помощью Samba всю вашу работу можно легко выполнить в одной сети."><meta itemprop="datePublished" content="2024-01-26"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-01-26T19:00:00+03:00">2024-01-26</time> </p><h1 class="page__title" itemprop="headline">Как подключить FreeBSD к Windows с помощью Samba
+</h1></header><section class="page__content" itemprop="text">
+        <p>У вас есть несколько устройств в офисе, компании, дома, школе или где-то еще? Как вы передаете данные между компьютерами? Как вы передаете данные между компьютерами? Используете ли вы флэш-накопители или SD-карты для передачи данных между компьютерами? Этот вопрос возникает, когда вы работаете с несколькими компьютерами в одном месте.</p>
+
+<p>Samba — это ответ, с Samba вся ваша работа может быть легко выполнена в одной сети. Вам не нужно тратить драгоценное время на быструю и легкую передачу файлов, документов и других больших элементов по локальной сети. Это одноразовая настройка, а затем несколькими щелчками мыши вы можете обмениваться файлами между компьютерами.</p>
+
+<p>Если вы обычно работаете с Windows и хотите обмениваться файлами или документами по локальной сети или просто хотите, чтобы файлы или документы были доступны всем компьютерам, FreeBSD и Samba — правильный выбор. Вы можете использовать сервер FreeBSD в качестве шлюза, чтобы к файлам или документам могли обращаться несколько компьютеров.</p>
+
+<p>На рисунке ниже показан процесс соединения файлов или документов между FreeBSD (samba) и Windows.</p>
+
+<p><img src="/img/connecting files or documents between FreeBSD and samba on Windows.jpg" alt="connecting files or documents between FreeBSD and samba on Windows" /></p>
+
+<p>Каждый пользователь, желающий получить доступ к файлу или документу, должен войти в систему и воспользоваться полученными правами доступа. Успешно вошедшие в систему пользователи могут читать, создавать или изменять файлы на компьютере, на котором они работают.</p>
+
+<p>Доступ к серверу Samba также может осуществляться без пароля, поэтому к нему может получить доступ каждый. Хоть это и не рекомендуется, но некоторым людям это действительно необходимо. Например, если вам нужно очень быстро открыть доступ и нет времени на настройку ограниченного доступа. Настоятельно рекомендуется, чтобы каждый пользователь использовал пароль для входа в систему. Это необходимо для защиты данных или документов, чтобы никто не мог их открыть.</p>
+
+<h1 id="спецификации-сервера-samba">Спецификации сервера Samba</h1>
+<ul>
+  <li>ОС: FreeBSD 13.2</li>
+  <li>Имя хоста: ns3</li>
+  <li>IP-адрес: 192.168.5.2</li>
+  <li>интерфейсы = nfe0</li>
+  <li>Версия Samba: samba416</li>
+  <li>Версия Python: python39</li>
+  <li>Зависимости: p5-Parse-Yapp, libiconv, curl, py-wsdd</li>
+</ul>
+
+<h2 id="а-подготовка-к-установке">А. Подготовка к установке</h2>
+<p>Прежде чем приступить к установке Samba, необходимо установить зависимости, необходимые Samba. Цель — обеспечить нормальную работу сервера Samba. Вам необходимо установить несколько зависимостей, но наиболее важными из них являются Python39, p5-Parse-Yapp, libiconv, py-wsdd. Остальные зависимости обычно устанавливаются автоматически.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # pkg install python39 p5-Parse-Yapp libiconv net/py-wsdd
+</code></pre></div></div>
+
+<p>После установки вышеуказанных зависимостей приступайте к установке Samba. В этой статье мы будем использовать систему портов для установки Samba.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/ports/net/samba416
+root@ns3:/usr/ports/net/samba416 # make config
+</code></pre></div></div>
+
+<p>При запуске команды «make config» появится меню параметров Samba. Необходимо отметить опцию «PYTHON3».</p>
+
+<p>Продолжайте выполнять команду «make install clean».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/ports/net/samba416 # make install clean
+</code></pre></div></div>
+
+<p>Создайте сценарий Start Up rc.d, чтобы сервер Samba мог запускаться автоматически. Откройте файл «/etc/rc.conf» и введите приведенный ниже скрипт в файл «/etc/rc.conf».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>samba_server_enable="YES"
+nmbd_enable="YES"
+smbd_enable="YES"
+winbindd_enable="YES"
+samba_server_config="/usr/local/etc/smb4.conf"
+wsdd_enable="YES"
+</code></pre></div></div>
+
+<p>В конце установки порт net/samba416 не включает файл конфигурации «smb4.conf», необходимый для запуска Samba, поэтому мы создадим файл «smb4.conf». Чтобы упростить написание скрипта файла /m, мы создадим скрипт из двух частей.</p>
+
+<ul>
+  <li>Глобальные настройки</li>
+  <li>Определение обмена.</li>
+</ul>
+
+<p>Вот пример полного скрипта “/usr/local/etc/smb4.conf”. Настройте его в соответствии с техническими характеристиками вашего сервера Samba.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#======================= Global Settings =====================================
+[global]
+
+workgroup = WORKGROUP
+server string = FreeBSD %v (%h)
+server role = standalone server
+hosts allow = 192.168.5. 127.
+;  guest account = pcguest
+log file = /usr/local/samba/var/log.%m
+log level = 1
+max log size = 50
+;  realm = MY_REALM
+passdb backend = tdbsam
+bind interfaces only = yes
+#interfaces = nfe0 lo0
+interfaces = 192.168.5.0/24 127.0.0.1
+wins support = no
+wins server = 192.168.5.2
+local master = yes
+preferred master = yes
+
+#============================ Share Definitions ==============================
+[Personal]
+   comment = Home Folder
+   browseable = yes
+   writeable = yes
+   valid users = %U
+   create mode = 0644
+   directory mode = 0755
+   path = /usr/local/etc/sambashare/personal
+   guest ok = no
+
+[Public]
+   comment = Public Folder
+   path = /usr/local/etc/sambashare/public
+   browseable = yes
+   writeable = yes
+   guest ok = no
+   create mode = 0664
+   directory mode = 0775
+   valid users = %U
+
+[Shared] 
+   comment = Shared Folder
+   path = /usr/local/etc/sambashare/shared
+   browseable = yes
+   writeable = yes
+   guest ok = no
+   create mode = 0666
+   directory mode = 0777
+   valid users = %U
+
+[Guest] 
+   comment = Guest Folder
+   path = /usr/local/etc/sambashare/guest
+   browseable = yes
+   writeable = yes
+   guest ok = no
+   create mode = 0666
+   directory mode = 0777
+   valid users = %U
+</code></pre></div></div>
+
+<h2 id="б-подготовка-конфигурации">Б. Подготовка конфигурации</h2>
+<p>Этот процесс является неотъемлемой частью процесса установки. Первый шаг, который нам необходимо сделать после создания файла конфигурации «smb4.conf», — это создать каталог.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # mkdir -p /usr/local/etc/sambashare/personal
+root@ns3:~ # mkdir -p /usr/local/etc/sambashare/public
+root@ns3:~ # mkdir -p /usr/local/etc/sambashare/shared
+root@ns3:~ # mkdir -p /usr/local/etc/sambashare/guest
+</code></pre></div></div>
+
+<p>После этого выполните команду «chmod», эта команда используется для предоставления прав доступа/разрешений владельцу, обычным пользователям и непользователям. Следуем сценарию из файла «smb4.conf».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # chmod 775 /usr/local/etc/sambashare/personal
+root@ns3:~ # chmod 775 /usr/local/etc/sambashare/public
+root@ns3:~ # chmod 777 /usr/local/etc/sambashare/shared
+root@ns3:~ # chmod 777 /usr/local/etc/sambashare/guest
+</code></pre></div></div>
+
+<p>Следующим шагом будет редактирование файла «/boot/loader.conf» и вставка в него скрипта, приведённого ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbfs_load="YES"
+</code></pre></div></div>
+
+<p>Для защиты общих данных или документов мы создаем пользователя и пароль. Имея имя пользователя и пароль, не каждый может получить доступ к файлу или документу.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # pw add group samba
+root@ns3:~ # pw add group freebsd
+</code></pre></div></div>
+
+<p>Приведенный выше скрипт используется для создания группы с именем «samba». После создания группы приступайте к созданию пользователей. В этом примере мы создадим 3 пользователей: Джона, Мэри и Питера, которые будут в группе Samba.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # pw add user -n john -g samba -s /sbin/nologin -c "samba john"
+root@ns3:~ # pw add user -n mary -g samba -s /sbin/nologin -c "samba mary"
+root@ns3:~ # pw add user -n peter -g samba -s /sbin/nologin -c "samba peter"
+root@ns3:~ # pw add user -n jackson -g freebsd -s /sbin/nologin -c "samba guest"
+</code></pre></div></div>
+
+<p>Укажите пароль для каждого пользователя.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # pdbedit -a -u john -f "john chaplin"
+root@ns3:~ # pdbedit -a -u mary -f "mary rose"
+root@ns3:~ # pdbedit -a -u peter -f "peter joe"
+root@ns3:~ # pdbedit -a -u jackson -f "jackson samba"
+</code></pre></div></div>
+
+<p>Чтобы вам было легче, посмотрите на картинку ниже.</p>
+
+<p><img src="/img/create samba user and group in freebsd.jpg" alt="create samba user and group in freebsd" /></p>
+
+<p>Смущенный? Теперь продолжим с командой chown. Эта команда используется для смены владельца файла или каталога.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # chown -R john:samba /usr/local/etc/sambashare/shared
+root@ns3:~ # chown -R mary:samba /usr/local/etc/sambashare/public
+root@ns3:~ # chown -R peter:samba /usr/local/etc/sambashare/personal
+root@ns3:~ # chown -R jackson:freebsd /usr/local/etc/sambashare/guest
+</code></pre></div></div>
+
+<p>Запустите сервер Samba.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # service samba_server restart
+</code></pre></div></div>
+
+<h2 id="c-конфигурация-windows">C. Конфигурация Windows</h2>
+<p>На этом этапе мы начнем настройку в системной среде Windows. Откройте «C:\Windows\System32\drivers\etc», после чего введите скрипт, приведенный ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>192.168.5.2    ns3
+</code></pre></div></div>
+
+<p>В приложении Samba, которое мы изучаем, FreeBSD является сервером Samba, а Windows — клиентом Samba. Поэтому все файлы или документы, которыми вы хотите поделиться, должны быть размещены на сервере FreeBSD. Любой пользователь, желающий использовать файл или документ, может получить к нему доступ только через Windows. В крупных средах, таких как школы, больницы или компании, необходим сетевой администратор для управления правами доступа к файлам или документам, которые являются общими или доступными для пользователей.</p>
+
+<p>Вы копируете все файлы или документы на сервер FreeBSD в соответствии с правами доступа пользователя. После этого запустите «chmod», как в примере ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # chmod 644 /usr/local/etc/sambashare/shared/*
+root@ns3:~ # chmod 644 /usr/local/etc/sambashare/public/*
+root@ns3:~ # chmod 666 /usr/local/etc/sambashare/personal/*
+root@ns3:~ # chmod 666 /usr/local/etc/sambashare/guest/*
+</code></pre></div></div>
+
+<p>Выполняйте указанную выше команду каждый раз, когда файл или документ добавляется на сервер FreeBSD.</p>
+
+<p>Любой пользователь, желающий получить доступ к файлу или документу, может открыть его через проводник Windows. Хорошо, давайте начнем испытывать приложение Samba на клиенте Windows. Откройте проводник Windows и введите «\192.168.5.2\personal» или «\ns3\personal».</p>
+
+<p>Чтобы удалить подключение к серверу Samba в Windows, запустите «cmd» и введите команду «net use * /delete».</p>
+
+<p>Вы также можете попробовать выполнить команду ниже в оболочке «cmd».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\blogspot&gt;net use \delete \\192.168.5.2\personal
+C:\Users\blogspot&gt;net use \delete \\192.168.5.2\public
+C:\Users\blogspot&gt;net use \delete \\ns3
+</code></pre></div></div>
+
+<p>Samba имеет множество функций и применений. Итак, вам придется многое попробовать на своем сервере FreeBSD, а также прочитать множество статей с инструкциями по Samba в поисковой системе Google. Обсуждение в этой статье — лишь часть изучения самбы. Однако процесс установки и настройки практически такой же, если вы хотите объединить его с сервером DHCP или DNS Bind.</p>
+
+</section>
+      <footer class="page__meta"><p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell' Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-01-26T19:00:00+03:00">2024-01-26</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#configuration" class="page__taxonomy-item" rel="tag">configuration</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#freebsd" class="page__taxonomy-item" rel="tag">freebsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openbsd" class="page__taxonomy-item" rel="tag">openbsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#samba" class="page__taxonomy-item" rel="tag">samba</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#server" class="page__taxonomy-item" rel="tag">server</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#setup" class="page__taxonomy-item" rel="tag">setup</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#transfer" class="page__taxonomy-item" rel="tag">transfer</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#windows" class="page__taxonomy-item" rel="tag">windows</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#client" class="page__taxonomy-item" rel="tag">client</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2023/05/01/openbsd-redis.cached-db-install/" class="pagination--pager" title="Как установить Redis Cache DB на OpenBSD
+">Previous</a><a href="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/" class="pagination--pager" title="Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://twitter.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About/Impressum/GDPR/No AI/ML</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

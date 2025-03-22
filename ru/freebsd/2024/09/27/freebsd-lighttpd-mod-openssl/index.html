@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+  <meta charset="utf-8">
+  
+  <title>Установка и настройка FreeBSD Lighttpd Plus Mod OpenSSL  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Установка и настройка FreeBSD Lighttpd Plus Mod OpenSSL"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2024/09/27/freebsd-lighttpd-mod-openssl/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2024/09/27/freebsd-lighttpd-mod-openssl/"><meta property="og:description" content="Lighttpd очень надежен в высокопроизводительных средах с небольшим объемом памяти по сравнению с другими веб-серверами и служит для эффективного управления загрузкой ЦП расширенного набора функций, таких как SCGI, сжатие вывода, аутентификация, FastCGI, перезапись URL."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Установка и настройка FreeBSD Lighttpd Plus Mod OpenSSL">
+  <meta name="twitter:description" content="Lighttpd очень надежен в высокопроизводительных средах с небольшим объемом памяти по сравнению с другими веб-серверами и служит для эффективного управления загрузкой ЦП расширенного набора функций, таких как SCGI, сжатие вывода, аутентификация, FastCGI, перезапись URL.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2024/09/27/freebsd-lighttpd-mod-openssl/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-09-27T16:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/09/27/freebsd-lighttpd-mod-openssl/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div><nav class="breadcrumbs">
+  <ol itemscope itemtype="http://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comfreebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com09" itemprop="item"><span itemprop="name">09</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com27" itemprop="item"><span itemprop="name">27</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span><li class="current">Установка и настройка FreeBSD Lighttpd Plus Mod OpenSSL</li></ol>
+</nav><div id="main" role="main"><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Установка и настройка FreeBSD Lighttpd Plus Mod OpenSSL"><meta itemprop="description" content="Lighttpd очень надежен в высокопроизводительных средах с небольшим объемом памяти по сравнению с другими веб-серверами и служит для эффективного управления загрузкой ЦП расширенного набора функций, таких как SCGI, сжатие вывода, аутентификация, FastCGI, перезапись URL."><meta itemprop="datePublished" content="2024-09-27"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-09-27T16:00:00+03:00">2024-09-27</time> </p><h1 class="page__title" itemprop="headline">Установка и настройка FreeBSD Lighttpd Plus Mod OpenSSL
+</h1></header><section class="page__content" itemprop="text">
+        <p>Этот веб-сервер, распространяемый по лицензии BSD, является одним из самых легких, безопасных и быстрых веб-серверов. Lighttpd очень надежен в высокопроизводительных средах с небольшим объемом памяти по сравнению с другими веб-серверами и служит для эффективного управления загрузкой ЦП расширенного набора функций, таких как SCGI, сжатие вывода, аутентификация, FastCGI, перезапись URL и многие другие.</p>
+
+<p>Для пользователей, испытывающих нагрузку при работе с веб-сервером, Lighttpd является идеальным решением для серверов, испытывающих проблемы с рабочей нагрузкой. Lighttpd — отличная альтернатива широко используемым веб-серверам Nginx и Apache. Потому что Lighttpd — это легкий веб-сервер с открытым исходным кодом, оптимизированный для высокоскоростных сред и низкого потребления ресурсов, что снижает производительность ЦП.</p>
+
+<p>Что касается процесса веб-сервера, вы, должно быть, знаете, что некоторые сайты обрабатывают тысячи файлов параллельно, поэтому требуется большой объем памяти, а максимальное количество потоков или процессов также велико.</p>
+
+<p>Чтобы решить эту проблему, Дэн Кегель подробно описал проблемы с обработкой тысяч одновременных запросов на своей странице, посвященной проблемам C10K. В 2003 году немецкий разработчик MySQL по имени Ян Кнешке заинтересовался этой проблемой и решил, что он сможет написать более быстрый веб-сервер, чем Apache, сосредоточившись на правильных методах.</p>
+
+<p>Затем Ян Кнешке разработал lighttpd как единый процесс с одним потоком и неблокируемым вводом-выводом. Lighttpd также использует самый быстрый обработчик событий в целевой системе: polling, epoll, kqueue или /dev/polling. Lighttpd предпочитает неподключенные системные вызовы, такие как sendfile, вместо чтения и записи. Результатом его усилий стало то, что через несколько месяцев lighttpd начал обрабатывать статические файлы быстрее, чем Apache.</p>
+
+<p>В этой статье вы узнаете, как установить и настроить Lighttpd на сервере FreeBSD. Мало того, для повышения безопасности веб-сервера Lighttp мы также добавили режим Openssl в содержание этой статьи.</p>
+
+<h1 id="технические-характеристики-системы">Технические характеристики системы</h1>
+
+<p>ОС: FreeBSD 13.2 Стабильная
+Имя хоста: ns5
+IP-адрес: 192.168.5.2
+Домен: datainchi.com
+Версия Lighttpd: lighttpd/1.4.67 (ssl) - легкий и быстрый веб-сервер</p>
+
+<h2 id="а-процесс-установки-lighttpd">А. Процесс установки Lighttpd</h2>
+
+<p>Как вы знаете, на серверах FreeBSD существует два способа установки каждого приложения, а именно система портов и пакет PKG. Специально для установок Lighttp мы предпочитаем использовать систему портов, поскольку она может собирать все библиотеки, необходимые Lighttpd.</p>
+
+<p>Перед началом процесса установки Lighttpd необходимо сначала установить зависимости Lighttpd, а именно «Зависимости сборки» и «Зависимости библиотеки». Вот как установить эти зависимости.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # pkg install cmake-core ninja pkgconf
+</code></pre></div></div>
+
+<p>Приведенная выше команда используется для установки «Зависимостей сборки». Теперь установим «Библиотечные зависимости», которые будет использовать Lighttpd.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # pkg install pcre2 nettle lua54
+</code></pre></div></div>
+
+<p>Мы установили все зависимости, давайте продолжим установку Lighttpd.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # cd /usr/ports/www/lighttpd
+root@ns5:/usr/ports/www/lighttpd # make config
+</code></pre></div></div>
+
+<p>В команде «make config» необходимо включить некоторые параметры, поскольку мы будем использовать мод OpenSSL, включите параметр «OPENSSL».</p>
+
+<p>Используйте команду «make install clean», чтобы начать процесс установки.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:/usr/ports/www/lighttpd # make install clean
+</code></pre></div></div>
+
+<h2 id="b-создать-start-up-rcd">B. Создать Start Up rc.d</h2>
+
+<p>Вы, конечно, не хотите, чтобы каждое приложение запускалось вручную. Что бы произошло, если бы Lighttpd запускался вручную? Конечно, это было бы очень хлопотно. Вот как автоматически запустить Lighttpd на вашем сервере FreeBSD.</p>
+
+<p>В Linux есть systemd для автоматического запуска приложений, а во FreeBSD — rc.d. Чтобы Lihttpd запускался автоматически, откройте файл «/etc/rc/conf» и введите в него следующую команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lighttpd_enable="YES"
+lighttpd_conf="/usr/local/etc/lighttpd/lighttpd.conf"
+lighttpd_pidfile="/var/run/lighttpd.pid"
+lighttpd_instances=""
+</code></pre></div></div>
+
+<p>В приведенном выше скрипте файл конфигурации Lighttpd находится в папке «/usr/local/etc/lighttpd» с именем файла конфигурации «lighttpd.conf».</p>
+
+<p>Вы можете запустить Lighttpd с помощью следующей команды.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # service lighttpd restart
+</code></pre></div></div>
+
+<h2 id="c-конфигурация-lighttpd">C. Конфигурация Lighttpd</h2>
+
+<p>Основной файл конфигурации Lighttpd — «/usr/local/etc/lighttpd/lighttpd.conf», вы открываете этот файл и редактируете только те скрипты, которые вам нужны. Чтобы включить частные порты и IP-адреса, запустите скрипт ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server.port = 80
+server.use-ipv6 = "disable"
+server.bind = "192.168.5.2"
+server.username  = "www"
+server.groupname = "www"
+server.document-root = "/usr/local/www" + "/data"
+server.pid-file = state_dir + "/lighttpd.pid"
+</code></pre></div></div>
+
+<p>Для тех из вас, кто только начинает работать с Lighttpd, конфигурация «журнала» важна, поскольку часто что-то выходит из строя или Lighttpd не запускается из-за неправильной конфигурации «журнала». Для настройки «log» следуйте приведенному ниже сценарию.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server.errorlog-use-syslog = "enable"
+include conf_dir + "/conf.d/debug.conf"
+</code></pre></div></div>
+
+<p>Приведенная выше конфигурация журнала предоставит LightTPD привилегии для управления собственными журналами.</p>
+
+<p>Часто при запуске LightTPD появляется сообщение об ошибке, подобное следующему.</p>
+
+<p>2024-01-15 10:31:51: (configfile.c.1287) ПРЕДУПРЕЖДЕНИЕ: неизвестный config-key: dir-listing.encoding (игнорируется)
+2024-01-15 10:31:51: (configfile.c.1287) ПРЕДУПРЕЖДЕНИЕ: неизвестный config-key: dir-listing.exclude (игнорируется)</p>
+
+<p>Чтобы обойти эту проблему, вы можете включить опцию «dir-listing.activate» в файле «/usr/local/etc/lighttpd/lighttpd.conf».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>include conf_dir + "/conf.d/dirlisting.conf"
+dir-listing.activate = "enable"
+</code></pre></div></div>
+
+<p>Теперь вы используете Lighttpd.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # service lighttpd restart
+Performing sanity check on lighttpd configuration:
+Stopping lighttpd.
+Waiting for PIDS: 12730.
+Starting lighttpd.
+</code></pre></div></div>
+
+<p>Полный скрипт для файла “/usr/local/etc/lighttpd/lighttpd.conf” можно увидеть на Github unixwinbsd.</p>
+
+<p>Все данные Lighttpd хранятся в папке «/usr/local/www/data». Создайте файл index.html и введите скрипт, который вы скачали на Github unixwinbsd.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # cd /usr/local/www
+root@ns5:/usr/local/www # mkdir -p data
+root@ns5:/usr/local/www # cd data
+root@ns5:/usr/local/www/data # touch index.html
+root@ns5:/usr/local/www/data # chown -R www:www /usr/local/www/data/
+</code></pre></div></div>
+
+<h2 id="d-создать-openssl-mod">D. Создать Openssl Mod</h2>
+
+<p>Основная функция шифрования — преобразование обычных текстовых сообщений в зашифрованный текст, который не может быть прочитан посторонними лицами. Все конфиденциальные данные пользователя, такие как учетные данные для входа и личная информация, шифруются перед отправкой по сети. После этого доступ к веб-сайту смогут получить только получатели, имеющие правильный ключ дешифрования.</p>
+
+<p>В целом, на веб-серверах используются два основных протокола шифрования, а именно:</p>
+<ul>
+  <li>SSL: протокол защищенных сокетов.</li>
+  <li>TLS: Transport Layer Security (замена SSL).</li>
+</ul>
+
+<p>Lighttpd также обладает весьма продвинутыми возможностями шифрования. Существует множество способов шифрования веб-сервера. В этой статье мы обсуждаем только шифрование с помощью OpenSSL.</p>
+
+<p>На первом этапе мы сгенерируем закрытые ключи и CSR. Мы сохраним закрытый ключ и файлы CSR в каталоге FreeBSD, а именно /etc/ssl. Включите каталог и выполните команду ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # cd /etc/ssl
+root@ns5:/etc/ssl # openssl genrsa -out /etc/ssl/unixwinbsd.key 4096
+Generating RSA private key, 4096 bit long modulus (2 primes)
+....................................................................................................................................................++++
+.........................++++
+e is 65537 (0x010001)
+</code></pre></div></div>
+
+<p>Для большей безопасности установите ограниченные права доступа к файлам на уровне 400 или 600.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:/etc/ssl # chmod 400 /etc/ssl/unixwinbsd.key
+</code></pre></div></div>
+
+<p>Следующим шагом является создание файла .csr, который содержит необходимые сведения о домене/организации вашего веб-сайта.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:/etc/ssl # openssl req -new -sha256 -key /etc/ssl/unixwinbsd.key -out /etc/ssl/unixwinbsd.csr
+</code></pre></div></div>
+
+<p>Подпишите свой CSR-файл.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:/etc/ssl # openssl x509 -req -days 365 -in unixwinbsd.csr -signkey unixwinbsd.key -out unixwinbsd.crt
+Signature ok
+</code></pre></div></div>
+
+<p>Объедините первичный сертификат, промежуточный сертификат и закрытый ключ в один.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:/etc/ssl # cat unixwinbsd.crt unixwinbsd.key &gt; unixwinbsd-ssl.pem
+</code></pre></div></div>
+
+<p>После успешного создания SSL-сертификата отредактируйте файл конфигурации Lighttpd, который называется «/usr/local/etc/lighttpd/lighttpd.conf».</p>
+
+<p>Введите скрипт ниже, чтобы включить OpenSSL в Lighttpd.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server.modules += ( "mod_openssl" )
+ssl.pemfile = "/etc/ssl/unixwinbsd-ssl.pem"
+
+   $SERVER["socket"] == "*:443" {
+     ssl.engine  = "enable"
+   }
+</code></pre></div></div>
+
+<h2 id="e-тест-lighttpd">E. Тест Lighttpd</h2>
+
+<p>В качестве последнего шага в приведенной выше конфигурации мы проводим тест, сначала запуская веб-сервер Lighttpd с помощью следующей команды.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:/etc/ssl # service lighttpd restart
+</code></pre></div></div>
+
+<p>Если при выполнении команды выше возникает ошибка в файле SSL, поскольку Lighttpd часто медленно реагирует на созданный вами файл SSL, чтобы избежать этого, вы можете повторить команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:/etc/ssl # openssl x509 -req -days 365 -in unixwinbsd.csr -signkey unixwinbsd.key -out unixwinbsd.crt
+root@ns5:/etc/ssl # cat unixwinbsd.crt unixwinbsd.key &gt; unixwinbsd-ssl.pem
+</code></pre></div></div>
+
+<p>Теперь откройте веб-браузер Google Chrome, в адресной строке введите «http://192.168.5.2» или «https://192.168.5.2».</p>
+
+<p>В заключение следует отметить, что Lighttpd — это легкий, эффективный, надежный и универсальный веб-сервер, который выделяется среди многих других программных средств веб-серверов, таких как NGINX и Apache. Его событийно-ориентированная архитектура, расширенные функции и ориентация на безопасность делают его отличным выбором для обслуживания веб-контента в различных средах.</p>
+
+</section>
+      <footer class="page__meta"><p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell' Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-09-27T16:00:00+03:00">2024-09-27</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#configuration" class="page__taxonomy-item" rel="tag">configuration</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#freebsd" class="page__taxonomy-item" rel="tag">freebsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#http" class="page__taxonomy-item" rel="tag">http</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#httpd" class="page__taxonomy-item" rel="tag">httpd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#https" class="page__taxonomy-item" rel="tag">https</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#lighttpd" class="page__taxonomy-item" rel="tag">lighttpd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#mod" class="page__taxonomy-item" rel="tag">mod</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openbsd" class="page__taxonomy-item" rel="tag">openbsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openssl" class="page__taxonomy-item" rel="tag">openssl</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#ssl" class="page__taxonomy-item" rel="tag">ssl</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2024/09/02/freebsd-inetd-daemon-conf-file/" class="pagination--pager" title="Демон FreeBSD INETD и файл конфигурации inetd conf
+">Previous</a><a href="https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/" class="pagination--pager" title="Балансировщик нагрузки Relayd с httpd на OpenBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://twitter.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About/Impressum/GDPR/No AI/ML</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

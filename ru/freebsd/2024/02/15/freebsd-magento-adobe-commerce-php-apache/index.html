@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+  <meta charset="utf-8">
+  
+  <title>Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/"><meta property="og:description" content="Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache">
+  <meta name="twitter:description" content="Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-02-15T19:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div><nav class="breadcrumbs">
+  <ol itemscope itemtype="http://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.comfreebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com02" itemprop="item"><span itemprop="name">02</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span><li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a href="https://penaadventure.com15" itemprop="item"><span itemprop="name">15</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span><li class="current">Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache</li></ol>
+</nav><div id="main" role="main"><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache"><meta itemprop="description" content="Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами."><meta itemprop="datePublished" content="2024-02-15"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-02-15T19:00:00+03:00">2024-02-15</time> </p><h1 class="page__title" itemprop="headline">Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache
+</h1></header><section class="page__content" itemprop="text">
+        <p>Magento — это приложение CMS Framework, предназначенное для запуска крупномасштабных и сложных проектов электронной коммерции. Основная цель — помочь владельцам интернет-магазинов с сотнями и тысячами товаров. Простота управления тысячами продуктов делает его очень популярным среди крупных предпринимателей.</p>
+
+<p>Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами. Функции Magento предоставляют инструменты для создания и управления интернет-магазинами и платформами для онлайн-торговли. Magento обеспечивает более плавную навигацию, лучшую конверсию и улучшенный пользовательский опыт.</p>
+
+<p>Magento обеспечивает гибкую настройку, масштабируемость и расширяемость для различных типов онлайн-бизнеса. Платформа Magento CMS также поддерживает множество функций, включая управление продуктами, заказы, платежи, доставку и маркетинговые инструменты для улучшения качества обслуживания клиентов. Это позволяет компаниям создавать и управлять эффективными интернет-магазинами с различными функциями и возможностями, которые могут помочь владельцам магазинов развивать свой бизнес.</p>
+
+<p>Magento, также известная как Adobe Commerce, — это решение для электронной коммерции, предназначенное для крупных интернет-торговцев, разработанное с учетом того, что разработчикам необходимо самостоятельно разрабатывать интернет-магазины. Magento обеспечивает простое управление товарными запасами и продажами для лучшего управления вашим интернет-магазином. Этот интернет-магазин также предоставляет конструктор страниц, поэтому вы можете легко создавать и оформлять веб-страницы в соответствии со своими пожеланиями.</p>
+
+<p>В этой статье мы изучим процесс установки и настройки Adobe Magento, чтобы вы могли отображать платформу Magento на экране Google Chrome.</p>
+
+<h1 id="технические-характеристики-системы">Технические характеристики системы</h1>
+
+<ul>
+  <li>OS: FreeBSD 13.3</li>
+  <li>Hostname: ns3</li>
+  <li>IP FreeBSD: 192.168.5.2</li>
+  <li>Database server: MySQL8</li>
+  <li>Web server: Apache24</li>
+  <li>PHP: PHP82, PHP Composer</li>
+  <li>PHP FPM</li>
+  <li>Elasticsearch: elasticsearch8</li>
+  <li>Dependencies: php82-opcache php82-session php82-pecl-APCu php82-bcmath php82-bz2 php82-ctype php82-curl php82-dom php82-exif php82-fileinfo php82-filter php82-gd php82-gmp php82-iconv php82-intl php82-ldap php82-mbstring php82-pecl-msgpack php82-mysqli php82-pcntl php82-pdo php82-phar php82-posix php82-simplexml php82-sodium php82-sysvsem php82-tokenizer php82-xml php82-xmlwriter php82-zip php82-zlib php82-pecl-memcache php82-pecl-memcached php82-pdo_mysql php82-xmlreader php82-xsl php82-soap</li>
+</ul>
+
+<h2 id="установить-зависимости">Установить зависимости</h2>
+<p>Adobe Magento имеет множество PHP-зависимостей. При первой настройке Magento необходимо установить зависимости. Потому что если вы не установите зависимости, не ожидайте, что сможете нормально запустить Magento. Все зависимости написаны на PHP, что очень полезно для Magento, поскольку позволяет подключать веб-сайт к базам данных и веб-серверам, таким как Apache.</p>
+
+<p>Чтобы упростить задачу, вы можете установить зависимости Magento с помощью пакета FreeBSD PKG. Вот как установить зависимости Magento с помощью PKG.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www # pkg install php82-opcache php82-session php82-pecl-APCu php82-bcmath php82-bz2 php82-ctype php82-curl php82-dom php82-exif php82-fileinfo php82-filter php82-gd php82-gmp php82-iconv php82-intl php82-ldap php82-mbstring php82-pecl-msgpack php82-mysqli php82-pcntl php82-pdo php82-phar php82-posix php82-simplexml php82-sodium php82-sysvsem php82-tokenizer php82-xml php82-xmlwriter php82-zip php82-zlib php82-pecl-memcache php82-pecl-memcached php82-pdo_mysql php82-xmlreader php82-xsl php82-soap
+</code></pre></div></div>
+
+<h2 id="создать-базу-данных-для-adobe-magento">Создать базу данных для Adobe Magento</h2>
+<p>В этой статье мы предполагаем, что все перечисленные выше системные спецификации установлены на сервере FreeBSD. Поэтому мы не будем обсуждать вышеуказанные приложения. Давайте перейдем непосредственно к основной теме статьи.</p>
+
+<p>Создание базы данных является важной частью настройки Magento. Все ваши данные, такие как название продукта и данные о клиентах, будут храниться в базе данных. В этой статье мы будем использовать сервер MySQL для создания базы данных Magento.</p>
+
+<p>Приведенные ниже команды помогут вам создать базу данных Maento с сервером MySQL.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # mysql -u root -p
+root@localhost [(none)]&gt; CREATE DATABASE magento CHARACTER SET utf8;
+root@localhost [(none)]&gt; CREATE USER 'usermagento'@'localhost' IDENTIFIED BY 'router12345';
+root@localhost [(none)]&gt; GRANT ALL PRIVILEGES ON magento.* TO 'usermagento'@'localhost';
+root@localhost [(none)]&gt; FLUSH PRIVILEGES;
+root@localhost [(none)]&gt; exit;
+root@ns3:~ #
+</code></pre></div></div>
+
+<h2 id="создание-открытых-и-закрытых-ключей-adobe-magento">Создание открытых и закрытых ключей Adobe Magento</h2>
+<p>Перед началом процесса установки Magento необходимо создать открытый и закрытый ключ Magento. Этот ключ используется для аутентификации доступа к репозиторию repo.magento.com. Потому что каждый раз при доступе к repo.magento.com требуются как открытый, так и закрытый ключи. Этот ключ используется для заполнения:
+Username = public key
+Password = private key</p>
+
+<p>Получить или сгенерировать ключ можно, зайдя на сайт торговой площадки Magento.</p>
+<ul>
+  <li>Первый вход на https://marketplace.magento.com/</li>
+  <li>Если у вас нет учетной записи Magento, создайте новую учетную запись по адресу https://account.magento.com/applications/customer/login/</li>
+  <li>Если у вас уже есть учетная запись Magento, войдите в систему, используя свои учетные данные Magento.</li>
+  <li>После успешного входа откройте меню «Мой профиль».</li>
+  <li>Нажмите «Ключ доступа».</li>
+  <li>Выберите меню «Magento2».</li>
+  <li>Чтобы создать новый ключ, нажмите меню «Создать новый ключ доступа».</li>
+</ul>
+
+<h2 id="как-установить-adobe-magento">Как установить Adobe Magento</h2>
+<p>В системах FreeBSD репозиторий Magento недоступен в PKG или портах. При установке Magento и модулей Magento активно используются модули Composer. Поэтому перед установкой Magento необходимо сначала установить Composer. Еще одной важной деталью при использовании Composer является то, что переменная memory_limit (PHP) должна быть установлена ​​на 4 ГБ. При достижении предела в 2 ГБ Composer может вызвать сбой PHP с фатальной ошибкой в ​​процессе установки.</p>
+
+<p>Первым шагом будет создание рабочего каталога для Magento, мы поместим этот каталог в блок сервера Apache, а именно /usr/local/www.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # mkdir -p /usr/local/www/magento
+</code></pre></div></div>
+
+<p>После этого создайте проект Magento с помощью Composer.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/www
+root@ns3:/usr/local/www # composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition magento
+</code></pre></div></div>
+
+<p>При запуске указанной выше команды Composer запросит имя пользователя и пароль. Используйте пароль и пользователя, созданные вами выше. После этого установите Magento с помощью команды ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www # cd magento
+root@ns3:/usr/local/www/magento # composer install --ignore-platform-req=ext-sockets
+</code></pre></div></div>
+
+<p>Также установите сокеты для PHP.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www/magento # pkg install php82-sockets
+</code></pre></div></div>
+
+<p>Также выполните команду ниже, чтобы продолжить установку Magento.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www/magento/bin # ./magento setup:install --base-url=http://192.168.5.2/magento --db-host=localhost --db-name=magento --db-user=usermagento --db-password=router12345 --admin-firstname=john --admin-lastname=doe --admin-email=datainchi@gmail.com --admin-user=admin --admin-password=admin123 --language=en_US --currency=USD --timezone=America/New_York --use-rewrites=1 --search-engine=elasticsearch8 --elasticsearch-host=http://192.168.5.2 --elasticsearch-port=9200
+</code></pre></div></div>
+
+<p>В процессе установки Magento на FreeBSD следует обратить внимание на приложение Elasticsearch. Перед <a href="https://www.inchimediatama.org/2025/02/freebsd-elasticsearch-cara-mengaktifkan.html">установкой Magento</a> вам необходимо установить это приложение.</p>
+
+<p>После этого откройте файл elasticsearch.yml и отредактируйте скрипт, как в примере ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # ee /usr/local/etc/elasticsearch/elasticsearch.yml
+cluster.name: magento
+node.name: node-1
+path.data: /var/db/elasticsearch
+path.logs: /var/run/elasticsearch
+bootstrap.memory_lock: true
+network.host: 192.168.5.2
+http.port: 9200
+discovery.seed_hosts: ["127.0.0.1", "[::1]"]
+discovery.type: single-node
+xpack.ml.enabled: false
+xpack.security.enabled: false
+xpack.security.enrollment.enabled: false
+</code></pre></div></div>
+
+<p>Начиная с версии Magento 2.2, для управления файлами журналов был добавлен файл crontab. В FreeBSD вы можете управлять файлами crontab в /etc/crontab. Выполните команду ниже, чтобы установить файл crontab.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/www/magento/bin
+root@ns3:/usr/local/www/magento/bin # ./magento cron:install --force
+Crontab has been generated and saved
+</code></pre></div></div>
+
+<p>Затем в файл /etc/crontab добавьте скрипт, указанный ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www/magento/bin # ee /etc/crontab
+* * * * * /usr/local/bin/php /usr/local/www/magento/bin/magento cron:run 2&gt;&amp;1 | grep -v "Ran jobs by schedule" &gt;&gt; /usr/local/www/magento/var/log/magento.cron.log
+</code></pre></div></div>
+
+<p>Далее выполните команды ниже, чтобы обновить базу данных, развернуть файлы статического представления и отключить двухфакторную аутентификацию.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www/magento/bin # ./magento indexer:reindex &amp;&amp; ./magento se:up &amp;&amp; ./magento se:s:d -f &amp;&amp; ./magento c:f &amp;&amp; ./magento module:disable Magento_TwoFactorAuth
+</code></pre></div></div>
+
+<p>Затем вы добавляете права доступа и владельца к файлам и папкам Magento.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # chown -R www:www /usr/local/www/magento/
+root@ns3:~ # chmod -R 775 /usr/local/www/magento
+</code></pre></div></div>
+
+<h2 id="создать-apache-vhost">Создать Apache Vhost</h2>
+<p>В качестве интерфейса Magento мы будем использовать Apache24 как веб-сервер. С помощью Apache Magento можно отображать и настраивать через Google Chrome. Чтобы подключить Magento к Apache, вам необходимо включить файл виртуального хоста Apache. В файле httpd.conf включите файл vhost, удалив знак «#», см. пример ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/etc/apache24
+root@ns3:/usr/local/etc/apache24 # ee httpd.conf
+#Include etc/apache24/extra/httpd-vhosts.conf
+Include etc/apache24/extra/httpd-vhosts.conf
+</code></pre></div></div>
+
+<p>После этого удалите все скрипты /usr/local/etc/apache24/extra/vhost.conf и замените их скриптами, приведенными ниже (настройте под свою серверную систему FreeBSD).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/apache24 # cd extra
+root@ns3:/usr/local/etc/apache24/extra # ee httpd-vhosts.conf
+&lt;VirtualHost *:80&gt;
+    ServerAdmin datainchi@gmail.com
+    DocumentRoot "/usr/local/www/magento/pub"
+    ServerName datainchi.com
+    ServerAlias www.datainchi.com
+SetEnv MAGE_RUN_CODE "base"
+    SetEnv MAGE_RUN_TYPE "website"
+
+  &lt;Directory /usr/local/www/magento/pub&gt;
+       Options Indexes FollowSymLinks MultiViews
+       AllowOverride All
+       Require all granted
+  &lt;/Directory&gt;
+
+    ErrorLog "/var/log/dummy-host.example.com-error_log"
+    CustomLog "/var/log/dummy-host.example.com-access_log" common
+&lt;/VirtualHost&gt;
+</code></pre></div></div>
+
+<p>Следующий шаг — перезапуск Apache24.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # service apache24 restart
+</code></pre></div></div>
+
+<p>Последний шаг — проверка, для чего откройте Google Chrome и введите «http://192.168.5.2/magento/setup/» или «http://192.168.5.2/magento/pub/». Просмотрите результаты в Google Chrome. Если ваши настройки верны, появится меню конфигурации Magento.</p>
+
+<p>Если вы хотите использовать Magento для открытия интернет-магазина, полное и понятное руководство по установке и настройке облегчит этот процесс. В этом руководстве показано, как вручную настроить Magento на сервере FreeBSD. Однако существующий скрипт можно использовать на серверах Linux, таких как Ubuntu. Мы представляем все содержание этой статьи в полном объеме и можем помочь тем из вас, кто хочет создать интернет-магазин на Magento.</p>
+
+</section>
+      <footer class="page__meta"><p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell' Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-02-15T19:00:00+03:00">2024-02-15</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#adobe" class="page__taxonomy-item" rel="tag">adobe</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#commerce" class="page__taxonomy-item" rel="tag">commerce</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#configuration" class="page__taxonomy-item" rel="tag">configuration</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#freebsd" class="page__taxonomy-item" rel="tag">freebsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#magento" class="page__taxonomy-item" rel="tag">magento</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openbsd" class="page__taxonomy-item" rel="tag">openbsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#server" class="page__taxonomy-item" rel="tag">server</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#setup" class="page__taxonomy-item" rel="tag">setup</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#client" class="page__taxonomy-item" rel="tag">client</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2024/01/26/samba-on-freebsd-connect-windows/" class="pagination--pager" title="Как подключить FreeBSD к Windows с помощью Samba
+">Previous</a><a href="https://penaadventure.com/ru/linux/2024/03/16/freebsd-install-ubuntu-linux-binary/" class="pagination--pager" title="
+  
+    
+      Как установить Ubuntu на FreeBSD
+      Совместимость двоичных файлов Linux
+    
+  
+
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://twitter.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About/Impressum/GDPR/No AI/ML</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>
