@@ -2,7 +2,7 @@
 
 # English (default)
 # -----------------
-en: &DEFAULT_EN
+ru: &DEFAULT_RU
   page                       : "Page"
   pagination_previous        : "Prev"
   pagination_next            : "Next"
@@ -41,35 +41,35 @@ en: &DEFAULT_EN
   comment_error_msg          : "Sorry, there was an error with your submission. Please make sure all required fields have been completed and try again."
   loading_label              : "Loading..."
 en-US:
-  <<: *DEFAULT_EN
+  <<: *DEFAULT_RU
 en-CA:
-  <<: *DEFAULT_EN
+  <<: *DEFAULT_RU
 en-GB:
-  <<: *DEFAULT_EN
+  <<: *DEFAULT_RU
 en-AU:
-  <<: *DEFAULT_EN
+  <<: *DEFAULT_RU
 
 # Spanish
 # --------------
 es: &DEFAULT_ES
-  page                       : "Página"
+  page                       : "Page"
   pagination_previous        : "Anterior"
-  pagination_next            : "Siguiente"
-  breadcrumb_home_label      : "Inicio"
+  pagination_next            : "Following"
+  breadcrumb_home_label      : "Start"
   breadcrumb_separator       : "/"
-  toc_label                  : "Contenidos"
+  toc_label                  : "Contents"
   ext_link_label             : "Enlace"
   less_than                  : "menos de"
   minute_read                : "minuto de lectura"
   share_on_label             : "Compartir"
   meta_label                 :
   tags_label                 : "Etiquetas:"
-  categories_label           : "Categorías:"
-  date_label                 : "Actualizado:"
+  categories_label           : "Categories:"
+  date_label                 : "Updated:"
   comments_label             : "Comentar"
   comments_title             :
-  more_label                 : "Ver más"
-  related_label              : "Podrías ver también"
+  more_label                 : "See more"
+  related_label              : "You could also see"
   follow_label               : "Seguir:"
   feed_label                 : "Feed"
   powered_by                 : "Powered by"
@@ -89,9 +89,9 @@ es: &DEFAULT_ES
   comment_error_msg          :
   loading_label              :
 es-ES:
-  <<: *DEFAULT_ES
+  <<: *DEFAULT_RU
 es-CO:
-  <<: *DEFAULT_ES
+  <<: *DEFAULT_RU
 
 # French
 # -----------------
