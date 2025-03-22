@@ -1,5 +1,5 @@
 ---
-title: "About Us
+title: "About Us"
 layout: single
 excerpt: "Information about this blog | penaadventure.com"
 author_profile: true
