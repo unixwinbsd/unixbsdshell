@@ -3,6 +3,9 @@ title: Building a FreeBSD Private Cloud Server With Seafile Seahub Server
 date: "2025-01-17 12:10:00 +0300"
 id: building-freebsd-private-cloud-server-seafile-seahub
 lang: en
+layout: single
+categories:
+  - FreeBSD
 tags: "SysAdmin"
 excerpt: Seafile is a high performance and best file sharing application solution. Seafile open source cloud storage is written using the Python Django framework
 keywords: freebsd, seafile, seahub, building, cloud, server, private, setup, blog, http

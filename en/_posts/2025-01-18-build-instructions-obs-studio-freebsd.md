@@ -3,6 +3,9 @@ title: Build Instructions OBS Studio For GhostBSD Desktop FreeBSD
 date: "2025-01-18 14:11:10 +0300"
 id: build-instructions-obs-studio-freebsd
 lang: en
+layout: single
+categories:
+  - FreeBSD
 tags: "SysAdmin"
 excerpt: OBS Studio also supports many plugins that can expand its functionality to include features such as NDI support
 keywords: freebsd, obs, studio, building, ghostbsd, desktop, instruction

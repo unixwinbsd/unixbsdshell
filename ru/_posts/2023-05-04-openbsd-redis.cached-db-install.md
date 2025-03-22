@@ -3,6 +3,9 @@ title: Как установить Redis Cache DB на OpenBSD
 date: "2023-05-01 11:00:00 +0300"
 id: openbsd-redis.cached-db-install
 lang: ru
+layout: single
+categories:
+  - FreeBSD
 excerpt: "Redis можно скомпилировать и использовать в операционных системах Linux, OSX, OpenBSD, NetBSD и FreeBSD."
 tags: "redis, freebsd, cache, openbsd, configuration, setup, server, database"
 keywords: redis, freebsd, cache, openbsd, configuration, setup, server, database

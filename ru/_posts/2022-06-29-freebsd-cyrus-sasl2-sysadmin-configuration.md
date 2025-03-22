@@ -4,6 +4,10 @@ date: "2022-06-29 18:15:00 +0300"
 excerpt: "Добавление поддержки аутентификации в Postfix важно для пользователей, которые хотят ретранслировать электронную почту через свои серверы из незащищенных публичных сетей."
 id: freebsd-cyrus-sasl2-sysadmin-configuration
 lang: ru
+layout: single
+categories:
+  - FreeBSD
+keywords: cyrus, sasl2, sasl, mail, server, email, freebsd
 tags: "cyrus, sasl2, sasl, mail, server, email, freebsd"
 ---
 

@@ -3,6 +3,9 @@ title: How to Install phpMyAdmin on FreeBSD with Apache24
 date: "2025-01-16 11:10:00 +0300"
 id: install-phpmyadmin-on-freebsd-apache
 lang: en
+layout: single
+categories:
+  - FreeBSD
 tags: "WebServer"
 excerpt: phpMyAdmin supports multiple database servers. It can also import data from various formats such as CSV and SQL.
 keywords: php, phpmyadmin, freebsd, server, openbsd, apache, install

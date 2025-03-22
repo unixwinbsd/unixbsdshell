@@ -3,6 +3,9 @@ title: Aria2 Metalink Guide On FreeBSD To Download Torrent Files
 date: "2025-01-14 09:10:00 +0300"
 id: install-aria2-metalink-freebsd-torrent
 lang: en
+layout: single
+categories:
+  - FreeBSD
 tags: "Anonymous"
 excerpt: Aria2 is a utility for downloading torrent files. Supported protocols are HTTP(S), FTP, SFTP, BitTorrent, and Metalink
 keywords: torrent, aria, freebsd, metalink, aria2, download, file

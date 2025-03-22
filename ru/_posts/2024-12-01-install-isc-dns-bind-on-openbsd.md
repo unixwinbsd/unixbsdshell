@@ -4,6 +4,11 @@ date: 2024-12-01 17:00:00+03:00
 excerpt: "Принцип работы кэширующего DNS-сервера заключается в том, что когда DNS-сервер находит запрошенный вами DNS-адрес, он немедленно отправляет его тому, кто запросил DNS-адрес, а затем сохраняет DNS-адрес в своей базе данных."
 id: install-isc-dns-bind-on-openbsd
 lang: ru
+layout: single
+categories:
+  - OpenBSD
+tags: "openbsd, freebsd, lighttpd, dns, configuration, server, openssl, isc, https, ssl"
+keywords: isc, dns, bind, openbsd, configuration, server, openssl, http, https, ssl
 ---
 
 Для тех из вас, у кого медленный интернет, кэширование DNS-сервера является разумным решением для увеличения скорости интернет-серфинга. В общем случае приложение DNS-сервера выполняет функцию преобразования имен в числа. Каждое введенное вами имя веб-сайта будет преобразовано в IP-адрес, поэтому веб-страница будет отображаться так, как вы ее видите в Google Chrome или Firefox.

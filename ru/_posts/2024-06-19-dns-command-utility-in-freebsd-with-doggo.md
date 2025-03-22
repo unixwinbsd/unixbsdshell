@@ -4,6 +4,9 @@ date: 2024-06-19 19:00:00+03:00
 excerpt: "Doggo — современный DNS-клиент командной строки, написанный на Golang. Поэтому не будет ошибкой назвать его «dog + go = doggo»."
 id: dns-command-utility-in-freebsd-with-doggo
 lang: ru
+layout: single
+categories:
+  - FreeBSD
 tags: "doggo, freebsd, dig, openbsd, configuration, setup, nslookup, command"
 keywords: doggo, freebsd, dig, openbsd, configuration, setup, nslookup, command
 ---

@@ -3,6 +3,9 @@ title: Простая настройка и конфигурирование с�
 date: "2025-01-15 11:00:00 +0300"
 id: setup-configuration-ldap-server-on-openbsd.ru
 lang: ru
+layout: single
+categories:
+  - OpenBSD
 tags: "ldap, openldap, server, freebsd, database"
 excerpt: "LDAP (Lightweight Directory Access Protocol) — стандартный метод, используемый для доступа к данным в базе данных."
 keywords: openldap, ldap, freebsd, server, openbsd, configuration, setup

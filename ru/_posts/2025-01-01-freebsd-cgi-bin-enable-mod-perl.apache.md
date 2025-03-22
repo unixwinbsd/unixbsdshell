@@ -3,6 +3,9 @@ title: FreeBSD CGI BIN Включение mod PERL на Apache24
 date: "2025-01-01 09:01:00 +0300"
 id: freebsd-cgi-bin-enable-mod-perl.apache
 lang: ru
+layout: single
+categories:
+  - FreeBSD
 tags: "WebServer"
 excerpt: "Моды perl, установленные на FreeBSD, — это больше, чем просто скрипты CGI на стероидах. Моды perl — это новый способ создания динамического контента"
 keywords: freebsd, apache, cgi, bin, web, mod, perl

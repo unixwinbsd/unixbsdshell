@@ -5,6 +5,9 @@ id: freebsd-tutorial-setuo-apache-mod-openssl-http
 excerpt: "Веб-сервер Apache существует уже много лет, и теперь число его пользователей продолжает расти."
 mathjax: true
 lang: ru
+layout: single
+categories:
+  - FreeBSD
 tags: "apache, freebsd, mod, openbsd, configuration, setup, openssl, http, https, ssl"
 keywords: apache, freebsd, mod, openbsd, configuration, setup, openssl, http, https, ssl
 ---

@@ -3,6 +3,9 @@ title: Запуск базы данных PostgreSQL на OpenBSD
 date: "2023-03-01 09:30:00 +0300"
 id: running-postgresql-database-on-openbsd
 lang: ru
+layout: single
+categories:
+  - OpenBSD
 excerpt: "OpenBSD имеет систему пакетов, которая несколько отличается от многих других операционных систем; в частности, пакеты тщательно проверяются перед установкой."
 tags: "postgresql, freebsd, client, openbsd, configuration, setup, server, database"
 keywords: postgresql, freebsd, client, openbsd, configuration, setup, server, database

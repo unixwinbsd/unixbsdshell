@@ -3,6 +3,9 @@ title: Как установить Ubuntu на FreeBSD | Совместимос�
 date: "2024-03-16 14:15:00 +0300"
 id: freebsd-install-ubuntu-linux-binary
 lang: ru
+layout: single
+categories:
+  - Linux
 excerpt: "Встроенная в FreeBSD двоичная совместимость Linux позволяет пользователям FreeBSD, работающим на 32-битной архитектуре i386, 64-битной архитектуре amd64 или 64-битной архитектуре arm64"
 tags: "ubuntu, freebsd, linux, openbsd, configuration, setup, apt, commerce, binary"
 keywords: ubuntu, freebsd, linux, openbsd, configuration, setup, apt, commerce, binary

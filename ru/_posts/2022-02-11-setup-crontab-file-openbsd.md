@@ -5,6 +5,10 @@ id: setup-crontab-file-openbsd
 excerpt: "Активная строка в файле crontab — это настройка переменной среды или команды cron. Настройка переменной среды в файле crontab создаст среду, в которой будет выполняться любая команда в crontab."
 mathjax: true
 lang: ru
+layout: single
+categories:
+  - OpenBSD
+keywords: cront, scheduling, freebsd, openbsd, aria2, download, file
 tags: "cron, crontab, file, schedule, time, openbsd, freebsd"
 ---
 

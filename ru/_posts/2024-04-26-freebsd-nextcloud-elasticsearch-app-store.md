@@ -3,6 +3,9 @@ title: FreeBSD Elasticsearch — как включить полнотексто�
 date: "2024-04-26 19:00:00 +0300"
 id: freebsd-nextcloud-elasticsearch-app-store
 lang: ru
+layout: single
+categories:
+  - FreeBSD
 excerpt: "Приложения Elasticsearch часто используются организациями или компаниями как средство быстрого и эффективного представления информации."
 tags: "nextcloud, freebsd, linux, openbsd, configuration, setup, apt, elasticsearch"
 keywords: nextcloud, freebsd, linux, openbsd, configuration, setup, apt, elasticsearch
