@@ -6,7 +6,7 @@ tags:
   - TAG
 published: true
 header:
-  image: mh/mh006.jpg
+  image: mh/mh002.jpg
 # comments:
 #  host: social.wildeboer.net
 #  username: jwildeboer

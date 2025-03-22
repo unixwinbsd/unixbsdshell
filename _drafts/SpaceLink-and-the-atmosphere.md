@@ -8,7 +8,7 @@ tags:
   - Climate
   - Pollution
 header:
-  image: mh/mh003.jpg
+  image: mh/mh002.jpg
 #comments:
 #  host: social.wildeboer.net
 #  username: jwildeboer

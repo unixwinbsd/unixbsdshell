@@ -6,7 +6,7 @@ author_profile: true
 search: false
 permalink: /inv/
 header:
-  image: mh/mh009.jpg
+  image: mh/mh002.jpg
 ---
 
 ![Do The Right Thing](/assets/dtrt.png)

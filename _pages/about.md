@@ -6,7 +6,7 @@ author_profile: true
 search: false
 permalink: /about/
 header:
-  image: mh/mh009.jpg
+  image: mh/mh002.jpg
 ---
 
 ## About

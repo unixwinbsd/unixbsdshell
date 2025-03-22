@@ -4,5 +4,5 @@ permalink: /year-archive/
 layout: posts
 author_profile: true
 header:
-  image: mh/mh004.jpg
+  image: mh/mh002.jpg
 ---

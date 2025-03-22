@@ -97,7 +97,7 @@ tags:
  - YubiKey
 published: false
 header:
-  image: mh/mh006.jpg
+  image: mh/mh002.jpg
 # comments:
 #  host: social.wildeboer.net
 #  username: jwildeboer

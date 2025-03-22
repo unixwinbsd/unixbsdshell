@@ -7,7 +7,7 @@ tags:
   - Mesh
 published: true
 header:
-  image: mh/mh014.jpg
+  image: mh/mh002.jpg
 comments:
   host: social.wildeboer.net
   username: jwildeboer
