@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>TD1 MRZ Generator</title>
+    <style type="text/css">
+			* {
+				font-family: sans-serif;
+			}
+			button {
+				display: inline-block;
+				color: black;
+				background-color: white;
+				border-style: solid;
+				border-width: 1px;
+				border-radius: 0.5rem;
+        padding: 10px 10px;
+				transition-duration: 0.4s;
+        font-size: 0.75em;
+			}
+      button:hover {
+        background-color:green;
+        color:white;
+      }
+      details {
+        display: inline-block;
+      }
+			div {
+				display: block;
+			}
+      input {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1em;
+				border: gray solid 1px;
+      }
+      input:invalid {
+        border: red solid 1px;
+				background-color: lightpink;
+      }
+      input:user-valid {
+        border: green solid 1px;
+      }
+			label {
+				font-family:sans-serif;
+			}
+			p {
+				display: block;
+			}
+      summary {
+        font-weight: bold;
+      }
+      summary:hover {
+        font-weight: bold;
+        background-color:ghostwhite;
+      }
+      textarea {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1em;
+        font-weight: bold;
+				vertical-align:middle;
+      }
+      .mrzform {
+				float:left;
+        margin: 0.5em 0.5em;
+				border-radius: .5rem;
+        border-style: solid;
+				border-width: 1px;
+        border-color:darkgray;
+        background-color:white;
+      }
+			.mrzform fieldset {
+				border-radius: .3rem;
+        border-style: solid;
+				border-width: 1px;
+        border-color:whitesmoke;
+				display: grid;
+				grid-template-columns: auto;
+        margin: 0.5em 1em;
+				padding: 0.5em;
+        background-color:whitesmoke;
+			}
+			.mrzform legend {
+        padding: 6px 6px;
+        background-color:whitesmoke;
+				border-radius: .3rem;
+        font-weight:bold;
+      }
+			.mrzform label {
+        float: left;
+        text-align: right;
+				vertical-align:middle;
+				padding: 0.25em;
+      }
+			.mrzform div {
+        text-align: center;
+      }
+    </style>
+    <script>
+      document.addEventListener('keydown', e => {
+        if (e.key == 'Enter') {
+          e.preventDefault();
+          TD1MRZ();
+          document.getElementById('mrz1').focus();
+        }
+      });
+
+    /* The ICAO9303-3 Check Digit algorithm
+		
+		   - Take the input, character by character.
+			 - 0-9, A-Z and '<'' are the only characters allowed
+			 - Transform the character into a number between 10 (A) and 35 (Z), '<'' becomes 0
+			 - Multiply the number with a weight, starting with 7 for ghe first character, 3 for the next character,1 for the next, repeat
+			 - Add the results
+			 - The remainder of modulo 10 on the sum is the check digit
+
+       Example: 123AF is the string. The respective numbers thus are
+       1,2,3,10,15. 1*7=7, 2*3=6, 10*1=10, 15*7=105.
+       7+6+10+105=128. The remainder of 128 modulo 10 is 8.
+
+       The MRTD check digit for 123AF is 8
+
+		*/
+      function check_digit(str) {
+				let weights = [7,3,1];
+        let sum = 0;
+
+        for (let i=0; i < str.length; i++) {
+          let c = str[i];
+          let ord = str.charCodeAt(i);
+          if (c == '<')
+            c = 0;
+          else if (ord >= 65 && ord <= 90)
+            c = ord - 55;
+          
+          sum += c * weights[i%3];
+        }
+
+        return sum % 10;
+      }
+
+    /* Get and mangle the input, build the output and check digits */
+      function TD1MRZ() {
+
+        // Fields
+        let	iss = document.getElementById('iss').value,
+          surname = document.getElementById('surname').value,
+          name = document.getElementById('name').value,
+          docno = document.getElementById('docno').value,
+          land = document.getElementById('land').value,
+          dob = document.getElementById('dob').value,
+          gender = document.getElementById('gender').value,
+          exp = document.getElementById('exp').value,
+          opt1 = document.getElementById('opt1').value;
+          opt2 = document.getElementById('opt2').value;
+
+					// Pad everything with < to make check digits and output correct
+          docno = docno.padEnd(9,'<');
+          opt1 = opt1.padEnd(14,'<');
+          opt2 = opt2.padEnd(10,'<');
+
+					// Build the check digits needed
+          let check1 = check_digit(docno);
+          let check2 = check_digit(dob);
+          let check3 = check_digit(exp);
+          let check4 = check_digit('' + docno + check1 + opt1 + '<' + dob + check2 + exp + check3 + opt2 );
+        
+        // Build line 1
+        let line1 = ('I<' + iss.padEnd(3,'<') + docno + check1 + opt1)
+          .replace("'", "")
+          .replace(' ', '<')
+          .replace(/[^A-Z0-9<]/, '<')
+          .substring(0,30)
+          .padEnd(30,'<');
+
+        // Build line 2
+        let line2 = (''+ dob + check2 + gender + exp + check3 + land.padEnd(3,'<') + opt2 + '<' + check4);
+
+        // Build line 3
+        surname = surname.replace(' ', '<');
+        name = name.replace(' ', '<');
+        let line3 = ('' + surname + '<<' + name)
+          .replace("'", "")
+          .replace(' ', '<')
+          .replace(/[^A-Z0-9<]/, '<')
+          .substring(0,30)
+          .padEnd(30,'<');
+
+        // Put result in the page
+        document.getElementById('mrz').value = '' + line1 +'\n' + line2 + '\n' + line3;
+      }
+      function makeid(length) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+          counter += 1;
+        }
+        return result;
+     }
+
+      function TD1RESET () {
+        document.getElementById('iss').value = '';
+        document.getElementById('docno').value = '';
+        document.getElementById('exp').value = '';
+        document.getElementById('opt1').value = '';
+        document.getElementById('opt2').value = '';
+        document.getElementById('land').value = '';
+        document.getElementById('surname').value = '';
+        document.getElementById('name').value = '';
+        document.getElementById('dob').value = '';
+        document.getElementById('gender').value = '';
+        document.getElementById('mrz1').value = '';
+        document.getElementById('mrz2').value = '';
+        document.getElementById('mrz3').value = '';
+      }
+      function TD1SAMPLE () {
+        document.getElementById('iss').value = 'UTO';
+        document.getElementById('docno').value = makeid(9);
+        document.getElementById('exp').value = '350101';
+        document.getElementById('opt1').value = makeid(14);
+        document.getElementById('opt2').value = makeid(10);
+        document.getElementById('land').value = 'UTO';
+        document.getElementById('surname').value = 'SMITH MUELLER';
+        document.getElementById('name').value = 'ANN CAROLINE';
+        document.getElementById('dob').value = '700101';
+        document.getElementById('gender').value = 'F';
+        document.getElementById('mrz1').value = '';
+        document.getElementById('mrz2').value = '';
+        document.getElementById('mrz3').value = '';
+      }
+</script>
+  </head>
+  <body>
+    <div id="descr">
+      <p>Last updated: 2025-01-04 by <a href="https://social.wildeboer.net/@jwildeboer">jwildeboer</a></p>
+      <h1>TD1 MRZ Generator ICAO9303 Part 5</h1>
+      <details>
+        <summary>TD1 Form Remarks (click to open)</summary>
+        <p>Form to generate the Machine Readable Zone for a TD1 travel document.</p>
+        <ul>
+          <li>Expects correctly transliterated names in uppercase.</li>
+          <li>Dates MUST be YYMMDD.</li>
+          <li>Gender can be M (Male),F (Female) or X (unspecified).</li>
+          <li>The Optional Data Element 1 can have a maximum of 14 characters.</li>
+          <li>The Optional Data Element 2 can have a maximum of 10 characters.</li>
+          <li>Input only uppercase letters, numbers, or <kbd>&lt;</kbd>.</li>
+        </ul>
+      </details>
+  </div>
+    <div id="form01">
+      <form class="mrzform" id="td1mrz" method="get" action="">
+        <fieldset id="issuer">
+					<legend>ISSUER&nbsp;DETAILS</legend>
+						<label for="iss">Issuer Org Code: <input id='iss' type='text' maxlength='3' pattern='[A-Z]{1,3}' placeholder='Ex: NLD, XOM, BRA' /></label>
+						<label for="docno">Document Number: <input id='docno' type='text' maxlength='9' pattern='[A-Z0-9<]{0,9}' placeholder='9 Characters Max' /></label>
+						<label for="exp">Expiration Date: <input id='exp' type='text' maxlength='6' pattern='[0-9]{6}' placeholder='YYMMDD' /></label>
+						<label for="opt1">Optional Data Element 1: <input id='opt1' type='text' maxlength='14' pattern='[A-Z0-9<]{0,14}' placeholder='14 Characters Max' /></label>
+						<label for="opt2">Optional Data Element 2: <input id='opt2' type='text' maxlength='10' pattern='[A-Z0-9<]{0,10}' placeholder='10 Characters Max' /></label>
+				</fieldset>
+				<fieldset id="holder">
+					<legend>HOLDER&nbsp;DETAILS</legend>
+					<label for="land">Nationality/Citizenship: <input id='land' type='text' maxlength='3' pattern='[A-Z]{3}' placeholder='Ex: NLD, XOM, BRA' /></label>
+					<label for="surname">Primary/Family Name: <input id='surname' type='text' pattern='[A-Z0-9 <]*' placeholder='Family Name(s)' /></label>
+					<label for="name">Secondary/Given Name: <input id='name' type='text' pattern='[A-Z0-9 <]*' placeholder='Given Name(s)' /></label>
+					<label for="dob">Date of Birth: <input id='dob' type='text' maxlength='6' pattern='[0-9]{6}' placeholder='YYMMDD' /></label>
+					<label for="gender">Gender: <input id='gender' type='text' maxlength='1' pattern='[MFX<]' placeholder='M, F or X' /></label>
+				</fieldset>
+				<div id="action">
+					<button type='button' onclick='TD1SAMPLE()'>SAMPLE DATA</button>
+					<button type='button' onclick='TD1RESET()'>RESET</button>
+					<button type='button' onclick='TD1MRZ()'>GENERATE MRZ</button>
+				</div>
+				<fieldset id="output">
+					<legend>OUTPUT</legend>
+						<label for="mrz">MRZ: <textarea id='mrz' rows='3' cols='30' onclick='this.select()' readonly></textarea></label>
+				</fieldset>
+			</form>
+		</div>
+  </body>
+</html>

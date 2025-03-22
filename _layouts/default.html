@@ -1,0 +1,33 @@
+---
+---
+{%- include base_path -%}
+{%- assign lang = page.lang | default: site.lang | default: "en" -%}
+<!doctype html>
+<html lang="{{ page.lang | default: site.lang | default: 'ru' }}">
+  <head>
+    {%- include head.html -%}
+    {%- include head/custom.html -%}
+
+  <meta http-equiv="Content-Language" content="{{site.active_lang}}">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  {% if site.default_lang %}<link rel="alternate" hreflang="{{site.default_lang}}" href="{{site.url}}{{page.url}}" />{% endif %}
+  {% for lang in site.languages %}{% if lang == site.default_lang %}{% continue %}{% endif %}
+  <link rel="alternate" hreflang="{{lang}}" href="{{site.url}}/{{lang}}{{page.url}}" />
+  {% endfor %}
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--{{- page.layout | default: layout.layout -}}{%- if page.classes or layout.classes -%}{{- page.classes | default: layout.classes | join: ' ' | prepend: ' ' -}}{%- endif -%}">
+    {%- include browser-upgrade.html -%}
+    {%- include masthead.html -%}
+    {{- content -}}
+    <div class="page__footer">
+      <footer>
+        {%- include footer/custom.html -%}
+        {%- include footer.html -%}
+      </footer>
+    </div>
+    {%- include scripts.html -%}
+  </body>
+</html>

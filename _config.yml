@@ -1,0 +1,238 @@
+#languages: ["ru", "en"]
+#default_lang: "ru"      
+
+#lang: ru-RU
+encoding: utf-8
+
+title: "UnixBSDShell"
+description: "A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others"
+email: datainchi@gmail.com
+
+author: "Iwan Setiawan"
+domain: penaadventure.com
+baseurl: ""
+#baseurl: "https://penaadventure.com"
+url: https://penaadventure.com
+github_username: unixwinbsd
+timezone: Europe/Moscow
+permalink: pretty
+#destination: ./_posts
+enforce_ssl: unixwinbsd.github.io
+
+author:
+  name             : "UnixBSDShell's Blog"
+  avatar           : "auth/JHW500.jpg"
+  avataralt        : "Me wearing a red fedora, with a smile."
+  bio              : "That Open Guy. Transnational citizen. Red Hat's EMEA Evangelist during the day, societal hacker in the dark. He/Him. Personal blog. Opinions expressed are my own, not Red Hat's."
+  location         : "Moscow, Russia"
+
+breadcrumbs            : true
+words_per_minute         : 150
+comments:
+  provider               : # false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "custom"
+  disqus:
+    shortname            : # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-
+  discourse:
+    server               : # https://meta.discourse.org/t/embedding-discourse-comments-via-javascript/31963 , e.g.: meta.discourse.org
+  facebook:
+    # https://developers.facebook.com/docs/plugins/comments
+    appid                :
+    num_posts            : # 5 (default)
+    colorscheme          : # "light" (default), "dark"
+staticman:
+  allowedFields          : ['name', 'email', 'url', 'message']
+ #branch                 : "master", "gh-pages"
+  commitMessage          : "New comment."
+  filename               : comment-{@timestamp}
+  format                 : "yml"
+  moderation             : true
+  path                   : "_data/comments/{options.slug}"
+  requiredFields         : ['name', 'email', 'message']
+  transforms:
+    email                : "md5"
+  generatedFields:
+    date:
+      type               : "date"
+      options:
+        format           : "iso8601"
+
+# SEO Related
+google_site_verification : googledc9be5e5382da4fd
+bing_site_verification   : BCDF1444D895EBA62C6422C90DF8EA1C
+alexa_site_verification  :
+yandex_site_verification : 69d778baa1dbd371
+
+# Social Sharing
+twitter:
+  username               : iwanset96143401
+facebook:
+  username               :
+  app_id                 :
+  publisher              :
+og_image                 : # 
+# For specifying social profiles
+# - https://developers.google.com/structured-data/customize/social-profiles
+social:
+  type                   : # 
+  name                   : # 
+  links: # 
+
+# Analytics
+analytics:
+  provider               : false
+  google:
+    tracking_id          :
+
+email: 
+  uri              :
+  bitbucket        :
+  codeberg         : 
+  codepen          :
+  dribbble         :
+  flickr           :
+  facebook         :
+  foursquare       :
+  github           : 
+  google_plus      : 
+  instagram        : 
+  keybase          : 
+  lastfm           :
+  linkedin         : 
+  mastodon         : 
+  pinterest        :
+  soundcloud       :
+  stackoverflow    : 
+  steemit          : 
+  steam            :
+  tumblr           :
+  twitter          : 
+  vine             :
+  weibo            :
+  xing             : 
+  youtube          : 
+
+# Reading Files
+include:
+  - .htaccess
+  - _pages
+exclude:
+#  - "*.sublime-project"
+#  - "*.sublime-workspace"
+#  - vendor
+  - .asset-cache
+  - .bundle
+  - .jekyll-assets-cache
+  - .sass-cache
+  - assets/js/plugins
+  - assets/js/_main.js
+  - assets/js/vendor
+  - Capfile
+  - CHANGELOG
+  - config
+  - Gemfile
+  - Gruntfile.js
+  - gulpfile.js
+  - LICENSE
+  - log
+  - node_modules
+  - package.json
+  - Rakefile
+  - README
+  - tmp
+  - CNAME
+keep_files:
+  - .git
+  - .gitignore
+  - README.md
+  - LICENSE
+  - robots.txt
+  - CNAME
+encoding: "utf-8"
+markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+exclude_from_localization: ['javascript', 'images', 'assets', 'css', "sitemap"]
+parallel_localization: false
+lang_from_path: true
+
+# Conversion
+markdown: kramdown
+highlighter: rouge
+lsi: false
+excerpt_separator: "\n\n"
+incremental: false
+
+# Markdown Processing
+kramdown:
+  input: GFM
+  hard_wrap: false
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  smart_quotes: lsquo,rsquo,ldquo,rdquo
+  enable_coderay: false
+
+# Sass/SCSS
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# Outputting
+#permalink: /:year/:month/:title/
+paginate: 10
+paginate_path: /page:num/
+
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - github-pages
+  - jekyll-compose
+  - jekyll-redirect-from
+  - jekyll-coffeescript
+  - jekyll-default-layout
+  - jekyll-gist 
+  - jekyll-github-metadata
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-titles-from-headings
+  - jekyll-relative-links
+  - jekyll-polyglot
+  - jemoji
+
+category_archive:
+  type: liquid
+  path: /categories/
+
+tag_archive:
+  type: liquid
+  path: /tags/
+
+compress_html:
+  clippings: all
+  ignore:
+    envs: development
+  
+#Posting defaults
+defaults:
+  # _posts
+  - scope:
+      path: /en/
+      type: posts
+    values:
+      category: "Blog"
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: false
+      share: true
+      related: true
+      permalink: en
+      destination: /_site/en/
+      lang: en
+
+atom_feed:
+  path                   : feed.xml
+feed:
+  excerpt_only           : true
+  
