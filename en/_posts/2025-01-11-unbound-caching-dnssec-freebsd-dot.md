@@ -1,7 +1,7 @@
 ---
 title: CONFIGURATION UNBOUND FOR CACHING DNSSEC AND DOT WITH FREEBSD
-date: "2025-01-18 14:11:10 +0300"
-id: build-instructions-obs-studio-freebsd
+date: "2025-01-11 11:16:10 +0400"
+id: unbound-caching-dnssec-freebsd-dot
 lang: en
 layout: single
 categories:
