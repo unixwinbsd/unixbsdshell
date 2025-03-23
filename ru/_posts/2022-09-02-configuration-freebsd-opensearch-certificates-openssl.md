@@ -4,10 +4,11 @@ date: "2022-09-02 09:00:00 +0300"
 id: configuration-freebsd-opensearch-certificates-openssl
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 excerpt: "Opensearch можно объединить с платформами доставки данных Beat (Filebeat, Winlogbeat и т. д.), благодаря чему пользователи OpenSearch могут выстроить полный цикл управления журналами в виде сбора, систематизации и поиска."
-tags: "freebsd, opensearch, app, configuration, openssl, certificate"
+tags: "WebServer"
 keywords: freebsd, opensearch, app, configuration, openssl, certificate
 ---
 

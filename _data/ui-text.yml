@@ -73,10 +73,10 @@ es: &DEFAULT_ES
   follow_label               : "Seguir:"
   feed_label                 : "Feed"
   powered_by                 : "Powered by"
-  website_label              : "Sitio web"
+  website_label              : "Website"
   email_label                : "Email"
-  recent_posts               : "Entradas recientes"
-  undefined_wpm              : "Parametro words_per_minute (Palabras por minuto) no definido en _config.yml"
+  recent_posts               : "Recent Posts"
+  undefined_wpm              : "Parameter words_per_minute (Words per minute) not defined in _config.yml"
   comment_form_info          :
   comment_form_comment_label :
   comment_form_md_info       :
@@ -97,12 +97,12 @@ es-CO:
 # -----------------
 fr: &DEFAULT_FR
   page                       : "Page"
-  pagination_previous        : "Précédent"
-  pagination_next            : "Suivant"
-  breadcrumb_home_label      : "Accueil"
+  pagination_previous        : "Previous"
+  pagination_next            : "Following"
+  breadcrumb_home_label      : "Welcome"
   breadcrumb_separator       : "/"
-  toc_label                  : "Sur cette page"
-  ext_link_label             : "Lien direct"
+  toc_label                  : "On this page"
+  ext_link_label             : "Direct links"
   less_than                  : "plus petit que"
   minute_read                : "minute de lecture"
   share_on_label             : "Partager sur"

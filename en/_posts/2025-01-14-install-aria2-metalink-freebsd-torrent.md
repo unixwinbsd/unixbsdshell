@@ -4,6 +4,7 @@ date: "2025-01-14 09:10:00 +0300"
 id: install-aria2-metalink-freebsd-torrent
 lang: en
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 tags: "Anonymous"

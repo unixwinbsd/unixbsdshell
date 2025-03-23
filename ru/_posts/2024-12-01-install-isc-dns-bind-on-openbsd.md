@@ -5,9 +5,10 @@ excerpt: "Принцип работы кэширующего DNS-сервера 
 id: install-isc-dns-bind-on-openbsd
 lang: ru
 layout: single
+author_profile: true
 categories:
   - OpenBSD
-tags: "openbsd, freebsd, lighttpd, dns, configuration, server, openssl, isc, https, ssl"
+tags: "DNSServer"
 keywords: isc, dns, bind, openbsd, configuration, server, openssl, http, https, ssl
 ---
 

@@ -5,11 +5,8 @@ excerpt: "Information about this blog | penaadventure.com"
 author_profile: true
 search: false
 permalink: /about/
-header:
-  image: mh/mh002.jpg
 ---
 
-## About
 
 >Education Blog of penaadventure.com.
 

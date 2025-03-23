@@ -4,10 +4,11 @@ date: "2024-02-15 19:00:00 +0300"
 id: freebsd-magento-adobe-commerce-php-apache
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 excerpt: "Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами."
-tags: "adobe, freebsd, magento, openbsd, configuration, setup, server, commerce, client"
+tags: "SysAdmin"
 keywords: adobe, freebsd, magento, openbsd, configuration, setup, server, commerce, client
 ---
 

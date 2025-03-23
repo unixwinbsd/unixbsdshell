@@ -5,9 +5,10 @@ excerpt: "Наличие ERP-систем не является ошибочны
 id: installation-apache-ofbiz-crm-erp-freebsd
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "apache, freebsd, ofbiz, openbsd, configuration, setup, openssl, http, https, ssl"
+tags: "WebServer"
 keywords: apache, freebsd, ofbiz, openbsd, configuration, setup, openssl, http, https, ssl
 ---
 

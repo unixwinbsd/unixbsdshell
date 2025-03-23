@@ -5,9 +5,10 @@ excerpt: "Преимущества Yii по сравнению с другими
 id: installing-yii-php-framework-on-freebsd
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "yii, freebsd, linux, openbsd, configuration, setup, php, framework"
+tags: "WebServer"
 keywords: yii, freebsd, linux, openbsd, configuration, setup, php, framework
 ---
 

@@ -5,9 +5,10 @@ excerpt: "В операционной системе FreeBS существует
 id: freebsd-inetd-daemon-conf-file
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "inetd, conf, freebsd, openbsd, command, shell"
+tags: "UnixShell"
 keywords: shell, freebsd, openbsd, inetd, conf, command, cmd
 ---
 

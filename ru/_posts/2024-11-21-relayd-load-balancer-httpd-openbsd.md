@@ -5,9 +5,10 @@ excerpt: "Relayd — это демон для динамической пере�
 id: relayd-load-balancer-httpd-openbsd
 lang: ru
 layout: single
+author_profile: true
 categories:
   - OpenBSD
-tags: "openbsd, freebsd, relayd, email, configuration, setup, openssl, http, https, ssl"
+tags: "WebServer"
 keywords: apache, freebsd, email, openbsd, configuration, relayd, openssl, http, https, ssl
 ---
 

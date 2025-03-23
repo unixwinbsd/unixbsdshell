@@ -5,9 +5,10 @@ excerpt: "Knot DNS Resolver включает в себя полное прило
 id: freebsd-knot-resover-dns-caching-resolver
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "dns, server, freebsd, openbsd"
+tags: "DNSServer"
 keywords: dns, knot, resolver, openbsd, configuration, httpd, openssl, http, https, isc
 ---
 

@@ -4,10 +4,11 @@ date: "2023-05-01 11:00:00 +0300"
 id: openbsd-redis.cached-db-install
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 excerpt: "Redis можно скомпилировать и использовать в операционных системах Linux, OSX, OpenBSD, NetBSD и FreeBSD."
-tags: "redis, freebsd, cache, openbsd, configuration, setup, server, database"
+tags: "DataBase"
 keywords: redis, freebsd, cache, openbsd, configuration, setup, server, database
 ---
 

@@ -3,11 +3,12 @@ title: Используйте цепочки прокси с Tor для анон
 date: "2022-11-01 17:00:00 +0300"
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 id: ghostbsd-proxychain-with-tor
 excerpt: "ProxyChains — это программа UNIX, которая объединяет сетевые функции libc в динамически связанную программу с помощью предварительно загруженной DLL и перенаправляет соединения через прокси-сервер SOCKS4a/5 или HTTP."
-tags: "ghostbsd, freebsd, proxy, proxychain, configuration, setup"
+tags: "Anonymous"
 keywords: ghostbsd, freebsd, proxy, proxychain, configuration, setup
 ---
 

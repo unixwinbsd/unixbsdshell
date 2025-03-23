@@ -5,9 +5,10 @@ excerpt: "Lighttpd очень надежен в высокопроизводит
 id: freebsd-lighttpd-mod-openssl
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "lighttpd, freebsd, httpd, openbsd, configuration, mod, openssl, http, https, ssl"
+tags: "WebServer"
 keywords: apache, freebsd, mod, openbsd, configuration, setup, openssl, http, https, ssl
 ---
 

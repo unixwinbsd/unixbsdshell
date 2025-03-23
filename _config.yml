@@ -1,33 +1,28 @@
-#languages: ["ru", "en"]
-#default_lang: "ru"      
-
-#lang: ru-RU
-encoding: utf-8
-
-title: "UnixBSDShell"
-description: "A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others"
+title: UnixBSDShell
 email: datainchi@gmail.com
-
-author: "Iwan Setiawan"
+description: A Blog That Focuses On UNIX Systems, Such As FreeBSD OpenBSD NetBSD and Others
+author: Iwan Setiawan
 domain: penaadventure.com
 baseurl: ""
-#baseurl: "https://penaadventure.com"
-url: https://penaadventure.com
-github_username: unixwinbsd
+url: "https://penaadventure.com"
+repository  : "unixwinbsd/unixbsdshell.github.io"
+#twitter_username: jekyllrb
+github_username:  unixwinbsd
+github: [metadata]
 timezone: Europe/Moscow
 permalink: pretty
 #destination: ./_posts
-enforce_ssl: unixwinbsd.github.io
+enforce_ssl: "unixwinbsd.github.io"
 
 author:
-  name             : "UnixBSDShell's Blog"
-  avatar           : "auth/JHW500.jpg"
-  avataralt        : "Me wearing a red fedora, with a smile."
-  bio              : "That Open Guy. Transnational citizen. Red Hat's EMEA Evangelist during the day, societal hacker in the dark. He/Him. Personal blog. Opinions expressed are my own, not Red Hat's."
-  location         : "Moscow, Russia"
+  name             : UnixBSDShell's Blog
+  avatar           : auth/JHW500.jpg
+  avataralt        : Thank you for visiting our site. Have a nice day!.
+  bio              : penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.
+  location         : Moscow, Russia
 
 breadcrumbs            : true
-words_per_minute         : 150
+words_per_minute       : 150
 comments:
   provider               : # false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "custom"
   disqus:
@@ -49,12 +44,12 @@ staticman:
   path                   : "_data/comments/{options.slug}"
   requiredFields         : ['name', 'email', 'message']
   transforms:
-    email                : "md5"
+    email                : md5
   generatedFields:
     date:
-      type               : "date"
+      type               : date
       options:
-        format           : "iso8601"
+        format           : iso8601
 
 # SEO Related
 google_site_verification : googledc9be5e5382da4fd
@@ -92,24 +87,24 @@ email:
   flickr           :
   facebook         :
   foursquare       :
-  github           : 
+  github           : datainchi@gmail.com
   google_plus      : 
   instagram        : 
   keybase          : 
   lastfm           :
-  linkedin         : 
+  linkedin         : datainchi@gmail.com
   mastodon         : 
   pinterest        :
   soundcloud       :
   stackoverflow    : 
   steemit          : 
   steam            :
-  tumblr           :
+  tumblr           : datainchi@gmail.com
   twitter          : 
   vine             :
   weibo            :
   xing             : 
-  youtube          : 
+  youtube          : datainchi@gmail.com
 
 # Reading Files
 include:
@@ -181,6 +176,9 @@ sass:
 paginate: 10
 paginate_path: /page:num/
 
+
+# Build settings
+theme: minima
 plugins:
   - jekyll-feed
   - jekyll-paginate
@@ -235,4 +233,4 @@ atom_feed:
   path                   : feed.xml
 feed:
   excerpt_only           : true
-  
+

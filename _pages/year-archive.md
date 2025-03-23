@@ -3,6 +3,4 @@ title: "Posts by Year"
 permalink: /year-archive/
 layout: posts
 author_profile: true
-header:
-  image: mh/mh002.jpg
 ---

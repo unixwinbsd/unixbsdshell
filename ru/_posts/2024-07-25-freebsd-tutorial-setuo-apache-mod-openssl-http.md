@@ -6,9 +6,10 @@ excerpt: "Веб-сервер Apache существует уже много ле
 mathjax: true
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "apache, freebsd, mod, openbsd, configuration, setup, openssl, http, https, ssl"
+tags: "WebServer"
 keywords: apache, freebsd, mod, openbsd, configuration, setup, openssl, http, https, ssl
 ---
 

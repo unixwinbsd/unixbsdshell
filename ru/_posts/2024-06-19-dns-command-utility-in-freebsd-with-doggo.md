@@ -5,9 +5,10 @@ excerpt: "Doggo — современный DNS-клиент командной �
 id: dns-command-utility-in-freebsd-with-doggo
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "doggo, freebsd, dig, openbsd, configuration, setup, nslookup, command"
+tags: "DNSServer"
 keywords: doggo, freebsd, dig, openbsd, configuration, setup, nslookup, command
 ---
 

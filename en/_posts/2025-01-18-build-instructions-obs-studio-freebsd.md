@@ -4,6 +4,7 @@ date: "2025-01-18 14:11:10 +0300"
 id: build-instructions-obs-studio-freebsd
 lang: en
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 tags: "SysAdmin"

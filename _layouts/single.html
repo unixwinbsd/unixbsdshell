@@ -11,6 +11,24 @@ layout: default
     {%- include breadcrumbs.html -%}
   {%- endunless -%}
 {%- endif -%}
+
+    {%- include jsonld_blogposting.html -%}
+    {% include google-analytics.html %}
+    {% include yandex-metrika.html %} 
+    {% include clarifymicrosoft.html %}
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
 <div id="main" role="main">
   {%- include sidebar.html -%}
   <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
@@ -36,7 +54,21 @@ layout: default
         {%- if site.data.ui-text[site.locale].meta_label -%}
           <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
         {%- endif -%}
-        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell' Blog</p>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p>
         {%- if page.modified -%}
           <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_mod_label | default: "Updated:" }}</strong> <time datetime="{{ page.modified | date: "%Y-%m-%d" }}">{{ page.modified | date: "%Y-%m-%d" }}</time></p>
         {%- elsif page.date -%}

@@ -5,9 +5,10 @@ excerpt: "Надежность и гибкость Drupal помогут вам 
 id: freebsd-guide-creating-custom-drupal-theme
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "drupal, freebsd, theme, openbsd, configuration, setup, template, framework"
+tags: "WebServer"
 keywords: doggo, freebsd, dig, openbsd, configuration, setup, nslookup, command
 ---
 

@@ -4,6 +4,7 @@ date: "2025-01-17 12:10:00 +0300"
 id: building-freebsd-private-cloud-server-seafile-seahub
 lang: en
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 tags: "SysAdmin"

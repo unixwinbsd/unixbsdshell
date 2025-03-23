@@ -5,9 +5,10 @@ excerpt: "Первые программы CGI были написаны на я�
 id: setup-freebsd-lighttpd-cgi-bin-perl
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
-tags: "openbsd, freebsd, lighttpd, cgi, configuration, setup, openssl, bin, https, ssl"
+tags: "WebServer"
 keywords: cgi, freebsd, bin, openbsd, configuration, httpd, openssl, http, https, ssl
 ---
 

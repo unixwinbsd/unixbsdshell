@@ -4,6 +4,7 @@ date: "2025-01-16 11:10:00 +0300"
 id: install-phpmyadmin-on-freebsd-apache
 lang: en
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 tags: "WebServer"

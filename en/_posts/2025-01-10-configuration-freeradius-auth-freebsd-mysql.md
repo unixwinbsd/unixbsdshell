@@ -4,9 +4,10 @@ date: "2025-01-10 13:11:10 +0100"
 id: configuration-freeradius-auth-freebsd-mysql
 lang: en
 layout: single
+author_profile: true
 categories:
   - OpenBSD
-tags: "openbsd, freebsd, mysql server, freeradius"
+tags: "DataBase"
 excerpt: FreeRADIUS is an excellent free server and provides centralized authentication and authorization services for devices including switches, routers, VPN gateways, and Wi-Fi access points
 keywords: freebsd, openbsd, freeradius, auth, mysql server, mysql, database, radius
 ---

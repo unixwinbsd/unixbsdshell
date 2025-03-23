@@ -4,10 +4,11 @@ date: "2023-03-01 09:30:00 +0300"
 id: running-postgresql-database-on-openbsd
 lang: ru
 layout: single
+author_profile: true
 categories:
   - OpenBSD
 excerpt: "OpenBSD имеет систему пакетов, которая несколько отличается от многих других операционных систем; в частности, пакеты тщательно проверяются перед установкой."
-tags: "postgresql, freebsd, client, openbsd, configuration, setup, server, database"
+tags: "DataBase"
 keywords: postgresql, freebsd, client, openbsd, configuration, setup, server, database
 ---
 

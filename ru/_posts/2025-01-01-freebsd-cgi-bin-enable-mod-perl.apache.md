@@ -4,6 +4,7 @@ date: "2025-01-01 09:01:00 +0300"
 id: freebsd-cgi-bin-enable-mod-perl.apache
 lang: ru
 layout: single
+author_profile: true
 categories:
   - FreeBSD
 tags: "WebServer"
