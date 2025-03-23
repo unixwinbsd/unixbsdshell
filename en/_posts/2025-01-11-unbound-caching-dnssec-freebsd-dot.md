@@ -20,7 +20,7 @@ This article explains how to configure and use the Unbound DNS server, both as c
 Unbound is a highly secure validating, recursive, and caching DNS server developed by NLnet Labs, VeriSign Inc, Nominet, and Kirei. This software is distributed free of charge under the BSD license. Binaries are written with a high security focus and very strict C code.  
 
 To help improve online privacy, Unbound supports DNS-over-TLS and DNS-over-HTTPS allowing clients to encrypt their communications. In addition, it supports various modern standards that limit the amount of data exchanged with official servers. This standard not only improves privacy but also helps make DNS more robust. The most important are Query Name Minimisation, Aggressive Use of DNSSEC-Validated Cache and support for authority zones, which can be used to load a copy of the root zone.
-<br><br/>   
+<br><br/>
 
 ## 1. System Specifications
 - OS: FreeBSD 13
@@ -29,55 +29,50 @@ To help improve online privacy, Unbound supports DNS-over-TLS and DNS-over-HTTPS
 - IP LAN Private: 192.168.9.3/24
 - Unbound Caching DNS Server: 192.168.9.3@53
 - Unbound Caching DNS over TLS: 192.168.9.3@853
+<br><br/>
+## 2. Instalasi Unbound
+Generally, to install Unbound on a FreeBSD server, you can do two things, namely ports and pkg. In this article, we will discuss installation with pkg.  
 
-## 2\. Instalasi Unbound
-Generally, to install Unbound on a FreeBSD server, you can do two things, namely ports and pkg. In this article, we will discuss installation with pkg.
+The first step, please log in to your FreeBSD server via the FreeBSD console or remote SSH with PuTTy, then run the following command lines:  
 
-  
+```
+root@miner4:~ # pkg update
+root@miner4:~ # pkg upgrade
+```
 
-The first step, please log in to your FreeBSD server via the FreeBSD console or remote SSH with PuTTy, then run the following command lines:
+After finishing updating the pkg package, we continue with installing unbound, type the following command to install unbound.  
 
-  
+```
+root@miner4:~ #  pkg install unbound bind-tools ca_root_nss
+```
 
-root@miner4:~ # pkg update root@miner4:~ # pkg upgrade
+So that the unbound server can run automatically every time the FreeBSD server is turned off or restarted, you must first add the following command to rc.conf, by typing the script below in the /etc/rc.conf file.  
 
-After finishing updating the pkg package, we continue with installing unbound, type the following command to install unbound.
-
-  
-
-root@miner4:~ # pkg install unbound bind-tools ca\_root\_nss
-
-So that the unbound server can run automatically every time the FreeBSD server is turned off or restarted, you must first add the following command to rc.conf, by typing the script below in the /etc/rc.conf file.
-
-  
-
-root@miner4:~ # ee /etc/rc.conf  unbound_enable="YES"
+```
+root@miner4:~ # ee /etc/rc.conf
+unbound_enable="YES"
 unbound_config="/usr/local/etc/unbound/unbound.conf"
 unbound_pidfile="/usr/local/etc/unbound/unbound.pid"
 unbound_anchorflags=""
+```
 
 After that, in the "resolv.conf" file, enter the script below. Use the default FreeBSD application, namely "ee" to add the script.
 
-  
-
-root@miner4:~ # ee /etc/resolv.conf  domain miner4pool.org
+```
+root@miner4:~ # ee /etc/resolv.conf
+domain miner4pool.org
 nameserver 192.168.9.3
-
-  
+```  
 
 Edit the hosts file, use the command ee /etc/hosts, then enter the following syntax.
-
   
-
-root@miner4:~ # ee /etc/hosts   127.0.0.1      localhost localhost.miner4pool.org
+```
+root@miner4:~ # ee /etc/hosts
+127.0.0.1      localhost localhost.miner4pool.org
 192.168.9.3    miner4 miner4.miner4pool.org
-
-  
-
-**3. ****Unbound Configuration**
-
-  
-
+```
+ <br><br/>
+## 3. Unbound Configuration
 Before we start configuring unbound.conf, the unbound application requires a "root.hints" file that lists the primary DNS Server. The Unbound DNS Server application comes with a list of root DNS Servers in its code, but it ensures an up-to-date copy on each server. A good practice is to update this file every six months.
 
   
