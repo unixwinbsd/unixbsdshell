@@ -110,7 +110,7 @@ Before we edit the unbound.conf file, in this section we will divide it into 3 s
 
 This was deliberately created to make it easier for readers to understand and study the Unbound server.
 
-## a. Unbound Server as DNS Caching
+### a. Unbound Server as DNS Caching
 So that unbound can function as DNS caching, we have to edit the unbound.conf file. Type the following command in the putty console.
 
 ```
@@ -1481,7 +1481,7 @@ Name:	yahoo.com
 Address: 2001:4998:24:120d::1:1
 ```
 
-## b. Unbound Server as DNS Caching & DNS Over TLS
+### b. Unbound Server as DNS Caching & DNS Over TLS
 Another more modern way to protect DNS traffic is the DNS-over-TLS protocol described in the RFC7858 standard, which is data encapsulation in standard TLS. We recommend using port 853 for access. Just like DNSCrypt, it is assumed that the DNS client, which is usually the same local caching DNS, accesses a remote server that supports DNS-over-TLS.
 
 The aforementioned Unbound has built-in support for this protocol, so no additional software layer is required to use, as is the case with DNSCrypt.
