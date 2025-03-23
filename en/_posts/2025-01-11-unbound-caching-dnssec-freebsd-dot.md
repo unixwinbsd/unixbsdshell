@@ -12,7 +12,7 @@ keywords: freebsd, unbound, dns, server, security, caching, dot, doh, dnssec, co
 ---
   
 The DNS service or Domain Name System is a basic service of the Internet, as well as other networks that operate based on the TCP/IP protocol family, and is used to obtain matching host names on the network with corresponding digital addresses. Despite such a simple description, DNS is perhaps the most complex network service in terms of its structure and set of interactions, and its reliable operation depends on the reliable operation of everyone and everything.
-<br/>  
+<br><br/>  
 
 DNSSEC provides authentication of DNS records using digital signatures, which protects them from possible replacement. However, at the same time, all data is always transmitted in clear form and is not protected from view during transit in any way. In the absence of a digital signature, if desired, it can be easily modified for various purposes - from criminal to censorship.
 
