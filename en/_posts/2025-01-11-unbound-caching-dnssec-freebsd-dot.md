@@ -26,7 +26,7 @@ To help improve online privacy, Unbound supports DNS-over-TLS and DNS-over-HTTPS
 
   
 
-**1.** **System Specifications**
+**1. ****System Specifications**
 
   
 
@@ -58,33 +58,28 @@ The first step, please log in to your FreeBSD server via the FreeBSD console or 
 
   
 
-root@miner4:~ #  pkg update
-root@miner4:~ #  pkg upgrade
+root@miner4:~ # pkg update root@miner4:~ # pkg upgrade
 
 After finishing updating the pkg package, we continue with installing unbound, type the following command to install unbound.
 
   
 
-root@miner4:~ #  pkg install unbound bind-tools ca\_root\_nss
+root@miner4:~ # pkg install unbound bind-tools ca\_root\_nss
 
 So that the unbound server can run automatically every time the FreeBSD server is turned off or restarted, you must first add the following command to rc.conf, by typing the script below in the /etc/rc.conf file.
 
   
 
-root@miner4:~ # ee /etc/rc.conf
-
-unbound\_enable="YES"
-unbound\_config="/usr/local/etc/unbound/unbound.conf"
-unbound\_pidfile="/usr/local/etc/unbound/unbound.pid"
-unbound\_anchorflags=""
+root@miner4:~ # ee /etc/rc.conf  unbound_enable="YES"
+unbound_config="/usr/local/etc/unbound/unbound.conf"
+unbound_pidfile="/usr/local/etc/unbound/unbound.pid"
+unbound_anchorflags=""
 
 After that, in the "resolv.conf" file, enter the script below. Use the default FreeBSD application, namely "ee" to add the script.
 
   
 
-root@miner4:~ # ee /etc/resolv.conf
-
-domain miner4pool.org
+root@miner4:~ # ee /etc/resolv.conf  domain miner4pool.org
 nameserver 192.168.9.3
 
   
@@ -93,13 +88,12 @@ Edit the hosts file, use the command ee /etc/hosts, then enter the following syn
 
   
 
-root@miner4:~ # ee /etc/hosts
-127.0.0.1      localhost localhost.miner4pool.org
+root@miner4:~ # ee /etc/hosts   127.0.0.1      localhost localhost.miner4pool.org
 192.168.9.3    miner4 miner4.miner4pool.org
 
   
 
-**3.** **Unbound Configuration**
+**3. ****Unbound Configuration**
 
   
 
@@ -117,23 +111,19 @@ Additionally, Unbound requires an auto-trust-anchor file. This file contains the
 
   
 
-root@miner4:~ # cd /usr/local/etc/unbound
-root@miner4:~ # unbound-anchor -a "/usr/local/etc/unbound/root.key"
+root@miner4:~ # cd /usr/local/etc/unbound root@miner4:~ # unbound-anchor -a "/usr/local/etc/unbound/root.key"
 
 The next step is to create the necessary keys for Unbound to be controlled by unbound-control, type the command below to run unbound control setup.
 
   
 
-root@miner4:~ # cd /usr/local/etc/unbound
-root@miner4:~ # unbound-control-setup  
+root@miner4:~ # cd /usr/local/etc/unbound root@miner4:~ # unbound-control-setup  
 
 After that create an Unbound log file.
 
   
 
-root@miner4:~ # cd /usr/local/etc/unbound
-root@miner4:~ # mkdir log && touch /usr/local/etc/unbound/log/unbound.log
-root@miner4:~ # chown unbound log
+root@miner4:~ # cd /usr/local/etc/unbound root@miner4:~ # mkdir log && touch /usr/local/etc/unbound/log/unbound.log root@miner4:~ # chown unbound log
 
 The next step is to edit the unbound.conf file, which is located at /usr/local/etc/unbound/unbound.conf
 
@@ -149,14 +139,13 @@ This was deliberately created to make it easier for readers to understand and st
 
   
 
-**a.** **Unbound Server as DNS Caching**
+**a. ****Unbound Server as DNS Caching**
 
 So that unbound can function as DNS caching, we have to edit the unbound.conf file. Type the following command in the putty console.
 
   
 
-root@miner4:~ # cd /usr/local/etc/unbound
-root@miner4:~ # ee unbound.conf
+root@miner4:~ # cd /usr/local/etc/unbound root@miner4:~ # ee unbound.conf
 
   
 
@@ -167,20 +156,20 @@ Below is a complete example script from the "unbound.conf" file
   
 
 #
-# Example configuration file.
+\# Example configuration file.
 #
-# See unbound.conf(5) man page, version 1.17.1.
+\# See unbound.conf(5) man page, version 1.17.1.
 #
-# this is a comment.
+\# this is a comment.
 
-# Use this anywhere in the file to include other text into this file.
+\# Use this anywhere in the file to include other text into this file.
 #include: "otherfile.conf"
 
-# Use this anywhere in the file to include other text, that explicitly starts a
-# clause, into this file. Text after this directive needs to start a clause.
+\# Use this anywhere in the file to include other text, that explicitly starts a
+\# clause, into this file. Text after this directive needs to start a clause.
 #include-toplevel: "otherfile.conf"
 
-# The server clause sets the main parameters.
+\# The server clause sets the main parameters.
 server:
 	# whitespace is not necessary, but looks cleaner.
 
@@ -279,24 +268,24 @@ server:
 	# number of incoming simultaneous tcp buffers to hold per thread.
 	# incoming-num-tcp: 10
 
-	# buffer size for UDP port 53 incoming (SO\_RCVBUF socket option).
+	# buffer size for UDP port 53 incoming (SO_RCVBUF socket option).
 	# 0 is system default.  Use 4m to catch query spikes for busy servers.
 	so-rcvbuf: 1m
 
-	# buffer size for UDP port 53 outgoing (SO\_SNDBUF socket option).
+	# buffer size for UDP port 53 outgoing (SO_SNDBUF socket option).
 	# 0 is system default.  Use 4m to handle spikes on very busy servers.
 	so-sndbuf: 1m
 
-	# use SO\_REUSEPORT to distribute queries over threads.
+	# use SO_REUSEPORT to distribute queries over threads.
 	# at extreme load it could be better to turn it off to distribute even.
 	# so-reuseport: yes
 
-	# use IP\_TRANSPARENT so the interface: addresses can be non-local
+	# use IP_TRANSPARENT so the interface: addresses can be non-local
 	# and you can config non-existing IPs that are going to work later on
-	# (uses IP\_BINDANY on FreeBSD).
+	# (uses IP_BINDANY on FreeBSD).
 	# ip-transparent: no
 
-	# use IP\_FREEBIND so the interface: addresses can be non-local
+	# use IP_FREEBIND so the interface: addresses can be non-local
 	# and you can bind to nonexisting IPs and interfaces that are down.
 	# Linux only.  On Linux you also have ip-transparent that is similar.
 	# ip-freebind: no
@@ -401,7 +390,7 @@ server:
 	# infra-cache-numhosts: 10000
 
 	# define a number of tags here, use with local-zone, access-control,
-	# interface-\*.
+	# interface-*.
 	# repeat the define-tag statement to add additional tags.
 	# define-tag: "tag1 tag2 tag3"
 
@@ -453,8 +442,8 @@ server:
 	# to this server. Specify classless netblocks with /size and action.
 	# By default everything is refused, except for localhost.
 	# Choose deny (drop message), refuse (polite error reply),
-	# allow (recursive ok), allow\_setrd (recursive ok, rd bit is forced on),
-	# allow\_snoop (recursive and nonrecursive ok)
+	# allow (recursive ok), allow_setrd (recursive ok, rd bit is forced on),
+	# allow_snoop (recursive and nonrecursive ok)
 	# deny\_non\_local (drop queries unless can be answered from local-data)
 	# refuse\_non\_local (like deny\_non\_local but polite error reply).
 	access-control: 192.168.9.0/24 allow
@@ -485,7 +474,7 @@ server:
 	# 'interface:' followed by the action.
 	# The actions are the same as 'access-control:' above.
 	# By default all the interfaces configured are refused.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-action: 192.0.2.153 allow
 	# interface-action: 192.0.2.154 allow
@@ -499,7 +488,7 @@ server:
 	# of these tags.
 	# The specified interfaces should be the same as the ones specified in
 	# 'interface:' followed by the list of tags.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-tag: eth0@5003 "tag2 tag3"
 
@@ -510,7 +499,7 @@ server:
 	# where "first" comes from the order of the define-tag values.
 	# The specified interfaces should be the same as the ones specified in
 	# 'interface:' followed by the tag and action.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-tag-action: eth0@5003 tag3 refuse
 
@@ -518,7 +507,7 @@ server:
 	# Set redirect data for a particular tag for an interface element.
 	# The specified interfaces should be the same as the ones specified in
 	# 'interface:' followed by the tag and the redirect data.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-tag-data: eth0@5003 tag2 "A 127.0.0.1"
 
@@ -526,7 +515,7 @@ server:
 	# Set view for an interface element.
 	# The specified interfaces should be the same as the ones specified in
 	# 'interface:' followed by the view name.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-view: eth0@5003 viewname
 
@@ -571,7 +560,7 @@ server:
 	# Use of this option sets use-syslog to "no".
 	logfile: "/usr/local/etc/unbound/log/unbound.log"
 
-	# Log to syslog(3) if yes. The log facility LOG\_DAEMON is used to
+	# Log to syslog(3) if yes. The log facility LOG_DAEMON is used to
 	# log to. If yes, it overrides the logfile.
 	# use-syslog: yes
 
@@ -625,7 +614,7 @@ server:
 	# the version to report. Leave "" or default to return package version.
 	# version: ""
 
-	# NSID identity (hex string, or "ascii\_somestring"). default disabled.
+	# NSID identity (hex string, or "ascii_somestring"). default disabled.
 	# nsid: "aabbccdd"
 
 	# User-Agent HTTP header to use. Leave "" or default to use package name
@@ -964,8 +953,8 @@ server:
 	# insecure-lan-zones: no
 
 	# a number of locally served zones can be configured.
-	# 	local-zone: <zone> <type>
-	# 	local-data: "<resource record string>"
+	# 	local-zone: &lt;zone&gt; &lt;type&gt;
+	# 	local-data: "&lt;resource record string&gt;"
 	# o deny serves local data (if any), else, drops queries.
 	# o refuse serves local data (if any), else, replies with error.
 	# o static serves local data, else, nxdomain or nodata answer.
@@ -974,12 +963,12 @@ server:
 	# o nodefault can be used to normally resolve AS112 zones.
 	# o typetransparent resolves normally for other types and other names
 	# o inform acts like transparent, but logs client IP address
-	# o inform\_deny drops queries and logs client IP address
-	# o inform\_redirect redirects queries and logs client IP address
+	# o inform_deny drops queries and logs client IP address
+	# o inform_redirect redirects queries and logs client IP address
 	# o always\_transparent, always\_refuse, always\_nxdomain, always\_nodata,
-	#   always\_deny resolve in that way but ignore local data for
+	#   always_deny resolve in that way but ignore local data for
 	#   that name
-	# o always\_null returns 0.0.0.0 or ::0 for any name in the zone.
+	# o always_null returns 0.0.0.0 or ::0 for any name in the zone.
 	# o noview breaks out of that view towards global local-zones.
 	#
 	# defaults are localhost address, reverse for 127.0.0.1 and ::1
@@ -1042,8 +1031,8 @@ server:
 	# First key use to encrypt and decrypt TLS session tickets.
 	# Other keys use to decrypt only.
 	# requires restart to take effect.
-	# tls-session-ticket-keys: "path/to/secret\_file1"
-	# tls-session-ticket-keys: "path/to/secret\_file2"
+	# tls-session-ticket-keys: "path/to/secret_file1"
+	# tls-session-ticket-keys: "path/to/secret_file2"
 
 	# request upstream over TLS (with plain DNS inside the TLS stream).
 	# Default is no.  Can be turned on and off with unbound-control.
@@ -1069,7 +1058,7 @@ server:
 	# HTTP endpoint to provide DNS-over-HTTPS service on.
 	# http-endpoint: "/dns-query"
 
-	# HTTP/2 SETTINGS\_MAX\_CONCURRENT\_STREAMS value to use.
+	# HTTP/2 SETTINGS\_MAX\_CONCURRENT_STREAMS value to use.
 	# http-max-streams: 100
 
 	# Maximum number of bytes used for all HTTP/2 query buffers.
@@ -1078,7 +1067,7 @@ server:
 	# Maximum number of bytes used for all HTTP/2 response buffers.
 	# http-response-buffer-size: 4m
 
-	# Set TCP\_NODELAY socket option on sockets used for DNS-over-HTTPS
+	# Set TCP_NODELAY socket option on sockets used for DNS-over-HTTPS
 	# service.
 	# http-nodelay: yes
 
@@ -1164,7 +1153,7 @@ server:
 	#
 	# Path to executable external hook. It must be defined when ipsecmod is
 	# listed in module-config (above).
-	# ipsecmod-hook: "./my\_executable"
+	# ipsecmod-hook: "./my_executable"
 	#
 	# When enabled Unbound will reply with SERVFAIL if the return value of
 	# the ipsecmod-hook is not 0.
@@ -1190,28 +1179,28 @@ server:
 	# tcp-auth-query-timeout: 3000
 
 
-# Python config section. To enable:
-# o use --with-pythonmodule to configure before compiling.
-# o list python in the module-config string (above) to enable.
-#   It can be at the start, it gets validated results, or just before
-#   the iterator and process before DNSSEC validation.
-# o and give a python-script to run.
+\# Python config section. To enable:
+\# o use --with-pythonmodule to configure before compiling.
+\# o list python in the module-config string (above) to enable.
+\#   It can be at the start, it gets validated results, or just before
+\#   the iterator and process before DNSSEC validation.
+\# o and give a python-script to run.
 python:
 	# Script file to load
 	# python-script: "/usr/local/etc/unbound/ubmodule-tst.py"
 
-# Dynamic library config section. To enable:
-# o use --with-dynlibmodule to configure before compiling.
-# o list dynlib in the module-config string (above) to enable.
-#   It can be placed anywhere, the dynlib module is only a very thin wrapper
-#   to load modules dynamically.
-# o and give a dynlib-file to run. If more than one dynlib entry is listed in
-#   the module-config then you need one dynlib-file per instance.
+\# Dynamic library config section. To enable:
+\# o use --with-dynlibmodule to configure before compiling.
+\# o list dynlib in the module-config string (above) to enable.
+\#   It can be placed anywhere, the dynlib module is only a very thin wrapper
+\#   to load modules dynamically.
+\# o and give a dynlib-file to run. If more than one dynlib entry is listed in
+\#   the module-config then you need one dynlib-file per instance.
 dynlib:
 	# Script file to load
 	# dynlib-file: "/usr/local/etc/unbound/dynlib.so"
 
-# Remote control config section.
+\# Remote control config section.
 remote-control:
 	# Enable remote control with unbound-control(8) here.
 	# set up the keys and certificates with unbound-control-setup.
@@ -1232,26 +1221,26 @@ remote-control:
 	# control-use-cert: "yes"
 
 	# Unbound server key file.
-	server-key-file: "/usr/local/etc/unbound/unbound\_server.key"
+	server-key-file: "/usr/local/etc/unbound/unbound_server.key"
 
 	# Unbound server certificate file.
-	server-cert-file: "/usr/local/etc/unbound/unbound\_server.pem"
+	server-cert-file: "/usr/local/etc/unbound/unbound_server.pem"
 
 	# unbound-control key file.
-	control-key-file: "/usr/local/etc/unbound/unbound\_control.key"
+	control-key-file: "/usr/local/etc/unbound/unbound_control.key"
 
 	# unbound-control certificate file.
-	control-cert-file: "/usr/local/etc/unbound/unbound\_control.pem"
+	control-cert-file: "/usr/local/etc/unbound/unbound_control.pem"
 
-# Stub zones.
-# Create entries like below, to make all queries for 'example.com' and
-# 'example.org' go to the given list of nameservers. list zero or more
-# nameservers by hostname or by ipaddress. If you set stub-prime to yes,
-# the list is treated as priming hints (default is no).
-# With stub-first yes, it attempts without the stub if it fails.
-# Consider adding domain-insecure: name and local-zone: name nodefault
-# to the server: section if the stub is a locally served zone.
-# stub-zone:
+\# Stub zones.
+\# Create entries like below, to make all queries for 'example.com' and
+\# 'example.org' go to the given list of nameservers. list zero or more
+\# nameservers by hostname or by ipaddress. If you set stub-prime to yes,
+\# the list is treated as priming hints (default is no).
+\# With stub-first yes, it attempts without the stub if it fails.
+\# Consider adding domain-insecure: name and local-zone: name nodefault
+\# to the server: section if the stub is a locally served zone.
+\# stub-zone:
 #	name: "example.com"
 #	stub-addr: 192.0.2.68
 #	stub-prime: no
@@ -1259,27 +1248,27 @@ remote-control:
 #	stub-tcp-upstream: no
 #	stub-tls-upstream: no
 #	stub-no-cache: no
-# stub-zone:
+\# stub-zone:
 #	name: "example.org"
 #	stub-host: ns.example.com.
 
-# Forward zones
-# Create entries like below, to make all queries for 'example.com' and
-# 'example.org' go to the given list of servers. These servers have to handle
-# recursion to other nameservers. List zero or more nameservers by hostname
-# or by ipaddress. Use an entry with name "." to forward all queries.
-# If you enable forward-first, it attempts without the forward if it fails.
-# forward-zone:
-# 	name: "example.com"
-# 	forward-addr: 192.0.2.68
-# 	forward-addr: 192.0.2.73@5355  # forward to port 5355.
-# 	forward-first: no
-# 	forward-tcp-upstream: no
-# 	forward-tls-upstream: no
+\# Forward zones
+\# Create entries like below, to make all queries for 'example.com' and
+\# 'example.org' go to the given list of servers. These servers have to handle
+\# recursion to other nameservers. List zero or more nameservers by hostname
+\# or by ipaddress. Use an entry with name "." to forward all queries.
+\# If you enable forward-first, it attempts without the forward if it fails.
+\# forward-zone:
+\# 	name: "example.com"
+\# 	forward-addr: 192.0.2.68
+\# 	forward-addr: 192.0.2.73@5355  # forward to port 5355.
+\# 	forward-first: no
+\# 	forward-tcp-upstream: no
+\# 	forward-tls-upstream: no
 #	forward-no-cache: no
-# forward-zone:
-# 	name: "example.org"
-# 	forward-host: fwd.example.com
+\# forward-zone:
+\# 	name: "example.org"
+\# 	forward-host: fwd.example.com
 forward-zone:
   name: "."
   forward-addr: 1.1.1.1
@@ -1288,16 +1277,16 @@ forward-zone:
   forward-addr: 68.105.29.11
   forward-addr: 8.8.8.8
 
-# Authority zones
-# The data for these zones is kept locally, from a file or downloaded.
-# The data can be served to downstream clients, or used instead of the
-# upstream (which saves a lookup to the upstream).  The first example
-# has a copy of the root for local usage.  The second serves example.org
-# authoritatively.  zonefile: reads from file (and writes to it if you also
-# download it), primary: fetches with AXFR and IXFR, or url to zonefile.
-# With allow-notify: you can give additional (apart from primaries and urls)
-# sources of notifies.
-# auth-zone:
+\# Authority zones
+\# The data for these zones is kept locally, from a file or downloaded.
+\# The data can be served to downstream clients, or used instead of the
+\# upstream (which saves a lookup to the upstream).  The first example
+\# has a copy of the root for local usage.  The second serves example.org
+\# authoritatively.  zonefile: reads from file (and writes to it if you also
+\# download it), primary: fetches with AXFR and IXFR, or url to zonefile.
+\# With allow-notify: you can give additional (apart from primaries and urls)
+\# sources of notifies.
+\# auth-zone:
 #	name: "."
 #	primary: 199.9.14.201         # b.root-servers.net
 #	primary: 192.33.4.12          # c.root-servers.net
@@ -1318,7 +1307,7 @@ forward-zone:
 #	fallback-enabled: yes
 #	for-downstream: no
 #	for-upstream: yes
-# auth-zone:
+\# auth-zone:
 #	name: "example.org"
 #	for-downstream: yes
 #	for-upstream: yes
@@ -1326,134 +1315,134 @@ forward-zone:
 #	zonemd-reject-absence: no
 #	zonefile: "example.org.zone"
 
-# Views
-# Create named views. Name must be unique. Map views to requests using
-# the access-control-view option. Views can contain zero or more local-zone
-# and local-data options. Options from matching views will override global
-# options. Global options will be used if no matching view is found.
-# With view-first yes, it will try to answer using the global local-zone and
-# local-data elements if there is no view specific match.
-# view:
+\# Views
+\# Create named views. Name must be unique. Map views to requests using
+\# the access-control-view option. Views can contain zero or more local-zone
+\# and local-data options. Options from matching views will override global
+\# options. Global options will be used if no matching view is found.
+\# With view-first yes, it will try to answer using the global local-zone and
+\# local-data elements if there is no view specific match.
+\# view:
 #	name: "viewname"
 #	local-zone: "example.com" redirect
 #	local-data: "example.com A 192.0.2.3"
 #	local-data-ptr: "192.0.2.3 www.example.com"
 #	view-first: no
-# view:
+\# view:
 #	name: "anotherview"
 #	local-zone: "example.com" refuse
 
-# DNSCrypt
-# To enable, use --enable-dnscrypt to configure before compiling.
-# Caveats:
-# 1. the keys/certs cannot be produced by Unbound. You can use dnscrypt-wrapper
-#   for this: https://github.com/cofyc/dnscrypt-wrapper/blob/master/README.md#usage
-# 2. dnscrypt channel attaches to an interface. you MUST set interfaces to
-#   listen on \`dnscrypt-port\` with the follo0wing snippet:
-# server:
-#     interface: 0.0.0.0@443
-#     interface: ::0@443
+\# DNSCrypt
+\# To enable, use --enable-dnscrypt to configure before compiling.
+\# Caveats:
+\# 1\. the keys/certs cannot be produced by Unbound. You can use dnscrypt-wrapper
+\#   for this: https://github.com/cofyc/dnscrypt-wrapper/blob/master/README.md#usage
+\# 2\. dnscrypt channel attaches to an interface. you MUST set interfaces to
+\#   listen on \`dnscrypt-port\` with the follo0wing snippet:
+\# server:
+\#     interface: 0.0.0.0@443
+\#     interface: ::0@443
 #
-# Finally, \`dnscrypt\` config has its own section.
-# dnscrypt:
-#     dnscrypt-enable: yes
-#     dnscrypt-port: 443
-#     dnscrypt-provider: 2.dnscrypt-cert.example.com.
-#     dnscrypt-secret-key: /path/unbound-conf/keys1/1.key
-#     dnscrypt-secret-key: /path/unbound-conf/keys2/1.key
-#     dnscrypt-provider-cert: /path/unbound-conf/keys1/1.cert
-#     dnscrypt-provider-cert: /path/unbound-conf/keys2/1.cert
+\# Finally, \`dnscrypt\` config has its own section.
+\# dnscrypt:
+\#     dnscrypt-enable: yes
+\#     dnscrypt-port: 443
+\#     dnscrypt-provider: 2.dnscrypt-cert.example.com.
+\#     dnscrypt-secret-key: /path/unbound-conf/keys1/1.key
+\#     dnscrypt-secret-key: /path/unbound-conf/keys2/1.key
+\#     dnscrypt-provider-cert: /path/unbound-conf/keys1/1.cert
+\#     dnscrypt-provider-cert: /path/unbound-conf/keys2/1.cert
 
-# CacheDB
-# External backend DB as auxiliary cache.
-# To enable, use --enable-cachedb to configure before compiling.
-# Specify the backend name
-# (default is "testframe", which has no use other than for debugging and
-# testing) and backend-specific options.  The 'cachedb' module must be
-# included in module-config, just before the iterator module.
-# cachedb:
-#     backend: "testframe"
-#     # secret seed string to calculate hashed keys
-#     secret-seed: "default"
+\# CacheDB
+\# External backend DB as auxiliary cache.
+\# To enable, use --enable-cachedb to configure before compiling.
+\# Specify the backend name
+\# (default is "testframe", which has no use other than for debugging and
+\# testing) and backend-specific options.  The 'cachedb' module must be
+\# included in module-config, just before the iterator module.
+\# cachedb:
+\#     backend: "testframe"
+\#     # secret seed string to calculate hashed keys
+\#     secret-seed: "default"
 #
-#     # For "redis" backend:
-#     # (to enable, use --with-libhiredis to configure before compiling)
-#     # redis server's IP address or host name
-#     redis-server-host: 127.0.0.1
-#     # redis server's TCP port
-#     redis-server-port: 6379
-#     # timeout (in ms) for communication with the redis server
-#     redis-timeout: 100
-#     # set timeout on redis records based on DNS response TTL
-#     redis-expire-records: no
+\#     # For "redis" backend:
+\#     # (to enable, use --with-libhiredis to configure before compiling)
+\#     # redis server's IP address or host name
+\#     redis-server-host: 127.0.0.1
+\#     # redis server's TCP port
+\#     redis-server-port: 6379
+\#     # timeout (in ms) for communication with the redis server
+\#     redis-timeout: 100
+\#     # set timeout on redis records based on DNS response TTL
+\#     redis-expire-records: no
 
-# IPSet
-# Add specify domain into set via ipset.
-# To enable:
-# o use --enable-ipset to configure before compiling;
-# o Unbound then needs to run as root user.
-# ipset:
-#     # set name for ip v4 addresses
-#     name-v4: "list-v4"
-#     # set name for ip v6 addresses
-#     name-v6: "list-v6"
+\# IPSet
+\# Add specify domain into set via ipset.
+\# To enable:
+\# o use --enable-ipset to configure before compiling;
+\# o Unbound then needs to run as root user.
+\# ipset:
+\#     # set name for ip v4 addresses
+\#     name-v4: "list-v4"
+\#     # set name for ip v6 addresses
+\#     name-v6: "list-v6"
 #
 
-# Dnstap logging support, if compiled in by using --enable-dnstap to configure.
-# To enable, set the dnstap-enable to yes and also some of
-# dnstap-log-..-messages to yes.  And select an upstream log destination, by
-# socket path, TCP or TLS destination.
-# dnstap:
-# 	dnstap-enable: no
-# 	# if set to yes frame streams will be used in bidirectional mode
-# 	dnstap-bidirectional: yes
-# 	dnstap-socket-path: ""
-# 	# if "" use the unix socket in dnstap-socket-path, otherwise,
-# 	# set it to "IPaddress\[@port\]" of the destination.
-# 	dnstap-ip: ""
-# 	# if set to yes if you want to use TLS to dnstap-ip, no for TCP.
-# 	dnstap-tls: yes
-# 	# name for authenticating the upstream server. or "" disabled.
-# 	dnstap-tls-server-name: ""
-# 	# if "", it uses the cert bundle from the main Unbound config.
-# 	dnstap-tls-cert-bundle: ""
-# 	# key file for client authentication, or "" disabled.
-# 	dnstap-tls-client-key-file: ""
-# 	# cert file for client authentication, or "" disabled.
-# 	dnstap-tls-client-cert-file: ""
-# 	dnstap-send-identity: no
-# 	dnstap-send-version: no
-# 	# if "" it uses the hostname.
-# 	dnstap-identity: ""
-# 	# if "" it uses the package version.
-# 	dnstap-version: ""
-# 	dnstap-log-resolver-query-messages: no
-# 	dnstap-log-resolver-response-messages: no
-# 	dnstap-log-client-query-messages: no
-# 	dnstap-log-client-response-messages: no
-# 	dnstap-log-forwarder-query-messages: no
-# 	dnstap-log-forwarder-response-messages: no
+\# Dnstap logging support, if compiled in by using --enable-dnstap to configure.
+\# To enable, set the dnstap-enable to yes and also some of
+\# dnstap-log-..-messages to yes.  And select an upstream log destination, by
+\# socket path, TCP or TLS destination.
+\# dnstap:
+\# 	dnstap-enable: no
+\# 	# if set to yes frame streams will be used in bidirectional mode
+\# 	dnstap-bidirectional: yes
+\# 	dnstap-socket-path: ""
+\# 	# if "" use the unix socket in dnstap-socket-path, otherwise,
+\# 	# set it to "IPaddress\[@port\]" of the destination.
+\# 	dnstap-ip: ""
+\# 	# if set to yes if you want to use TLS to dnstap-ip, no for TCP.
+\# 	dnstap-tls: yes
+\# 	# name for authenticating the upstream server. or "" disabled.
+\# 	dnstap-tls-server-name: ""
+\# 	# if "", it uses the cert bundle from the main Unbound config.
+\# 	dnstap-tls-cert-bundle: ""
+\# 	# key file for client authentication, or "" disabled.
+\# 	dnstap-tls-client-key-file: ""
+\# 	# cert file for client authentication, or "" disabled.
+\# 	dnstap-tls-client-cert-file: ""
+\# 	dnstap-send-identity: no
+\# 	dnstap-send-version: no
+\# 	# if "" it uses the hostname.
+\# 	dnstap-identity: ""
+\# 	# if "" it uses the package version.
+\# 	dnstap-version: ""
+\# 	dnstap-log-resolver-query-messages: no
+\# 	dnstap-log-resolver-response-messages: no
+\# 	dnstap-log-client-query-messages: no
+\# 	dnstap-log-client-response-messages: no
+\# 	dnstap-log-forwarder-query-messages: no
+\# 	dnstap-log-forwarder-response-messages: no
 
-# Response Policy Zones
-# RPZ policies. Applied in order of configuration. QNAME, Response IP
-# Address, nsdname, nsip and clientip triggers are supported. Supported
-# actions are: NXDOMAIN, NODATA, PASSTHRU, DROP, Local Data, tcp-only
-# and drop.  Policies can be loaded from a file, or using zone
-# transfer, or using HTTP. The respip module needs to be added
-# to the module-config, e.g.: module-config: "respip validator iterator".
-# rpz:
-#     name: "rpz.example.com"
-#     zonefile: "rpz.example.com"
-#     primary: 192.0.2.0
-#     allow-notify: 192.0.2.0/32
-#     url: http://www.example.com/rpz.example.org.zone
-#     rpz-action-override: cname
-#     rpz-cname-override: www.example.org
-#     rpz-log: yes
-#     rpz-log-name: "example policy"
-#     rpz-signal-nxdomain-ra: no
-#     for-downstream: no
-#     tags: "example"
+\# Response Policy Zones
+\# RPZ policies. Applied in order of configuration. QNAME, Response IP
+\# Address, nsdname, nsip and clientip triggers are supported. Supported
+\# actions are: NXDOMAIN, NODATA, PASSTHRU, DROP, Local Data, tcp-only
+\# and drop.  Policies can be loaded from a file, or using zone
+\# transfer, or using HTTP. The respip module needs to be added
+\# to the module-config, e.g.: module-config: "respip validator iterator".
+\# rpz:
+\#     name: "rpz.example.com"
+\#     zonefile: "rpz.example.com"
+\#     primary: 192.0.2.0
+\#     allow-notify: 192.0.2.0/32
+\#     url: http://www.example.com/rpz.example.org.zone
+\#     rpz-action-override: cname
+\#     rpz-cname-override: www.example.org
+\#     rpz-log: yes
+\#     rpz-log-name: "example policy"
+\#     rpz-signal-nxdomain-ra: no
+\#     for-downstream: no
+\#     tags: "example"
 
   
 
@@ -1467,9 +1456,7 @@ Test server DNS unbound.
 
   
 
-root@miner4:~ # dig google.com
-
-; <<>> DiG 9.18.19 <<>> google.com
+root@miner4:~ # dig google.com  ; &lt;<&gt;\> DiG 9.18.19 &lt;<&gt;> google.com
 ;; global options: +cmd
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 14905
@@ -1497,8 +1484,7 @@ Test with nslookup.
 
   
 
-root@miner4:~ # nslookup yahoo.com
-Server:		192.168.9.3
+root@miner4:~ # nslookup yahoo.com  Server:		192.168.9.3
 Address:	192.168.9.3#53
 
 Non-authoritative answer:
@@ -1529,7 +1515,7 @@ Address: 2001:4998:24:120d::1:1
 
   
 
-**b.** **Unbound Server as DNS Caching & DNS Over TLS**
+**b. ****Unbound Server as DNS Caching & DNS Over TLS**
 
 Another more modern way to protect DNS traffic is the DNS-over-TLS protocol described in the RFC7858 standard, which is data encapsulation in standard TLS. We recommend using port 853 for access. Just like DNSCrypt, it is assumed that the DNS client, which is usually the same local caching DNS, accesses a remote server that supports DNS-over-TLS.
 
@@ -1547,41 +1533,33 @@ The first step that must be taken to implement unbound as a DNS Over TLS server 
 
   
 
-root@miner4:~ # cd /etc
-root@miner4:~ # mkdir ssl
-root@miner4:~ # mkdir /etc/ssl/unbound
-root@miner4:~ # cd /etc/ssl/unbound
-root@miner4:~ # openssl genrsa -des3 -out myCA.key 2048
-root@miner4:~ # openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem
-root@miner4:~ # openssl req -new -newkey rsa:2048 -nodes -keyout mydomain.key -out mydomain.csr
-root@miner4:~ # openssl x509 -req -in mydomain.csr -CA myCA.pem -CAkey myCA.key -CAcreateserial -out mydomain.pem -days 1825 -sha256
+root@miner4:~ # cd /etc root@miner4:~ # mkdir ssl root@miner4:~ # mkdir /etc/ssl/unbound root@miner4:~ # cd /etc/ssl/unbound root@miner4:~ # openssl genrsa -des3 -out myCA.key 2048 root@miner4:~ # openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem root@miner4:~ # openssl req -new -newkey rsa:2048 -nodes -keyout mydomain.key -out mydomain.csr root@miner4:~ # openssl x509 -req -in mydomain.csr -CA myCA.pem -CAkey myCA.key -CAcreateserial -out mydomain.pem -days 1825 -sha256
 
 After we have successfully created the SSL file, the next step is to change the unbound.conf file above. Type the following command in the putty console.
 
   
 
-root@miner4:~ # cd /usr/local/etc/unbound
-root@miner4:~ # ee unbound.conf
+root@miner4:~ # cd /usr/local/etc/unbound root@miner4:~ # ee unbound.conf
 
 The next step is to edit the unbound.conf file, as in the example below:
 
   
 
 #
-# Example configuration file.
+\# Example configuration file.
 #
-# See unbound.conf(5) man page, version 1.17.1.
+\# See unbound.conf(5) man page, version 1.17.1.
 #
-# this is a comment.
+\# this is a comment.
 
-# Use this anywhere in the file to include other text into this file.
+\# Use this anywhere in the file to include other text into this file.
 #include: "otherfile.conf"
 
-# Use this anywhere in the file to include other text, that explicitly starts a
-# clause, into this file. Text after this directive needs to start a clause.
+\# Use this anywhere in the file to include other text, that explicitly starts a
+\# clause, into this file. Text after this directive needs to start a clause.
 #include-toplevel: "otherfile.conf"
 
-# The server clause sets the main parameters.
+\# The server clause sets the main parameters.
 server:
 	# whitespace is not necessary, but looks cleaner.
 
@@ -1683,24 +1661,24 @@ server:
 	# number of incoming simultaneous tcp buffers to hold per thread.
 	# incoming-num-tcp: 10
 
-	# buffer size for UDP port 53 incoming (SO\_RCVBUF socket option).
+	# buffer size for UDP port 53 incoming (SO_RCVBUF socket option).
 	# 0 is system default.  Use 4m to catch query spikes for busy servers.
 	so-rcvbuf: 1m
 
-	# buffer size for UDP port 53 outgoing (SO\_SNDBUF socket option).
+	# buffer size for UDP port 53 outgoing (SO_SNDBUF socket option).
 	# 0 is system default.  Use 4m to handle spikes on very busy servers.
 	so-sndbuf: 1m
 
-	# use SO\_REUSEPORT to distribute queries over threads.
+	# use SO_REUSEPORT to distribute queries over threads.
 	# at extreme load it could be better to turn it off to distribute even.
 	# so-reuseport: yes
 
-	# use IP\_TRANSPARENT so the interface: addresses can be non-local
+	# use IP_TRANSPARENT so the interface: addresses can be non-local
 	# and you can config non-existing IPs that are going to work later on
-	# (uses IP\_BINDANY on FreeBSD).
+	# (uses IP_BINDANY on FreeBSD).
 	# ip-transparent: no
 
-	# use IP\_FREEBIND so the interface: addresses can be non-local
+	# use IP_FREEBIND so the interface: addresses can be non-local
 	# and you can bind to nonexisting IPs and interfaces that are down.
 	# Linux only.  On Linux you also have ip-transparent that is similar.
 	# ip-freebind: no
@@ -1805,7 +1783,7 @@ server:
 	# infra-cache-numhosts: 10000
 
 	# define a number of tags here, use with local-zone, access-control,
-	# interface-\*.
+	# interface-*.
 	# repeat the define-tag statement to add additional tags.
 	# define-tag: "tag1 tag2 tag3"
 
@@ -1857,8 +1835,8 @@ server:
 	# to this server. Specify classless netblocks with /size and action.
 	# By default everything is refused, except for localhost.
 	# Choose deny (drop message), refuse (polite error reply),
-	# allow (recursive ok), allow\_setrd (recursive ok, rd bit is forced on),
-	# allow\_snoop (recursive and nonrecursive ok)
+	# allow (recursive ok), allow_setrd (recursive ok, rd bit is forced on),
+	# allow_snoop (recursive and nonrecursive ok)
 	# deny\_non\_local (drop queries unless can be answered from local-data)
 	# refuse\_non\_local (like deny\_non\_local but polite error reply).
 	access-control: 192.168.9.0/24 allow
@@ -1889,7 +1867,7 @@ server:
 	# 'interface:' followed by the action.
 	# The actions are the same as 'access-control:' above.
 	# By default all the interfaces configured are refused.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-action: 192.0.2.153 allow
 	# interface-action: 192.0.2.154 allow
@@ -1903,7 +1881,7 @@ server:
 	# of these tags.
 	# The specified interfaces should be the same as the ones specified in
 	# 'interface:' followed by the list of tags.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-tag: eth0@5003 "tag2 tag3"
 
@@ -1914,7 +1892,7 @@ server:
 	# where "first" comes from the order of the define-tag values.
 	# The specified interfaces should be the same as the ones specified in
 	# 'interface:' followed by the tag and action.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-tag-action: eth0@5003 tag3 refuse
 
@@ -1922,7 +1900,7 @@ server:
 	# Set redirect data for a particular tag for an interface element.
 	# The specified interfaces should be the same as the ones specified in
 	# 'interface:' followed by the tag and the redirect data.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-tag-data: eth0@5003 tag2 "A 127.0.0.1"
 
@@ -1930,7 +1908,7 @@ server:
 	# Set view for an interface element.
 	# The specified interfaces should be the same as the ones specified in
 	# 'interface:' followed by the view name.
-	# Note: any 'access-control\*:' setting overrides all 'interface-\*:'
+	# Note: any 'access-control*:' setting overrides all 'interface-*:'
 	# settings for targeted clients.
 	# interface-view: eth0@5003 viewname
 
@@ -1975,7 +1953,7 @@ server:
 	# Use of this option sets use-syslog to "no".
 	logfile: "/usr/local/etc/unbound/log/unbound.log"
 
-	# Log to syslog(3) if yes. The log facility LOG\_DAEMON is used to
+	# Log to syslog(3) if yes. The log facility LOG_DAEMON is used to
 	# log to. If yes, it overrides the logfile.
 	# use-syslog: yes
 
@@ -2029,7 +2007,7 @@ server:
 	# the version to report. Leave "" or default to return package version.
 	# version: ""
 
-	# NSID identity (hex string, or "ascii\_somestring"). default disabled.
+	# NSID identity (hex string, or "ascii_somestring"). default disabled.
 	# nsid: "aabbccdd"
 
 	# User-Agent HTTP header to use. Leave "" or default to use package name
@@ -2368,8 +2346,8 @@ server:
 	# insecure-lan-zones: no
 
 	# a number of locally served zones can be configured.
-	# 	local-zone: <zone> <type>
-	# 	local-data: "<resource record string>"
+	# 	local-zone: &lt;zone&gt; &lt;type&gt;
+	# 	local-data: "&lt;resource record string&gt;"
 	# o deny serves local data (if any), else, drops queries.
 	# o refuse serves local data (if any), else, replies with error.
 	# o static serves local data, else, nxdomain or nodata answer.
@@ -2378,12 +2356,12 @@ server:
 	# o nodefault can be used to normally resolve AS112 zones.
 	# o typetransparent resolves normally for other types and other names
 	# o inform acts like transparent, but logs client IP address
-	# o inform\_deny drops queries and logs client IP address
-	# o inform\_redirect redirects queries and logs client IP address
+	# o inform_deny drops queries and logs client IP address
+	# o inform_redirect redirects queries and logs client IP address
 	# o always\_transparent, always\_refuse, always\_nxdomain, always\_nodata,
-	#   always\_deny resolve in that way but ignore local data for
+	#   always_deny resolve in that way but ignore local data for
 	#   that name
-	# o always\_null returns 0.0.0.0 or ::0 for any name in the zone.
+	# o always_null returns 0.0.0.0 or ::0 for any name in the zone.
 	# o noview breaks out of that view towards global local-zones.
 	#
 	# defaults are localhost address, reverse for 127.0.0.1 and ::1
@@ -2446,8 +2424,8 @@ server:
 	# First key use to encrypt and decrypt TLS session tickets.
 	# Other keys use to decrypt only.
 	# requires restart to take effect.
-	# tls-session-ticket-keys: "path/to/secret\_file1"
-	# tls-session-ticket-keys: "path/to/secret\_file2"
+	# tls-session-ticket-keys: "path/to/secret_file1"
+	# tls-session-ticket-keys: "path/to/secret_file2"
 
 	# request upstream over TLS (with plain DNS inside the TLS stream).
 	# Default is no.  Can be turned on and off with unbound-control.
@@ -2473,7 +2451,7 @@ server:
 	# HTTP endpoint to provide DNS-over-HTTPS service on.
 	# http-endpoint: "/dns-query"
 
-	# HTTP/2 SETTINGS\_MAX\_CONCURRENT\_STREAMS value to use.
+	# HTTP/2 SETTINGS\_MAX\_CONCURRENT_STREAMS value to use.
 	# http-max-streams: 100
 
 	# Maximum number of bytes used for all HTTP/2 query buffers.
@@ -2482,7 +2460,7 @@ server:
 	# Maximum number of bytes used for all HTTP/2 response buffers.
 	# http-response-buffer-size: 4m
 
-	# Set TCP\_NODELAY socket option on sockets used for DNS-over-HTTPS
+	# Set TCP_NODELAY socket option on sockets used for DNS-over-HTTPS
 	# service.
 	# http-nodelay: yes
 
@@ -2568,7 +2546,7 @@ server:
 	#
 	# Path to executable external hook. It must be defined when ipsecmod is
 	# listed in module-config (above).
-	# ipsecmod-hook: "./my\_executable"
+	# ipsecmod-hook: "./my_executable"
 	#
 	# When enabled Unbound will reply with SERVFAIL if the return value of
 	# the ipsecmod-hook is not 0.
@@ -2594,28 +2572,28 @@ server:
 	# tcp-auth-query-timeout: 3000
 
 
-# Python config section. To enable:
-# o use --with-pythonmodule to configure before compiling.
-# o list python in the module-config string (above) to enable.
-#   It can be at the start, it gets validated results, or just before
-#   the iterator and process before DNSSEC validation.
-# o and give a python-script to run.
+\# Python config section. To enable:
+\# o use --with-pythonmodule to configure before compiling.
+\# o list python in the module-config string (above) to enable.
+\#   It can be at the start, it gets validated results, or just before
+\#   the iterator and process before DNSSEC validation.
+\# o and give a python-script to run.
 python:
 	# Script file to load
 	# python-script: "/usr/local/etc/unbound/ubmodule-tst.py"
 
-# Dynamic library config section. To enable:
-# o use --with-dynlibmodule to configure before compiling.
-# o list dynlib in the module-config string (above) to enable.
-#   It can be placed anywhere, the dynlib module is only a very thin wrapper
-#   to load modules dynamically.
-# o and give a dynlib-file to run. If more than one dynlib entry is listed in
-#   the module-config then you need one dynlib-file per instance.
+\# Dynamic library config section. To enable:
+\# o use --with-dynlibmodule to configure before compiling.
+\# o list dynlib in the module-config string (above) to enable.
+\#   It can be placed anywhere, the dynlib module is only a very thin wrapper
+\#   to load modules dynamically.
+\# o and give a dynlib-file to run. If more than one dynlib entry is listed in
+\#   the module-config then you need one dynlib-file per instance.
 dynlib:
 	# Script file to load
 	# dynlib-file: "/usr/local/etc/unbound/dynlib.so"
 
-# Remote control config section.
+\# Remote control config section.
 remote-control:
 	# Enable remote control with unbound-control(8) here.
 	# set up the keys and certificates with unbound-control-setup.
@@ -2636,26 +2614,26 @@ remote-control:
 	# control-use-cert: "yes"
 
 	# Unbound server key file.
-	server-key-file: "/usr/local/etc/unbound/unbound\_server.key"
+	server-key-file: "/usr/local/etc/unbound/unbound_server.key"
 
 	# Unbound server certificate file.
-	server-cert-file: "/usr/local/etc/unbound/unbound\_server.pem"
+	server-cert-file: "/usr/local/etc/unbound/unbound_server.pem"
 
 	# unbound-control key file.
-	control-key-file: "/usr/local/etc/unbound/unbound\_control.key"
+	control-key-file: "/usr/local/etc/unbound/unbound_control.key"
 
 	# unbound-control certificate file.
-	control-cert-file: "/usr/local/etc/unbound/unbound\_control.pem"
+	control-cert-file: "/usr/local/etc/unbound/unbound_control.pem"
 
-# Stub zones.
-# Create entries like below, to make all queries for 'example.com' and
-# 'example.org' go to the given list of nameservers. list zero or more
-# nameservers by hostname or by ipaddress. If you set stub-prime to yes,
-# the list is treated as priming hints (default is no).
-# With stub-first yes, it attempts without the stub if it fails.
-# Consider adding domain-insecure: name and local-zone: name nodefault
-# to the server: section if the stub is a locally served zone.
-# stub-zone:
+\# Stub zones.
+\# Create entries like below, to make all queries for 'example.com' and
+\# 'example.org' go to the given list of nameservers. list zero or more
+\# nameservers by hostname or by ipaddress. If you set stub-prime to yes,
+\# the list is treated as priming hints (default is no).
+\# With stub-first yes, it attempts without the stub if it fails.
+\# Consider adding domain-insecure: name and local-zone: name nodefault
+\# to the server: section if the stub is a locally served zone.
+\# stub-zone:
 #	name: "example.com"
 #	stub-addr: 192.0.2.68
 #	stub-prime: no
@@ -2663,27 +2641,27 @@ remote-control:
 #	stub-tcp-upstream: no
 #	stub-tls-upstream: no
 #	stub-no-cache: no
-# stub-zone:
+\# stub-zone:
 #	name: "example.org"
 #	stub-host: ns.example.com.
 
-# Forward zones
-# Create entries like below, to make all queries for 'example.com' and
-# 'example.org' go to the given list of servers. These servers have to handle
-# recursion to other nameservers. List zero or more nameservers by hostname
-# or by ipaddress. Use an entry with name "." to forward all queries.
-# If you enable forward-first, it attempts without the forward if it fails.
-# forward-zone:
-# 	name: "example.com"
-# 	forward-addr: 192.0.2.68
-# 	forward-addr: 192.0.2.73@5355  # forward to port 5355.
-# 	forward-first: no
-# 	forward-tcp-upstream: no
-# 	forward-tls-upstream: no
+\# Forward zones
+\# Create entries like below, to make all queries for 'example.com' and
+\# 'example.org' go to the given list of servers. These servers have to handle
+\# recursion to other nameservers. List zero or more nameservers by hostname
+\# or by ipaddress. Use an entry with name "." to forward all queries.
+\# If you enable forward-first, it attempts without the forward if it fails.
+\# forward-zone:
+\# 	name: "example.com"
+\# 	forward-addr: 192.0.2.68
+\# 	forward-addr: 192.0.2.73@5355  # forward to port 5355.
+\# 	forward-first: no
+\# 	forward-tcp-upstream: no
+\# 	forward-tls-upstream: no
 #	forward-no-cache: no
-# forward-zone:
-# 	name: "example.org"
-# 	forward-host: fwd.example.com
+\# forward-zone:
+\# 	name: "example.org"
+\# 	forward-host: fwd.example.com
 
 forward-zone:
 name: "."
@@ -2696,16 +2674,16 @@ forward-addr: 68.105.29.11@853
 forward-addr: 8.8.8.8@853
 
 
-# Authority zones
-# The data for these zones is kept locally, from a file or downloaded.
-# The data can be served to downstream clients, or used instead of the
-# upstream (which saves a lookup to the upstream).  The first example
-# has a copy of the root for local usage.  The second serves example.org
-# authoritatively.  zonefile: reads from file (and writes to it if you also
-# download it), primary: fetches with AXFR and IXFR, or url to zonefile.
-# With allow-notify: you can give additional (apart from primaries and urls)
-# sources of notifies.
-# auth-zone:
+\# Authority zones
+\# The data for these zones is kept locally, from a file or downloaded.
+\# The data can be served to downstream clients, or used instead of the
+\# upstream (which saves a lookup to the upstream).  The first example
+\# has a copy of the root for local usage.  The second serves example.org
+\# authoritatively.  zonefile: reads from file (and writes to it if you also
+\# download it), primary: fetches with AXFR and IXFR, or url to zonefile.
+\# With allow-notify: you can give additional (apart from primaries and urls)
+\# sources of notifies.
+\# auth-zone:
 #	name: "."
 #	primary: 199.9.14.201         # b.root-servers.net
 #	primary: 192.33.4.12          # c.root-servers.net
@@ -2726,7 +2704,7 @@ forward-addr: 8.8.8.8@853
 #	fallback-enabled: yes
 #	for-downstream: no
 #	for-upstream: yes
-# auth-zone:
+\# auth-zone:
 #	name: "example.org"
 #	for-downstream: yes
 #	for-upstream: yes
@@ -2734,134 +2712,134 @@ forward-addr: 8.8.8.8@853
 #	zonemd-reject-absence: no
 #	zonefile: "example.org.zone"
 
-# Views
-# Create named views. Name must be unique. Map views to requests using
-# the access-control-view option. Views can contain zero or more local-zone
-# and local-data options. Options from matching views will override global
-# options. Global options will be used if no matching view is found.
-# With view-first yes, it will try to answer using the global local-zone and
-# local-data elements if there is no view specific match.
-# view:
+\# Views
+\# Create named views. Name must be unique. Map views to requests using
+\# the access-control-view option. Views can contain zero or more local-zone
+\# and local-data options. Options from matching views will override global
+\# options. Global options will be used if no matching view is found.
+\# With view-first yes, it will try to answer using the global local-zone and
+\# local-data elements if there is no view specific match.
+\# view:
 #	name: "viewname"
 #	local-zone: "example.com" redirect
 #	local-data: "example.com A 192.0.2.3"
 #	local-data-ptr: "192.0.2.3 www.example.com"
 #	view-first: no
-# view:
+\# view:
 #	name: "anotherview"
 #	local-zone: "example.com" refuse
 
-# DNSCrypt
-# To enable, use --enable-dnscrypt to configure before compiling.
-# Caveats:
-# 1. the keys/certs cannot be produced by Unbound. You can use dnscrypt-wrapper
-#   for this: https://github.com/cofyc/dnscrypt-wrapper/blob/master/README.md#usage
-# 2. dnscrypt channel attaches to an interface. you MUST set interfaces to
-#   listen on \`dnscrypt-port\` with the follo0wing snippet:
-# server:
-#     interface: 0.0.0.0@443
-#     interface: ::0@443
+\# DNSCrypt
+\# To enable, use --enable-dnscrypt to configure before compiling.
+\# Caveats:
+\# 1\. the keys/certs cannot be produced by Unbound. You can use dnscrypt-wrapper
+\#   for this: https://github.com/cofyc/dnscrypt-wrapper/blob/master/README.md#usage
+\# 2\. dnscrypt channel attaches to an interface. you MUST set interfaces to
+\#   listen on \`dnscrypt-port\` with the follo0wing snippet:
+\# server:
+\#     interface: 0.0.0.0@443
+\#     interface: ::0@443
 #
-# Finally, \`dnscrypt\` config has its own section.
-# dnscrypt:
-#     dnscrypt-enable: yes
-#     dnscrypt-port: 443
-#     dnscrypt-provider: 2.dnscrypt-cert.example.com.
-#     dnscrypt-secret-key: /path/unbound-conf/keys1/1.key
-#     dnscrypt-secret-key: /path/unbound-conf/keys2/1.key
-#     dnscrypt-provider-cert: /path/unbound-conf/keys1/1.cert
-#     dnscrypt-provider-cert: /path/unbound-conf/keys2/1.cert
+\# Finally, \`dnscrypt\` config has its own section.
+\# dnscrypt:
+\#     dnscrypt-enable: yes
+\#     dnscrypt-port: 443
+\#     dnscrypt-provider: 2.dnscrypt-cert.example.com.
+\#     dnscrypt-secret-key: /path/unbound-conf/keys1/1.key
+\#     dnscrypt-secret-key: /path/unbound-conf/keys2/1.key
+\#     dnscrypt-provider-cert: /path/unbound-conf/keys1/1.cert
+\#     dnscrypt-provider-cert: /path/unbound-conf/keys2/1.cert
 
-# CacheDB
-# External backend DB as auxiliary cache.
-# To enable, use --enable-cachedb to configure before compiling.
-# Specify the backend name
-# (default is "testframe", which has no use other than for debugging and
-# testing) and backend-specific options.  The 'cachedb' module must be
-# included in module-config, just before the iterator module.
-# cachedb:
-#     backend: "testframe"
-#     # secret seed string to calculate hashed keys
-#     secret-seed: "default"
+\# CacheDB
+\# External backend DB as auxiliary cache.
+\# To enable, use --enable-cachedb to configure before compiling.
+\# Specify the backend name
+\# (default is "testframe", which has no use other than for debugging and
+\# testing) and backend-specific options.  The 'cachedb' module must be
+\# included in module-config, just before the iterator module.
+\# cachedb:
+\#     backend: "testframe"
+\#     # secret seed string to calculate hashed keys
+\#     secret-seed: "default"
 #
-#     # For "redis" backend:
-#     # (to enable, use --with-libhiredis to configure before compiling)
-#     # redis server's IP address or host name
-#     redis-server-host: 127.0.0.1
-#     # redis server's TCP port
-#     redis-server-port: 6379
-#     # timeout (in ms) for communication with the redis server
-#     redis-timeout: 100
-#     # set timeout on redis records based on DNS response TTL
-#     redis-expire-records: no
+\#     # For "redis" backend:
+\#     # (to enable, use --with-libhiredis to configure before compiling)
+\#     # redis server's IP address or host name
+\#     redis-server-host: 127.0.0.1
+\#     # redis server's TCP port
+\#     redis-server-port: 6379
+\#     # timeout (in ms) for communication with the redis server
+\#     redis-timeout: 100
+\#     # set timeout on redis records based on DNS response TTL
+\#     redis-expire-records: no
 
-# IPSet
-# Add specify domain into set via ipset.
-# To enable:
-# o use --enable-ipset to configure before compiling;
-# o Unbound then needs to run as root user.
-# ipset:
-#     # set name for ip v4 addresses
-#     name-v4: "list-v4"
-#     # set name for ip v6 addresses
-#     name-v6: "list-v6"
+\# IPSet
+\# Add specify domain into set via ipset.
+\# To enable:
+\# o use --enable-ipset to configure before compiling;
+\# o Unbound then needs to run as root user.
+\# ipset:
+\#     # set name for ip v4 addresses
+\#     name-v4: "list-v4"
+\#     # set name for ip v6 addresses
+\#     name-v6: "list-v6"
 #
 
-# Dnstap logging support, if compiled in by using --enable-dnstap to configure.
-# To enable, set the dnstap-enable to yes and also some of
-# dnstap-log-..-messages to yes.  And select an upstream log destination, by
-# socket path, TCP or TLS destination.
-# dnstap:
-# 	dnstap-enable: no
-# 	# if set to yes frame streams will be used in bidirectional mode
-# 	dnstap-bidirectional: yes
-# 	dnstap-socket-path: ""
-# 	# if "" use the unix socket in dnstap-socket-path, otherwise,
-# 	# set it to "IPaddress\[@port\]" of the destination.
-# 	dnstap-ip: ""
-# 	# if set to yes if you want to use TLS to dnstap-ip, no for TCP.
-# 	dnstap-tls: yes
-# 	# name for authenticating the upstream server. or "" disabled.
-# 	dnstap-tls-server-name: ""
-# 	# if "", it uses the cert bundle from the main Unbound config.
-# 	dnstap-tls-cert-bundle: ""
-# 	# key file for client authentication, or "" disabled.
-# 	dnstap-tls-client-key-file: ""
-# 	# cert file for client authentication, or "" disabled.
-# 	dnstap-tls-client-cert-file: ""
-# 	dnstap-send-identity: no
-# 	dnstap-send-version: no
-# 	# if "" it uses the hostname.
-# 	dnstap-identity: ""
-# 	# if "" it uses the package version.
-# 	dnstap-version: ""
-# 	dnstap-log-resolver-query-messages: no
-# 	dnstap-log-resolver-response-messages: no
-# 	dnstap-log-client-query-messages: no
-# 	dnstap-log-client-response-messages: no
-# 	dnstap-log-forwarder-query-messages: no
-# 	dnstap-log-forwarder-response-messages: no
+\# Dnstap logging support, if compiled in by using --enable-dnstap to configure.
+\# To enable, set the dnstap-enable to yes and also some of
+\# dnstap-log-..-messages to yes.  And select an upstream log destination, by
+\# socket path, TCP or TLS destination.
+\# dnstap:
+\# 	dnstap-enable: no
+\# 	# if set to yes frame streams will be used in bidirectional mode
+\# 	dnstap-bidirectional: yes
+\# 	dnstap-socket-path: ""
+\# 	# if "" use the unix socket in dnstap-socket-path, otherwise,
+\# 	# set it to "IPaddress\[@port\]" of the destination.
+\# 	dnstap-ip: ""
+\# 	# if set to yes if you want to use TLS to dnstap-ip, no for TCP.
+\# 	dnstap-tls: yes
+\# 	# name for authenticating the upstream server. or "" disabled.
+\# 	dnstap-tls-server-name: ""
+\# 	# if "", it uses the cert bundle from the main Unbound config.
+\# 	dnstap-tls-cert-bundle: ""
+\# 	# key file for client authentication, or "" disabled.
+\# 	dnstap-tls-client-key-file: ""
+\# 	# cert file for client authentication, or "" disabled.
+\# 	dnstap-tls-client-cert-file: ""
+\# 	dnstap-send-identity: no
+\# 	dnstap-send-version: no
+\# 	# if "" it uses the hostname.
+\# 	dnstap-identity: ""
+\# 	# if "" it uses the package version.
+\# 	dnstap-version: ""
+\# 	dnstap-log-resolver-query-messages: no
+\# 	dnstap-log-resolver-response-messages: no
+\# 	dnstap-log-client-query-messages: no
+\# 	dnstap-log-client-response-messages: no
+\# 	dnstap-log-forwarder-query-messages: no
+\# 	dnstap-log-forwarder-response-messages: no
 
-# Response Policy Zones
-# RPZ policies. Applied in order of configuration. QNAME, Response IP
-# Address, nsdname, nsip and clientip triggers are supported. Supported
-# actions are: NXDOMAIN, NODATA, PASSTHRU, DROP, Local Data, tcp-only
-# and drop.  Policies can be loaded from a file, or using zone
-# transfer, or using HTTP. The respip module needs to be added
-# to the module-config, e.g.: module-config: "respip validator iterator".
-# rpz:
-#     name: "rpz.example.com"
-#     zonefile: "rpz.example.com"
-#     primary: 192.0.2.0
-#     allow-notify: 192.0.2.0/32
-#     url: http://www.example.com/rpz.example.org.zone
-#     rpz-action-override: cname
-#     rpz-cname-override: www.example.org
-#     rpz-log: yes
-#     rpz-log-name: "example policy"
-#     rpz-signal-nxdomain-ra: no
-#     for-downstream: no
-#     tags: "example"
+\# Response Policy Zones
+\# RPZ policies. Applied in order of configuration. QNAME, Response IP
+\# Address, nsdname, nsip and clientip triggers are supported. Supported
+\# actions are: NXDOMAIN, NODATA, PASSTHRU, DROP, Local Data, tcp-only
+\# and drop.  Policies can be loaded from a file, or using zone
+\# transfer, or using HTTP. The respip module needs to be added
+\# to the module-config, e.g.: module-config: "respip validator iterator".
+\# rpz:
+\#     name: "rpz.example.com"
+\#     zonefile: "rpz.example.com"
+\#     primary: 192.0.2.0
+\#     allow-notify: 192.0.2.0/32
+\#     url: http://www.example.com/rpz.example.org.zone
+\#     rpz-action-override: cname
+\#     rpz-cname-override: www.example.org
+\#     rpz-log: yes
+\#     rpz-log-name: "example policy"
+\#     rpz-signal-nxdomain-ra: no
+\#     for-downstream: no
+\#     tags: "example"  
 
 After the unbound.conf file editing process is complete, restart the unbound server with the command:
 
@@ -2873,9 +2851,7 @@ Test server DNS unbound
 
   
 
-root@miner4:~ # dig google.com -p 853
-
-; <<>> DiG 9.18.19 <<>> google.com -p 853
+root@miner4:~ # dig google.com -p 853  ; &lt;<&gt;\> DiG 9.18.19 &lt;<&gt;> google.com -p 853
 ;; global options: +cmd
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 7384
@@ -2903,10 +2879,9 @@ The answer is the server: 192.168.9.3#853, this means that unbound NDS Over TLS 
 
   
 
-root@miner4:~ # sockstat -P udp -p 53,853
-USER     COMMAND    PID   FD PROTO  LOCAL ADDRESS         FOREIGN ADDRESS      
-unbound  unbound    600   4  udp4   192.168.5.2:53        \*:\*
-unbound  unbound    600   6  udp4   192.168.5.2:853       \*:\*
+root@miner4:~ # sockstat -P udp -p 53,853  USER     COMMAND    PID   FD PROTO  LOCAL ADDRESS         FOREIGN ADDRESS      
+unbound  unbound    600   4  udp4   192.168.5.2:53        *:*
+unbound  unbound    600   6  udp4   192.168.5.2:853       *:*
 
 From the open ports above, we can see that port 853 and port 53 are open. This indicates Server Unbound DNS Over TLS RUNNING.
 
@@ -2914,7 +2889,7 @@ From the open ports above, we can see that port 853 and port 53 are open. This i
 
   
 
-**4.** **Create an Unbound Log File**
+**4. ****Create an Unbound Log File**
 
   
 
@@ -2922,25 +2897,21 @@ The final step, we will create a log file. In the Putty console, type the comman
 
   
 
-root@miner4:~ # ee /etc/newsyslog.conf
-
-/usr/local/etc/unbound/log/unbound.log  unbound:wheel     640  7     \*    @T12  JBR   /usr/local/etc/unbound/log\_reopen
+root@miner4:~ # ee /etc/newsyslog.conf  /usr/local/etc/unbound/log/unbound.log  unbound:wheel     640  7     *    @T12  JBR   /usr/local/etc/unbound/log_reopen
 
   
 
 The next step, we create a log\_reopen file and enter the following script in the log\_reopen.
 
-root@miner4:~ # ee /usr/local/etc/unbound/log\_reopen
-#!/bin/sh
-/usr/local/sbin/unbound-control -q log\_reopen
+root@miner4:~ # ee /usr/local/etc/unbound/log_reopen   #!/bin/sh
+/usr/local/sbin/unbound-control -q log_reopen
 exit 0
 
 Then restart unbound and system log files.
 
   
 
-root@miner4:~ # service unbound restart
-root@miner4:~ # service newsyslog restart
+root@miner4:~ # service unbound restart root@miner4:~ # service newsyslog restart
 
   
 
