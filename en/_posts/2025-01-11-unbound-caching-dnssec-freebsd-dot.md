@@ -1,6 +1,15 @@
-Konfigurasi FreeBSD dan DNS Unbound Untuk Melakukan Caching DNSSEC dan DOT
-
-CONFIGURATION UNBOUND FOR CACHING DNSSEC AND DOT WITH FREEBSD.txt
+---
+title: CONFIGURATION UNBOUND FOR CACHING DNSSEC AND DOT WITH FREEBSD
+date: "2025-01-18 14:11:10 +0300"
+id: build-instructions-obs-studio-freebsd
+lang: en
+layout: single
+categories:
+  - FreeBSD
+tags: "unbound, dns, server, dnssec, freebsd"
+excerpt: Unbound is a highly secure validating, recursive, and caching DNS server developed by NLnet Labs, VeriSign Inc, Nominet, and Kirei
+keywords: freebsd, unbound, dns, server, security, caching, dot, doh, dnssec, configuration, openbsd
+---
 
   
 
