@@ -157,8 +157,7 @@ client pfsense {
 }
 ```
 
-### 
-e. Create Users
+### e. Create Users
 Next, create a user and password that can use Freeradius. Below is the complete script /etc/raddb/mods-config/files/authorize.
 
 ```
@@ -207,14 +206,117 @@ ns3# radtest steve steve123 127.0.0.1 1812 testing123
 ns3# radtest steve steve123 localhost 1812 testing123
 ns3# radtest MaryRose mary123 192.168.5.3 1812 router123
 ```
-
+<br><br/>
 ## 2. Create user Freeradius with MySQL server
-
 When FreeRadius is used together with Mariadb or MySQL, Freeradius will use a database which is usually called 'radius' and within that database there is a database table called 'radcheck'. This table is the table we need to use to interact between Mariadb and Freeradius, because it contains all the user accounts that can be authenticated with FreeRadius.
 
 It's important to remember that like many other things, you can choose the username to use, the database name for something, and you can even choose to use a remote MySQL server! However for this tutorial we will assume that MySQL and FreeRadius are on the same server, and the database is called 'radius' and the user account we will use with MySQL is root.
 
 To create a radius database, first log in to the Mariadb database with the root account, after that create a radius database, see the example below.
 
+```
+ns3# mysql -u root -p
+MariaDB [(none)]> CREATE DATABASE radius;
+MariaDB [(none)]> CREATE USER 'userradius'@'localhost' IDENTIFIED BY 'radius123';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON radius.* TO 'userradius'@'localhost';
+MariaDB [(none)]> FLUSH PRIVILEGES;
+MariaDB [(none)]> exit;
+```
 
+### a. Create Freeradius schema
+For the first step, we need to create a schema.sql file, which contains the tables that Freeradius needs to communicate with Maridb. You can find an example of a schema.sql file at /etc/raddb/mods-config/sql/main/mysql/schema.sql.
 
+Import the schema.sql script into the newly created radius database.
+
+```
+ns3# mysql -uroot -prouter123 radius < /etc/raddb/mods-config/sql/main/mysql/schema.sql
+```
+
+root: Mariadb server user
+router123: Mariadb server password
+
+### b. Create db user and client
+Now we will create a new user which will be stored in the radius database. Run the insert command to add a new user. For this example the user we will add is Beyoncé, and she will have the following login details:
+
+Username: testuser
+Password: mariadb123
+
+```
+ns3# mysql -u root -prouter123
+MariaDB [(none)]> use radius;
+MariaDB [radius]> INSERT INTO radcheck (id, username, attribute, op, value) VALUES (1001,'testuser','Cleartext-Password',':=','mariadb123');
+```
+
+```
+MariaDB [radius]> INSERT INTO nas (nasname, shortname, type, ports, secret) VALUES ('192.168.5.3', 'router', 'other', 1812,'router123');
+```
+
+### c. Create Freeradius SQL Module
+One of the functions of the Radius module is to connect Freeradius with other applications such as the Mariadb database. In this example we will connect freeradius with Mariadb. To make this connection, you change the /etc/raddb/mods-available/sql file. You can see an example of the complete script below.
+
+```
+sql {
+	dialect = "mysql"
+	driver = "rlm_sql_mysql"
+	sqlite {
+		filename = "/tmp/freeradius.db"
+		busy_timeout = 200
+		bootstrap = "${modconfdir}/${..:name}/main/sqlite/schema.sql"
+	}
+
+	mysql {
+		warnings = auto
+	}
+
+	server = "localhost"
+	port = 3306
+	login = "userradius"
+	password = "radius123"
+	radius_db = "radius"
+	acct_table1 = "radacct"
+	acct_table2 = "radacct"
+	postauth_table = "radpostauth"
+	authcheck_table = "radcheck"
+	groupcheck_table = "radgroupcheck"
+	authreply_table = "radreply"
+	groupreply_table = "radgroupreply"
+	usergroup_table = "radusergroup"
+	delete_stale_sessions = yes
+
+	pool {
+		start = ${thread[pool].start_servers}
+		min = ${thread[pool].min_spare_servers}
+		max = ${thread[pool].max_servers}
+		spare = ${thread[pool].max_spare_servers}
+		uses = 0
+		retry_delay = 30
+		lifetime = 0
+		idle_timeout = 60
+		max_retries = 5
+	}
+	read_clients = yes
+	client_table = "nas"
+	group_attribute = "SQL-Group"
+	$INCLUDE ${modconfdir}/${.:name}/main/${dialect}/queries.conf
+}
+```
+
+Then you continue by creating a symlink.
+
+```
+ns3# ln -s /etc/raddb/mods-available/sql /etc/raddb/mods-enabled/
+```
+
+### d. Enable sql option
+Because in this article we will connect Freeradius to the Mariadb database server, we have to activate the "sql" option in the "default" and "inner-tunnel" files. The file is located in the /etc/raddb/sites-available directory.
+
+In the "default" and "inner-tunnel" file scripts, you remove the “#” and “-” signs (“#sql” and “-sql”) so that it just becomes a “sql” script.
+
+### e. Test Freeradius SQL Module
+This section is the most important step, because we will test whether the Freeradius server is connected to the Mariadb server. We will test it with the user and password that we created with the SQL command above. Run the following command to test the Freeradius server.
+
+```
+ns3# radtest testuser mariadb123 192.168.5.3 1812 router123
+```
+
+In conclusion, Freeradius is a powerful and flexible tool for improving network security and performance. Freeradius allows unique credentials for each user, as there is no unified password that is shared among a number of people, this can prevent the threat of hackers infiltrating your network.
