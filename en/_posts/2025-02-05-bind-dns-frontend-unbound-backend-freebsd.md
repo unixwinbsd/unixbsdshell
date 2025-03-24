@@ -1397,7 +1397,149 @@ forward-addr: 8.8.8.8@853
 #     tags: "example"
 ```
 
+The "#" sign in the black text in the script above is turning off port 53 in the /usr/local/etc/unbound/unbound.conf file.
 
+After we have turned off port 53, now let's continue by editing the named.conf file which is located in the /usr/local/etc/namedb folder.
+
+```
+root@router2:~ # ee /usr/local/etc/namedb/named.conf
+```
+
+In the original file named.conf we add the following scripts.
+
+```
+acl "client_LAN" { 192.168.9.0/24; 127.0.0.1; };
+acl IP_LAN { 127.0.0.1; };
+auth-nxdomain no;
+dnssec-validation yes;
+recursion yes;
+allow-recursion { client_LAN; };
+allow-query { client_LAN; };
+allow-query-cache { client_LAN; };
+allow-transfer { none; };
+listen-on port 53 { IP_LAN; };
+logging {
+     channel default_log {
+          file "/var/named/log/default" versions 3 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel auth_servers_log {
+          file "/var/named/log/auth_servers" versions 100 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel dnssec_log {
+          file "/var/named/log/dnssec" versions 3 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel zone_transfers_log {
+          file "/var/named/log/zone_transfers" versions 3 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel ddns_log {
+          file "/var/named/log/ddns" versions 3 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel client_security_log {
+          file "/var/named/log/client_security" versions 3 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel rate_limiting_log {
+          file "/var/named/log/rate_limiting" versions 3 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel rpz_log {
+          file "/var/named/log/rpz" versions 3 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel dnstap_log {
+          file "/var/named/log/dnstap" versions 3 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+
+     channel queries_log {
+          file "/var/named/log/queries" versions 600 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity info;
+     };
+     channel query-errors_log {
+          file "/var/named/log/query-errors" versions 5 size 20m;
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          severity dynamic;
+     };
+     channel default_syslog {
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          syslog daemon;
+          severity info;
+     };
+     channel default_debug {
+          print-time yes;
+          print-category yes;
+          print-severity yes;
+          file "named.run";
+          severity dynamic;
+     };
+     category default { default_syslog; default_debug; default_log; };
+     category config { default_syslog; default_debug; default_log; };
+     category dispatch { default_syslog; default_debug; default_log; };
+     category network { default_syslog; default_debug; default_log; };
+     category general { default_syslog; default_debug; default_log; };
+     category zoneload { default_syslog; default_debug; default_log; };
+     category resolver { auth_servers_log; default_debug; };       
+     category cname { auth_servers_log; default_debug; };       
+     category delegation-only { auth_servers_log; default_debug; };
+     category lame-servers { auth_servers_log; default_debug; };
+     category edns-disabled { auth_servers_log; default_debug; };
+     category dnssec { dnssec_log; default_debug; };
+     category notify { zone_transfers_log; default_debug; };       
+     category xfer-in { zone_transfers_log; default_debug; };       
+     category xfer-out { zone_transfers_log; default_debug; };
+     category update{ ddns_log; default_debug; };
+     category update-security { ddns_log; default_debug; };
+     category client{ client_security_log; default_debug; };       
+     category security { client_security_log; default_debug; };
+     category rate-limit { rate_limiting_log; default_debug; };       
+     category spill { rate_limiting_log; default_debug; };       
+     category database { rate_limiting_log; default_debug; };
+     category rpz { rpz_log; default_debug; };
+     category dnstap { dnstap_log; default_debug; };
+     category trust-anchor-telemetry { default_syslog; default_debug; default_log; };
+     category queries { queries_log; };
+     category query-errors {query-errors_log; };
+};
+```
 
 
 
