@@ -19,3 +19,5 @@ The existence of the ISC-Bind plugin can be felt by PFSense users who have slow 
 At PFSense there are lots of DNS application services that you can use, such as Unbound and DNS Forwarding. However, in this article we dedicate it to explaining in detail the installation and configuration process for the ISC-Bind DNS server. Not only that, this article also discusses name server services that can be utilized by DHCP servers.<br><br/>
 ## 1. Basic Configuration
 Before we go any further, on how to install and configure ISC-Bind. The first step you have to do is set the hostname and PFsense resolver.
+[pfsense system information]([pfsense system information](https://www.opencode.net/unixbsdshell/statif-page/-/raw/main/pfsense_system_information.jpg)
+
