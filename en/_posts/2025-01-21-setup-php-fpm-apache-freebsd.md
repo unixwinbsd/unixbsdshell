@@ -77,5 +77,123 @@ LoadModule proxy_fcgi_module libexec/apache24/mod_proxy_fcgi.so
 LoadModule proxy_scgi_module libexec/apache24/mod_proxy_scgi.so
 ```
 
+According to the explanation above in this article, there are 3 MPM modules, you can choose one according to your needs. In this article, the mpm_event module is used. After that, continue by editing the /etc/make.conf file and enter the script below in the /etc/make.conf file.
 
+DELETE the script below in the /usr/local/etc/apache24/httpd.conf file.
 
+```
+<FilesMatch "\.php$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+<FilesMatch "\.phps$">
+    SetHandler application/x-httpd-php-source
+</FilesMatch>
+```
+
+```
+root@ns1:~ # ee /etc/make.conf
+WITH_MPM=event
+```
+<br><br/>
+## 4. Test PHP-FPM Apache24
+After all the configurations above are complete, it's time for us to do the test. Create a test file called php.info and enter the script below in the file /usr/local/www/apache24/data/info.php.
+
+```
+root@ns1:~ # ee /usr/local/www/apache24/data/info.php
+
+<?php phpinfo(); ?>
+```
+
+Give ownership rights to the file and also file permissions.
+
+```
+root@ns1:~ # chown -R www:www /usr/local/www/apache24/data/info.php
+root@ns1:~ # chmod +x /usr/local/www/apache24/data/info.php
+```
+
+The next step is to activate the PHP-FPM module so that it can run automatically. Edit the /etc/rc.conf file and enter the script below.
+
+```
+root@ns1:~ # ee /etc/rc.conf
+php_fpm_enable="YES"
+```
+
+Before we do the test, restart or reboot the apache24 and PHP-FPM web server.
+
+```
+root@ns1:~ # service apache24 restart
+Performing sanity check on apache24 configuration:
+Syntax OK
+Stopping apache24.
+Waiting for PIDS: 2437.
+Performing sanity check on apache24 configuration:
+Syntax OK
+Starting apache24.
+```
+
+```
+root@ns1:~ # service php-fpm restart
+Performing sanity check on php-fpm configuration:
+[20-Aug-2023 13:20:07] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+
+Stopping php_fpm.
+Waiting for PIDS: 2105.
+Performing sanity check on php-fpm configuration:
+[20-Aug-2023 13:20:07] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+
+Starting php_fpm.
+```
+
+The way to do the PHP-FPM test is to type the IP Address of the FreeBSD Server, because in this article the FreeBSD server uses IP **192.168.5.2**, type the IP Address in a Web Browser such as Yandex or Google Chrome.<br><br/>
+## 5. Apache24 PHP-FPM With Unix Socket
+The method above is to connect Apache to the PHP-FPM server using the TCP/IP protocol. In this section we will learn how to connect an Apache server to a PHP-FPM server using a UNIX socket.
+
+Open the file /usr/local/etc/php-fpm.d/www.conf, and change the script "listen = 192.168.5.2:9000" to "listen = /tmp/php-fpm.sock".
+
+> listen = 192.168.5.2:9000
+> change with
+> listen = /tmp/php-fpm.sock
+
+Then in the file /usr/local/etc/apache24/Includes/php-fpm.conf, type the script below.
+
+```
+<IfModule proxy_fcgi_module>
+   <IfModule dir_module>
+       DirectoryIndex index.php
+   </IfModule>
+
+   <FilesMatch "\.(php|phtml|inc)$">
+SetHandler proxy:unix:/tmp/php-fpm.sock|fcgi://localhost/
+   </FilesMatch>
+</IfModule>
+```
+
+Restart the apache server and PHP-FPM server
+
+```
+root@ns:~ # service apache24 restart
+Performing sanity check on apache24 configuration:
+Syntax OK
+Stopping apache24.
+Waiting for PIDS: 3258.
+Performing sanity check on apache24 configuration:
+Syntax OK
+Starting apache24.
+```
+
+```
+root@ns:~ # service php-fpm restart
+Performing sanity check on php-fpm configuration:
+[21-Nov-2023 20:57:00] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+
+Stopping php_fpm.
+Waiting for PIDS: 3211.
+Performing sanity check on php-fpm configuration:
+[21-Nov-2023 20:57:01] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+
+Starting php_fpm.
+```
+
+Pay attention to line 5 where it says Server API FPM/FastCGI, that means the PHP-FPM module is RUNNING or running on the apache24 web server.
+
+PHP-FPM is an efficient method on how to minimize memory consumption and improve performance for websites with heavy traffic. This is significantly faster than traditional CGI-based methods in multi-user PHP environments. If your main goal is to host web applications and to achieve optimal performance and security, then PHP-FPM is the solution.
