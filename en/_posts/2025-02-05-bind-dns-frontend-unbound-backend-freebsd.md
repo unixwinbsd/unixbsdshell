@@ -38,9 +38,10 @@ Setting up private DNS for your private network is a great way to improve your s
 
  In this tutorial, we will set up a bind and unbound DNS server as your domain and private IP address. To carry out the configuration, we will use public DNS from the cloud and Google for the main forward, while we will use unbound DNS as the frontend of the bind DNS server.
 
- Apart from that, it is recommended that you also read and practice the article with the title [CONFIGURATION UNBOUND FOR CACHING DNSSEC AND DOT WITH FREEBSD](https://penaadventure.com/en/freebsd/2025/01/11/unbound-caching-dnssec-freebsd-dot/). Because this article is a continuation of that article, especially in the discussion on point "b", namely "Server Unbound as DNS Caching & DNS Over TLS".
+ In addition, it is a good idea to also read and practice the article entitled [UNBOUND CONFIGURATION FOR DNSSEC AND DOT CACHING WITH FREEBSD](https://penaadventure.com/en/freebsd/2025/01/11/unbound-caching-dnssec-freebsd-dot/). Because this article is a continuation of the article you are reading. In the article you see the discussion in point "b" namely "Unbound Server as DNS Caching & DNS Over TLS".
 
-In this case, I will not explain how to set unbound, you can read the previous article with the title "IMPLEMENTATION OF UNBOUND AS DNS OVER TLS CLIENT & SERVER ON FREEBSD".
+In this case, I will not explain how to set unbound, you can read the previous article entitled [UNBOUND IMPLEMENTATION AS DNS OVER TLS CLIENT & SERVER IN FREEBSD](https://www.inchimediatama.org/2024/11/freebsd-unbound-dns-over-tls-dot.html).
+
 
 
 
