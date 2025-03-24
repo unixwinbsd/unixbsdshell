@@ -8,4 +8,6 @@ categories:
 tags: "WebServer"
 excerpt: The Kroki library follows a modular architecture that provides many different modules such as a Java web server that acts as a gateway
 keywords: java, freebsd, php, kroki, javascript, apache, tomcat, maven
+layout: single
+author_profile: true
 ---
