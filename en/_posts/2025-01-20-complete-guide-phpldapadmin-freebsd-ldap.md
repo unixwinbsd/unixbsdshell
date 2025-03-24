@@ -786,3 +786,24 @@ $config->custom->session['reCAPTCHA-key-server'] = '<put-here-key-server>';
 ?>
 ```
 
+The next step is to type the following command.
+
+```
+root@ns1:~ # chown -R www:www /usr/local/www/phpldapadmin
+root@ns1:~ # service apache24 restart
+Performing sanity check on apache24 configuration:
+Syntax OK
+Stopping apache24.
+Waiting for PIDS: 44221.
+Performing sanity check on apache24 configuration:
+Syntax OK
+Starting apache24.
+```
+
+After that, you can test, open the Yandex web browser, Google Chrome or Mozilla Firefox, type the following script in the browser.
+
+```
+http://192.168.5.2/phpldapadmin/
+```
+
+If there is nothing wrong with the configuration above, the phpLDAPadmin dashboard will appear.
