@@ -41,6 +41,60 @@ Setting up private DNS for your private network is a great way to improve your s
  In addition, it is a good idea to also read and practice the article entitled [UNBOUND CONFIGURATION FOR DNSSEC AND DOT CACHING WITH FREEBSD](https://penaadventure.com/en/freebsd/2025/01/11/unbound-caching-dnssec-freebsd-dot/). Because this article is a continuation of the article you are reading. In the article you see the discussion in point "b" namely "Unbound Server as DNS Caching & DNS Over TLS".
 
 In this case, I will not explain how to set unbound, you can read the previous article entitled [UNBOUND IMPLEMENTATION AS DNS OVER TLS CLIENT & SERVER IN FREEBSD](https://www.inchimediatama.org/2024/11/freebsd-unbound-dns-over-tls-dot.html).
+<br><br/>
+## B. Bind DNS Server Installation and Configuration
+The first thing we will discuss is making the DNS Bind server as caching of DNS. On FreeBSD, you can use the pkg command to install it.
+
+```
+root@router2:~ # pkg install bind918 bind9-devel bind-tools libuv
+```
+
+Enter the following script in the rc.conf file.
+
+```
+root@router2:~ # ee /etc/rc.conf
+named_enable="YES"
+named_program="/usr/local/sbin/named"
+named_conf="/usr/local/etc/namedb/named.conf"
+#named_chrootdir="/usr/local/etc/namedb"
+named_flags="-u -c"
+named_uid="bind"
+```
+
+Enter the following script in the resolv.conf file.
+
+```
+root@router2:~ # ee /etc/resolv.conf
+domain unixexplore.com
+nameserver 192.168.5.2
+```
+
+Create a bind log file.
+
+```
+root@router2:~ # mkdir /var/named & mkdir /var/named/log
+root@router2:~ # touch /var/named/log/default
+root@router2:~ # touch /var/named/log/auth_servers
+root@router2:~ # touch /var/named/log/dnssec
+root@router2:~ # touch /var/named/log/zone_transfers
+root@router2:~ # touch /var/named/log/ddns
+root@router2:~ # touch /var/named/log/client_security
+root@router2:~ # touch /var/named/log/rate_limiting
+root@router2:~ # touch /var/named/log/rpz
+root@router2:~ # touch /var/named/log/dnstap
+root@router2:~ # touch /var/named/log/queries
+root@router2:~ # touch /var/named/log/query-errors
+```
+
+Give the Bind program permissions.
+
+```
+root@router2:~ # chown -R bind:bind /var/named/log
+root@router2:~ # chown -R bind:bind /usr/local/etc/namedb/named.conf
+root@router2:~ # chown -R bind:bind /usr/local/etc/namedb/*
+```
+
+
 
 
 
