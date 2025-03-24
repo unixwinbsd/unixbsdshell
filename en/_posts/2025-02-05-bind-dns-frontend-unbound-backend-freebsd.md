@@ -22,7 +22,7 @@ Setting up private DNS for your private network is a great way to improve your s
 > 
 > IP LAN: 192.168.5.2/24
 > 
-> > Domain: unixexplore.com
+> Domain: unixexplore.com
 > 
 > IP Unbound: 192.168.5.2
 > 
