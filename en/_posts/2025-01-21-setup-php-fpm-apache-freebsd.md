@@ -28,8 +28,8 @@ PHP-FPM is a FastCGI process manager for PHP. The FastCGI protocol is based on t
 By combining the Apache HTTP MPM module with PHP's FastCGI, process Manager (PHP-FPM), websites can load faster and handle more concurrent connections using fewer resources.
 <br><br/>
 ## 2. System Requirements
-> OS: FreeBSD 13.2
-> Web Server: Apache24
+> OS: FreeBSD 13.2.  
+> Web Server: Apache24.   
 > Modul: PHP82 dan mod_php
 
 Before you continue reading this article, it is recommended that you read the previous article which discusses the configuration and installation of apache24, PHP82 and the mod_php module.
@@ -150,9 +150,11 @@ The method above is to connect Apache to the PHP-FPM server using the TCP/IP pro
 
 Open the file /usr/local/etc/php-fpm.d/www.conf, and change the script "listen = 192.168.5.2:9000" to "listen = /tmp/php-fpm.sock".
 
-> listen = 192.168.5.2:9000
-> change with
-> listen = /tmp/php-fpm.sock
+```
+listen = 192.168.5.2:9000
+      change with
+listen = /tmp/php-fpm.sock
+```
 
 Then in the file /usr/local/etc/apache24/Includes/php-fpm.conf, type the script below.
 
