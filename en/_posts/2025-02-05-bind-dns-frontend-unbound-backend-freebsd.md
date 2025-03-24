@@ -16,10 +16,10 @@ An important part of managing server configuration and infrastructure involves m
 
 Setting up private DNS for your private network is a great way to improve your server management and prevent hacker attacks.<br><br/>
 ## System Specifications
-> OS: FreeBSD 13.2-STABLE 
-> CPU: AMD Phenom II X4 965 3400 MHz 
-> IP LAN: 192.168.5.2/24 
-> Domain: unixexplore.com 
+> OS: FreeBSD 13.2-STABLE
+> CPU: AMD Phenom II X4 965 3400 MHz
+> IP LAN: 192.168.5.2/24
+> > Domain: unixexplore.com 
 > IP Unbound: 192.168.5.2 
 > Port Unbound: 853 
 > Unbound Version: 1.17.1 
