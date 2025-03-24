@@ -18,7 +18,7 @@ phpLDAPadmin is popular among LDAP administrators because it is platform indepen
 
 If you are going to use phpLDAPadmin from an unsecured public network, start by ensuring that your Apache HTTP server is properly configured to accept HTTPS connections with SSL. If your Apache HTTP server does not have SSL support, your LDAP login and password will be transmitted over the network "in the clear" and could be exposed to unauthorized persons.
 
-In this article we will learn how to install and configure phpLDAPadmin on a FreeBSD 13.2 system.<br><br/>
+In this article we will learn how to install and configure phpLDAPadmin on a [FreeBSD 13.2 system](https://www.freebsd.org/).<br><br/>
 ## 1. PHP and Apache24 Mod Installation
 mod_php is an Apache module that allows PHP code to be executed directly by the Apache web server. This means that when a client (such as a web browser) requests a PHP page, the server can execute the PHP code and return the resulting HTML to the client, without requiring a separate PHP language interpreter. This can improve the performance and scalability of PHP applications, as it reduces the costs of starting and managing separate PHP processes. However, this also means that all PHP code runs with the same permissions as the Apache24 web server, which can pose security issues.
 
