@@ -14,8 +14,7 @@ keywords: mail server, openbsd, freebsd, email, email server, private, public
 
 If there is a need to create your own email server for your company or personal use for free (it’s actual for small businesses) so this information gives the point of interest. As a result, the mail can be sent over the world via your free mail server for the domain.  
 
-Why could we make our own email server?  
-
+Why could we make our own email server?<br><br/>
 ## 1.  Advantages of a private email server
 
 ### a. Our own mail domain
