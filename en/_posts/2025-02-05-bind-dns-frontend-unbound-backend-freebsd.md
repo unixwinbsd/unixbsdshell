@@ -12,3 +12,8 @@ excerpt: An important part of managing server configuration and infrastructure i
 keywords: freebsd, dns, server, isc, unbound, caching, resolver, backend, frontend
 ---
 
+An important part of managing server configuration and infrastructure involves maintaining and finding a way to find network interfaces and IP addresses by name website. One way to do this is to set up a Domain Name System (DNS). Use a fully qualified domain name (FQDN). Determining the domain name on a server will make configuration easier, make maintenance easier and improve application service performance.
+
+Setting up private DNS for your private network is a great way to improve your server management and prevent hacker attacks.
+
+
