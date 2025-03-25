@@ -85,6 +85,7 @@ If you choose the SSH authentication method, the following options will appear:
 How would you like to authenticate GitHub CLI? [Use arrows to move, type to filter]
 
 > Login with a web browser
+> 
 > Paste an authentication token  
 
 Choose one of the two options, for example you would choose "Paste an authentication token". You must create a token on your Github account. The method:
