@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Checking the Status of Open Ports on Windows and FreeBSD  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Checking the Status of Open Ports on Windows and FreeBSD"><link rel="canonical" href="https://penaadventure.com/en/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/">
+  <meta property="og:url" content="https://penaadventure.com/en/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/"><meta property="og:description" content="You can scan the network system and find out which computers have open ports."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Checking the Status of Open Ports on Windows and FreeBSD">
+  <meta name="twitter:description" content="You can scan the network system and find out which computers have open ports.">
+  <meta name="twitter:url" content="https://penaadventure.com/en/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-19T17:01:10+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#en" itemprop="item"><span itemprop="name">En</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#19" itemprop="item"><span itemprop="name">19</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Checking the Status of Open Ports on Windows and FreeBSD</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-01-19 17:01:10 +0300",
+"datePublished": "2025-01-19 17:01:10 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Checking the Status of Open Ports on Windows and FreeBSD",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "You can scan the network system and find out which computers have open ports."
+},
+
+"datePublished": "2025-01-19 17:01:10 +0300",
+"dateModified": "2025-01-19 17:01:10 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/en/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/",
+"name": "Checking the Status of Open Ports on Windows and FreeBSD"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/en/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/",
+"name": "freebsd,,openbsd,,linux.,ubuntu,,windows"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/en/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/",
+  "name": "Checking the Status of Open Ports on Windows and FreeBSD",
+  "headline": "Checking the Status of Open Ports on Windows and FreeBSD",
+  "keywords": "freebsd,,openbsd,,linux.,ubuntu,,windows",
+  "description": "You can scan the network system and find out which computers have open ports.",
+  "articleBody": "In this article we will not explain any more, the importance of noting open ports on your computer system. If you are looking for a way to find out which ports are wide open on the computer you are using, you are on the right blog. Keep reading the contents of this article, until you understand how to read the currently open ports.\n\nThe biggest problem for a network system administrator is open ports on devices. Even if you don’t install the applications on these ports, if left unchecked, you will be at risk of an attack that will damage your computer system.\n\nYou can scan the network system and find out which computers have open ports. When you know the location of open ports, you can check the information against your master list and immediately take action to close all unnecessary ports.\n\nPort scanning is carried out to determine which ports of computers on your network are open. Through open ports, we can find possible vulnerabilities in the target host and fix them in time. Therefore, host port scanning can help us better understand the target host and is the first step to properly strengthen security.\n\nBy adopting TCP full connection technology we can achieve port scanning. The scanning host tries (using a TCP three-way handshake) to establish a regular connection with the designated port of the destination host, as shown in the following Figure.\n\nIn this tutorial, you will learn how to check for open ports in Windows and FreeBSD operating systems using a handy command line tool that you can run in the Command Line shell.\n1. View Open Windows ports\nNetstat is a general purpose command line utility included with the Windows operating system. Its functions include displaying the network status with all the necessary details. Users use the built-in syntax to filter results or define additional actions available in the Netstat utility. The content of this article will also describe in detail the available methods for viewing open ports using the Netstat utility.\n\nSince Netstat is one of the console command applications, you need to run “CMD” to run it. Open the Start menu, find “Command Prompt” there, and launch it.\n\na. Displays all connections\nTo see the entire list of open ports in Windows use the “netstat -a” command in the CMD menu. The command will display all information about active connections from the ports that are currently open. This information is available for viewing without administrator rights and is displayed as follows:\n\nC:\\Users\\opensource&gt;netstat -a\n\nb. Identify Open Ports\nNetstat is short for network statistics. By using Netstat we can see TCP and IP network protocol and connection statistics on the server or client computer that is being used. Use the netstat -ab and netstat -aon commands to identify open ports.\n\nBelow is the meaning and explanation of the command\n\n  a =  Displays information about all connections.\n  b =  shows all executables involved in creating each listening port.\n  o =  provides the owning process ID related to each connection.\n  n = shows the addresses and port numbers as numerals.\n  more= Paginated output of elements\n\n\nIn the CMD shell menu, run the following command.\n\nC:\\Users\\blogspot&gt;netstat -ab\nC:\\Users\\blogspot&gt;netstat -aon\n\n\n\n  \n    \n      You can also use the command “netstat -aon\n      more” to display pagination of open ports.\n    \n  \n\n\nC:\\Users\\blogspot&gt;netstat -aon | more\n\n\nc. Search by content\nOther Netstat capabilities can display connections with certain parameters or addresses, for example only displaying listening ports.\n\nC:\\Users\\blogspot&gt;netstat -a | find /I \"LISTENING\"\n\n\nd. Write results to a text file\nAnother Netstat command is that it can save completed monitoring results to a text file. Run the following command to get the output in “txt” format.\n\nC:\\Users\\blogspot&gt;netstat -aon | more &gt; netstat.txt\n\n\n2. View open FreeBSD ports\nIf you are using a BSD operating system, such as FreeBSD or others, the Netstat command can also be used to find out which TCP/UDP ports can be listened to or opened, network connections, routing tables, interface statistics, masked connections, and multicast membership.\n\na. View connection status\nYou can use the Netstat command to view the TCP/UDP connection status. Run the following command to display TCP/UDP status.\n\nroot@ns3:~ # netstat -a -p tcp\nroot@ns3:~ # netstat -a -p udp\n\n\nb. View all sockets in the Listening state\nroot@ns3:~ # netstat -a | egrep 'Proto|LISTEN'\nroot@ns3:~ # netstat -a -p tcp | egrep 'Proto|LISTEN'\nroot@ns3:~ # netstat -a -p udp | egrep 'Proto|LISTEN'\n\n\nc. Display statistics for each protocol\n\nroot@ns3:~ # netstat -s\n\n\nd. View Open TCP and UDP Ports\n\nroot@ns3:~ # netstat -an | egrep \"^tcp|^udp\"\n\n\nAfter you read this article, you need to remember that using the Netstati utility does not eliminate the use of a personal firewall to protect the system, but rather complements it. You can fine-tune firewall rules based on data obtained from the NEtstat utility. For example, what ports are involved, and the addresses to which the program sends traffic. You can block applications, ports or addresses that we don’t like.\n",
+  "datePublished": "2025-01-19 17:01:10 +0300",
+  "dateModified": "2025-01-19 17:01:10 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Checking the Status of Open Ports on Windows and FreeBSD"><meta itemprop="description" content="You can scan the network system and find out which computers have open ports."><meta itemprop="datePublished" content="2025-01-19"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-19T17:01:10+03:00">2025-01-19</time> </p><h1 class="page__title" itemprop="headline">Checking the Status of Open Ports on Windows and FreeBSD
+</h1></header><section class="page__content" itemprop="text">
+        <p>In this article we will not explain any more, the importance of noting open ports on your computer system. If you are looking for a way to find out which ports are wide open on the computer you are using, you are on the right blog. Keep reading the contents of this article, until you understand how to read the currently open ports.</p>
+
+<p>The biggest problem for a network system administrator is open ports on devices. Even if you don’t install the applications on these ports, if left unchecked, you will be at risk of an attack that will damage your computer system.</p>
+
+<p>You can scan the network system and find out which computers have open ports. When you know the location of open ports, you can check the information against your master list and immediately take action to close all unnecessary ports.</p>
+
+<p>Port scanning is carried out to determine which ports of computers on your network are open. Through open ports, we can find possible vulnerabilities in the target host and fix them in time. Therefore, host port scanning can help us better understand the target host and is the first step to properly strengthen security.</p>
+
+<p>By adopting TCP full connection technology we can achieve port scanning. The scanning host tries (using a TCP three-way handshake) to establish a regular connection with the designated port of the destination host, as shown in the following Figure.</p>
+
+<p>In this tutorial, you will learn how to check for open ports in Windows and FreeBSD operating systems using a handy command line tool that you can run in the Command Line shell.<br /><br /></p>
+<h2 id="1-view-open-windows-ports">1. View Open Windows ports</h2>
+<p>Netstat is a general purpose command line utility included with the Windows operating system. Its functions include displaying the network status with all the necessary details. Users use the built-in syntax to filter results or define additional actions available in the Netstat utility. The content of this article will also describe in detail the available methods for viewing open ports using the Netstat utility.</p>
+
+<p>Since Netstat is one of the console command applications, you need to run “CMD” to run it. Open the Start menu, find “Command Prompt” there, and launch it.</p>
+
+<h3 id="a-displays-all-connections">a. Displays all connections</h3>
+<p>To see the entire list of open ports in Windows use the “netstat -a” command in the CMD menu. The command will display all information about active connections from the ports that are currently open. This information is available for viewing without administrator rights and is displayed as follows:</p>
+
+<p>C:\Users\opensource&gt;<strong>netstat -a</strong></p>
+
+<h3 id="b-identify-open-ports">b. Identify Open Ports</h3>
+<p>Netstat is short for network statistics. By using Netstat we can see TCP and IP network protocol and connection statistics on the server or client computer that is being used. Use the netstat -ab and netstat -aon commands to identify open ports.</p>
+
+<p>Below is the meaning and explanation of the command</p>
+<ul>
+  <li>a =  Displays information about all connections.</li>
+  <li>b =  shows all executables involved in creating each listening port.</li>
+  <li>o =  provides the owning process ID related to each connection.</li>
+  <li>n = shows the addresses and port numbers as numerals.</li>
+  <li>more= Paginated output of elements</li>
+</ul>
+
+<p>In the CMD shell menu, run the following command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\blogspot&gt;netstat -ab
+C:\Users\blogspot&gt;netstat -aon
+</code></pre></div></div>
+
+<table>
+  <tbody>
+    <tr>
+      <td>You can also use the command “netstat -aon</td>
+      <td>more” to display pagination of open ports.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\blogspot&gt;netstat -aon | more
+</code></pre></div></div>
+
+<h3 id="c-search-by-content">c. Search by content</h3>
+<p>Other Netstat capabilities can display connections with certain parameters or addresses, for example only displaying listening ports.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\blogspot&gt;netstat -a | find /I "LISTENING"
+</code></pre></div></div>
+
+<h3 id="d-write-results-to-a-text-file">d. Write results to a text file</h3>
+<p>Another Netstat command is that it can save completed monitoring results to a text file. Run the following command to get the output in “txt” format.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\Users\blogspot&gt;netstat -aon | more &gt; netstat.txt
+</code></pre></div></div>
+<p><br /><br /></p>
+<h2 id="2-view-open-freebsd-ports">2. View open FreeBSD ports</h2>
+<p>If you are using a BSD operating system, such as FreeBSD or others, the Netstat command can also be used to find out which TCP/UDP ports can be listened to or opened, network connections, routing tables, interface statistics, masked connections, and multicast membership.</p>
+
+<h3 id="a-view-connection-status">a. View connection status</h3>
+<p>You can use the Netstat command to view the TCP/UDP connection status. Run the following command to display TCP/UDP status.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # netstat -a -p tcp
+root@ns3:~ # netstat -a -p udp
+</code></pre></div></div>
+
+<h3 id="b-view-all-sockets-in-the-listening-state">b. View all sockets in the Listening state</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # netstat -a | egrep 'Proto|LISTEN'
+root@ns3:~ # netstat -a -p tcp | egrep 'Proto|LISTEN'
+root@ns3:~ # netstat -a -p udp | egrep 'Proto|LISTEN'
+</code></pre></div></div>
+
+<h3 id="c-display-statistics-for-each-protocol">c. Display statistics for each protocol</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # netstat -s
+</code></pre></div></div>
+
+<h3 id="d-view-open-tcp-and-udp-ports">d. View Open TCP and UDP Ports</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # netstat -an | egrep "^tcp|^udp"
+</code></pre></div></div>
+
+<p>After you read this article, you need to remember that using the Netstati utility does not eliminate the use of a personal firewall to protect the system, but rather complements it. You can fine-tune firewall rules based on data obtained from the NEtstat utility. For example, what ports are involved, and the addresses to which the program sends traffic. You can block applications, ports or addresses that we don’t like.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-19T17:01:10+03:00">2025-01-19</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#freebsd" class="page__taxonomy-item" rel="tag">freebsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#openbsd" class="page__taxonomy-item" rel="tag">openbsd</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#ubuntu" class="page__taxonomy-item" rel="tag">ubuntu</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#linux" class="page__taxonomy-item" rel="tag">linux.</a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#" class="page__taxonomy-item" rel="tag"></a><span class="sep">, </span><a href="https://penaadventure.com/tags/#windows" class="page__taxonomy-item" rel="tag">windows</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#en" class="page__taxonomy-item" rel="tag">en</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/" class="pagination--pager" title="Build Instructions OBS Studio For GhostBSD Desktop FreeBSD
+">Previous</a><a href="https://penaadventure.com/en/freebsd/2025/01/20/complete-guide-phpldapadmin-freebsd-ldap/" class="pagination--pager" title="Complete Guide  phpldapadmin PHP Application To Administrator LDAP Over The Web
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

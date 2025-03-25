@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2025/01/01/freebsd-cgi-bin-enable-mod-perl.apache/"/>
+
+  <meta charset="utf-8">
+  
+  <title>FreeBSD CGI BIN Включение mod PERL на Apache24  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="FreeBSD CGI BIN Включение mod PERL на Apache24"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2025/01/01/freebsd-cgi-bin-enable-mod-perl.apache/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2025/01/01/freebsd-cgi-bin-enable-mod-perl.apache/"><meta property="og:description" content="Моды perl, установленные на FreeBSD, — это больше, чем просто скрипты CGI на стероидах. Моды perl — это новый способ создания динамического контента"><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="FreeBSD CGI BIN Включение mod PERL на Apache24">
+  <meta name="twitter:description" content="Моды perl, установленные на FreeBSD, — это больше, чем просто скрипты CGI на стероидах. Моды perl — это новый способ создания динамического контента">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2025/01/01/freebsd-cgi-bin-enable-mod-perl.apache/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-01T09:01:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2025/01/01/freebsd-cgi-bin-enable-mod-perl.apache/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#ru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">FreeBSD CGI BIN Включение mod PERL на Apache24</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-01-01 09:01:00 +0300",
+"datePublished": "2025-01-01 09:01:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "FreeBSD CGI BIN Включение mod PERL на Apache24",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "Моды perl, установленные на FreeBSD, — это больше, чем просто скрипты CGI на стероидах. Моды perl — это новый способ создания динамического контента"
+},
+
+"datePublished": "2025-01-01 09:01:00 +0300",
+"dateModified": "2025-01-01 09:01:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/ru/freebsd/2025/01/01/freebsd-cgi-bin-enable-mod-perl.apache/",
+"name": "FreeBSD CGI BIN Включение mod PERL на Apache24"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/ru/freebsd/2025/01/01/freebsd-cgi-bin-enable-mod-perl.apache/",
+"name": "WebServer"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/ru/freebsd/2025/01/01/freebsd-cgi-bin-enable-mod-perl.apache/",
+  "name": "FreeBSD CGI BIN Включение mod PERL на Apache24",
+  "headline": "FreeBSD CGI BIN Включение mod PERL на Apache24",
+  "keywords": "WebServer",
+  "description": "Моды perl, установленные на FreeBSD, — это больше, чем просто скрипты CGI на стероидах. Моды perl — это новый способ создания динамического контента",
+  "articleBody": "Perl mod — это модуль языка программирования Perl, который вставляется в веб-сервер Apache24. Моды Perl можно использовать для управления веб-сервером Apache24, ответа на запросы веб-страниц и многого другого.\n\nМоды Perl, установленные на FreeBSD, — это больше, чем просто скрипты CGI на стероидах. Моды Perl — это новый способ создания динамического контента, использующий всю мощь веб-сервера Apache для сохранения состояния веб-сайта. Настраиваемая система аутентификации пользователей, более мощное использование прокси-сервера и многое другое. Однако, как ни странно, ваш старый скрипт CGI продолжит работать и работать очень быстро. С модом Perl вы получите больше преимуществ от производительности мода Perl, интегрированного в Apache24.\n\nВ этой статье объясняется, как включить моды Perl на Apache24. В этой статье моды Perl и Apache24 будут установлены одновременно на системе FreeBSD 13.2.\n\n1. Установка CGI-мод Apache24 Perl\nЧтобы использовать функцию мода Perl, сначала необходимо установить веб-сервер Apache24. Ниже приведено руководство по установке модов Perl на Apache24.\n\nroot@ns1:~ # cd /usr/ports/www/apache24\nroot@ns1:/usr/ports/www/apache24 # make install clean\n\n\nПосле успешной установки apache24 можно продолжить установку модуля perl.\n\nroot@ns1:~ # cd /usr/ports/www/mod_perl2\nroot@ns1:/usr/ports/www/mod_perl2 # make install clean\nroot@ns1:~ # cd /usr/ports/databases/p5-DBI\nroot@ns1:/usr/ports/databases/p5-DBI # make install clean\nroot@ns1:~ # cd /usr/ports/www/p5-Apache-DBI\nroot@ns1:/usr/ports/www/p5-Apache-DBI # make install clean\n\n\nОткройте файл /usr/local/etc/apache24/httpd.conf, активируйте ServerName, удалив знак «#» перед скриптом.\n\n#ServerName www.example.com:80\n\nИзменить с\n\nServerName www.unixexplore.com:80\n\nwww.example.com меняется на доменное имя на вашем сервере FreeBSD, в этом случае доменное имя, которое я установил в файле /etc/hosts, это unixexplore.com. Если вы не указали доменное имя в файле /etc/hosts, пожалуйста, создайте доменное имя, обратите внимание на следующий пример записи доменного имени в файле /etc/hosts.\n\nroot@ns1:~ # ee /etc/hosts\n::1                             localhost   localhost.unixexplore.com\n127.0.0.1                       localhost   localhost.unixexplore.com\n192.168.5.2                     ns1            ns1.unixexplore.com\n192.168.5.2                     www.unixexplore.com\n\n\nВсе еще в файле /usr/local/etc/apache24/httpd.conf, после скрипта.\n\n&lt;Directory \"/usr/local/www/apache24/cgi-bin\"&gt;\n    AllowOverride None\n    Options None\n    Require all granted\n&lt;/Directory&gt;\n\n\nНиже вы добавляете следующий скрипт.\n\n&lt;Location /cgi-bin/*.pl&gt;\n    SetHandler perl-script\n    PerlResponseHandler ModPerl::PerlRun\n    PerlSendHeader On\n    Options ExecCGI\n    Require all granted\n&lt;/Location&gt;\n&lt;Location /cgi-bin/*.cgi&gt;\n    SetHandler perl-script\n    PerlResponseHandler ModPerl::PerlRun\n    PerlSendHeader On\n    Options ExecCGI\n    Require all granted\n&lt;/Location&gt;\n\n\nТеперь откройте файл /usr/local/etc/apache24/modules.d/260_mod_perl.conf и активируйте модуль perl, удалив знак «#» в следующем скрипте.\n\n#LoadModule perl_module        libexec/apache24/mod_perl.so\n\nRemove the sign “#” thus becoming\n\nLoadModule perl_module        libexec/apache24/mod_perl.so\n\nПосле завершения настройки Apache24 введите следующий скрипт в файл /etc/rc.conf.\n\nroot@ns1:~ # ee /etc/rc.conf\napache24_enable=\"YES\"\n\n\nПерезапустите веб-сервер Apache24.\n\nroot@ns1:~ # service apache24 restart\n\n\n2. Тест Apache24 Perl mod CGI\nЧтобы протестировать этот Perl mod, мы создадим тестовый файл с именем “test.cgi”, который будет помещен в папку /usr/local/www/apache24/cgi-bin. Вот как создать файл.\n\nroot@ns1:~ # touch /usr/local/www/apache24/cgi-bin/test.cgi\n\n\nДайте разрешения файлу /usr/local/www/apache24/cgi-bin/test.cgi.\n\nroot@ns1:~ # chmod 755 /usr/local/www/apache24/cgi-bin/test.cgi\n\n\nПредоставьте права собственности на файл /usr/local/www/apache24/cgi-bin/test.cgi или папку /usr/local/www/apache24/.\n\nroot@ns1:~ # chown -R www:www /usr/local/www/apache24/\nroot@ns1:~ # chown -R www:www /usr/local/www/apache24/cgi-bin/test.cgi\n\n\nТеперь откройте файл /usr/local/www/apache24/cgi-bin/test.cgi и введите приведенный ниже скрипт. Используйте редактор «ee» или редактор «nano» для ввода следующего скрипта.\n\nroot@ns1:~ # ee /usr/local/www/apache24/cgi-bin/test.cgi\n#!/usr/local/bin/perl\nprint \"Content-Type: text/html; charset=utf-8 \\n\\n\";\nprint \"&lt;h1&gt;Congratulations on successfully configuring the Perl mod on Apache24!&lt;/h1&gt;\";\n\n\nПерезапустите веб-сервер Apache24.\n\nroot@ns1:~ # service apache24 restart\n\n\nПосле перезапуска проведите тест, открыв браузер Яндекс или Google Chrome. Введите в браузере следующую команду.\n\nhttp://192.168.5.2/cgi-bin/test.cgi\n\n\nПомните, IP 192.168.5.2 — это IP частного сервера FreeBSD. Если нет неправильных конфигураций, появится сообщение:\n\nCongratulations on successfully configuring the Perl mod on Apache24!\n\n",
+  "datePublished": "2025-01-01 09:01:00 +0300",
+  "dateModified": "2025-01-01 09:01:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="FreeBSD CGI BIN Включение mod PERL на Apache24"><meta itemprop="description" content="Моды perl, установленные на FreeBSD, — это больше, чем просто скрипты CGI на стероидах. Моды perl — это новый способ создания динамического контента"><meta itemprop="datePublished" content="2025-01-01"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-01T09:01:00+03:00">2025-01-01</time> </p><h1 class="page__title" itemprop="headline">FreeBSD CGI BIN Включение mod PERL на Apache24
+</h1></header><section class="page__content" itemprop="text">
+        <p>Perl mod — это модуль языка программирования Perl, который вставляется в веб-сервер Apache24. Моды Perl можно использовать для управления веб-сервером Apache24, ответа на запросы веб-страниц и многого другого.</p>
+
+<p>Моды Perl, установленные на FreeBSD, — это больше, чем просто скрипты CGI на стероидах. Моды Perl — это новый способ создания динамического контента, использующий всю мощь веб-сервера Apache для сохранения состояния веб-сайта. Настраиваемая система аутентификации пользователей, более мощное использование прокси-сервера и многое другое. Однако, как ни странно, ваш старый скрипт CGI продолжит работать и работать очень быстро. С модом Perl вы получите больше преимуществ от производительности мода Perl, интегрированного в Apache24.</p>
+
+<p>В этой статье объясняется, как включить моды Perl на Apache24. В этой статье моды Perl и Apache24 будут установлены одновременно на системе FreeBSD 13.2.</p>
+
+<h2 id="1-установка-cgi-мод-apache24-perl">1. Установка CGI-мод Apache24 Perl</h2>
+<p>Чтобы использовать функцию мода Perl, сначала необходимо установить веб-сервер Apache24. Ниже приведено руководство по установке модов Perl на Apache24.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # cd /usr/ports/www/apache24
+root@ns1:/usr/ports/www/apache24 # make install clean
+</code></pre></div></div>
+
+<p>После успешной установки apache24 можно продолжить установку модуля perl.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # cd /usr/ports/www/mod_perl2
+root@ns1:/usr/ports/www/mod_perl2 # make install clean
+root@ns1:~ # cd /usr/ports/databases/p5-DBI
+root@ns1:/usr/ports/databases/p5-DBI # make install clean
+root@ns1:~ # cd /usr/ports/www/p5-Apache-DBI
+root@ns1:/usr/ports/www/p5-Apache-DBI # make install clean
+</code></pre></div></div>
+
+<p>Откройте файл /usr/local/etc/apache24/httpd.conf, активируйте ServerName, удалив знак «#» перед скриптом.</p>
+
+<p>#ServerName www.example.com:80</p>
+
+<p>Изменить с</p>
+
+<p>ServerName www.unixexplore.com:80</p>
+
+<p>www.example.com меняется на доменное имя на вашем сервере FreeBSD, в этом случае доменное имя, которое я установил в файле /etc/hosts, это unixexplore.com. Если вы не указали доменное имя в файле /etc/hosts, пожалуйста, создайте доменное имя, обратите внимание на следующий пример записи доменного имени в файле /etc/hosts.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /etc/hosts
+::1                             localhost   localhost.unixexplore.com
+127.0.0.1                       localhost   localhost.unixexplore.com
+192.168.5.2                     ns1            ns1.unixexplore.com
+192.168.5.2                     www.unixexplore.com
+</code></pre></div></div>
+
+<p>Все еще в файле /usr/local/etc/apache24/httpd.conf, после скрипта.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Directory "/usr/local/www/apache24/cgi-bin"&gt;
+    AllowOverride None
+    Options None
+    Require all granted
+&lt;/Directory&gt;
+</code></pre></div></div>
+
+<p>Ниже вы добавляете следующий скрипт.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Location /cgi-bin/*.pl&gt;
+    SetHandler perl-script
+    PerlResponseHandler ModPerl::PerlRun
+    PerlSendHeader On
+    Options ExecCGI
+    Require all granted
+&lt;/Location&gt;
+&lt;Location /cgi-bin/*.cgi&gt;
+    SetHandler perl-script
+    PerlResponseHandler ModPerl::PerlRun
+    PerlSendHeader On
+    Options ExecCGI
+    Require all granted
+&lt;/Location&gt;
+</code></pre></div></div>
+
+<p>Теперь откройте файл /usr/local/etc/apache24/modules.d/260_mod_perl.conf и активируйте модуль perl, удалив знак «#» в следующем скрипте.</p>
+
+<p>#LoadModule perl_module        libexec/apache24/mod_perl.so</p>
+
+<p>Remove the sign “#” thus becoming</p>
+
+<p>LoadModule perl_module        libexec/apache24/mod_perl.so</p>
+
+<p>После завершения настройки Apache24 введите следующий скрипт в файл /etc/rc.conf.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /etc/rc.conf
+apache24_enable="YES"
+</code></pre></div></div>
+
+<p>Перезапустите веб-сервер Apache24.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # service apache24 restart
+</code></pre></div></div>
+
+<h2 id="2-тест-apache24-perl-mod-cgi">2. Тест Apache24 Perl mod CGI</h2>
+<p>Чтобы протестировать этот Perl mod, мы создадим тестовый файл с именем “test.cgi”, который будет помещен в папку /usr/local/www/apache24/cgi-bin. Вот как создать файл.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # touch /usr/local/www/apache24/cgi-bin/test.cgi
+</code></pre></div></div>
+
+<p>Дайте разрешения файлу /usr/local/www/apache24/cgi-bin/test.cgi.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # chmod 755 /usr/local/www/apache24/cgi-bin/test.cgi
+</code></pre></div></div>
+
+<p>Предоставьте права собственности на файл /usr/local/www/apache24/cgi-bin/test.cgi или папку /usr/local/www/apache24/.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # chown -R www:www /usr/local/www/apache24/
+root@ns1:~ # chown -R www:www /usr/local/www/apache24/cgi-bin/test.cgi
+</code></pre></div></div>
+
+<p>Теперь откройте файл /usr/local/www/apache24/cgi-bin/test.cgi и введите приведенный ниже скрипт. Используйте редактор «ee» или редактор «nano» для ввода следующего скрипта.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /usr/local/www/apache24/cgi-bin/test.cgi
+#!/usr/local/bin/perl
+print "Content-Type: text/html; charset=utf-8 \n\n";
+print "&lt;h1&gt;Congratulations on successfully configuring the Perl mod on Apache24!&lt;/h1&gt;";
+</code></pre></div></div>
+
+<p>Перезапустите веб-сервер Apache24.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # service apache24 restart
+</code></pre></div></div>
+
+<p>После перезапуска проведите тест, открыв браузер Яндекс или Google Chrome. Введите в браузере следующую команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://192.168.5.2/cgi-bin/test.cgi
+</code></pre></div></div>
+
+<p>Помните, IP 192.168.5.2 — это IP частного сервера FreeBSD. Если нет неправильных конфигураций, появится сообщение:</p>
+
+<p>Congratulations on successfully configuring the Perl mod on Apache24!</p>
+
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-01T09:01:00+03:00">2025-01-01</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#webserver" class="page__taxonomy-item" rel="tag">WebServer</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2024/12/18/freebsd-knot-resover-dns-caching-resolver/" class="pagination--pager" title="FreeBSD Knot Resolver — реализация DNS Caching Resolver
+">Previous</a><a href="https://penaadventure.com/ru/linux/2025/01/02/install-mariadb-database-server-linux-ubuntu/" class="pagination--pager" title="Как установить сервер базы данных MariaDB на Linux Ubuntu
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

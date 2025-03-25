@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Configuring OpenBSD to Use Freeradius Auth with MySQL Server  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Configuring OpenBSD to Use Freeradius Auth with MySQL Server"><link rel="canonical" href="https://penaadventure.com/en/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/">
+  <meta property="og:url" content="https://penaadventure.com/en/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/"><meta property="og:description" content="FreeRADIUS is an excellent free server and provides centralized authentication and authorization services for devices including switches, routers, VPN gateways, and Wi-Fi access points"><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Configuring OpenBSD to Use Freeradius Auth with MySQL Server">
+  <meta name="twitter:description" content="FreeRADIUS is an excellent free server and provides centralized authentication and authorization services for devices including switches, routers, VPN gateways, and Wi-Fi access points">
+  <meta name="twitter:url" content="https://penaadventure.com/en/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-10T15:11:10+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#en" itemprop="item"><span itemprop="name">En</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#openbsd" itemprop="item"><span itemprop="name">Openbsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#10" itemprop="item"><span itemprop="name">10</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Configuring OpenBSD to Use Freeradius Auth with MySQL Server</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-01-10 15:11:10 +0300",
+"datePublished": "2025-01-10 15:11:10 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Configuring OpenBSD to Use Freeradius Auth with MySQL Server",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "FreeRADIUS is an excellent free server and provides centralized authentication and authorization services for devices including switches, routers, VPN gateways, and Wi-Fi access points"
+},
+
+"datePublished": "2025-01-10 15:11:10 +0300",
+"dateModified": "2025-01-10 15:11:10 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/en/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/",
+"name": "Configuring OpenBSD to Use Freeradius Auth with MySQL Server"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/en/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/",
+"name": "DataBase"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/en/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/",
+  "name": "Configuring OpenBSD to Use Freeradius Auth with MySQL Server",
+  "headline": "Configuring OpenBSD to Use Freeradius Auth with MySQL Server",
+  "keywords": "DataBase",
+  "description": "FreeRADIUS is an excellent free server and provides centralized authentication and authorization services for devices including switches, routers, VPN gateways, and Wi-Fi access points",
+  "articleBody": "In modern enterprise network architecture, it has a complex and complicated structure. Lots of devices are connected to each other simultaneously, making it convenient for offenders and anyone with illegal intentions. To overcome this problem, a mechanism for recording subject information in the network was developed. A RADIUS server that can provide 3 security functions: authentication, authorization and accounting. Every step in the system will be logged and all records and entry points will be monitored.\n\nFreeRADIUS is an excellent free server and provides centralized authentication and authorization services for devices including switches, routers, VPN gateways, and Wi-Fi access points. Its unique ability to manage user access to network resources based on various parameters such as identity, location, device characteristics and time of day, makes it a versatile solution for enterprise, education and service provider networks.\n\nThe server supports multiple authentication methods and can integrate with external databases such as SQL, LDAP, and Kerberos to efficiently store and retrieve user and device information. With its scalability, flexibility and reliability, FreeRADIUS remains the top choice for organizations requiring a reliable and customizable RADIUS solution.\n\n1. Installing and configuring FreeRADIUS\na. Update package PKG\nBefore installing any software, we need to update the indexes and packages in OpenBSD.\n\nns3# pkg_add -uvi\n\n\nb. Install Freeradius\nInstall the Freeradius package with the pkg_add command.\n\nns3# pkg_add freeradius debug-freeradius-mysql freeradius-mysql\n\n\nc. Edit /etc/raddb/radiusd.conf\nFreeradius’ main configuration file is “radiusd.conf”. Before you configure other files, you must first edit radiusd.conf.\n\nBelow is an example of the complete radiusd.conf script.\n\nprefix = /usr/local\nexec_prefix = ${prefix}\nsysconfdir = /etc\nlocalstatedir = /var\nsbindir = ${exec_prefix}/sbin\nlogdir = ${localstatedir}/log/radius\nraddbdir = ${sysconfdir}/raddb\nradacctdir = ${logdir}/radacct\n\nname = radiusd\nconfdir = ${raddbdir}\nmodconfdir = ${confdir}/mods-config\ncertdir = ${confdir}/certs\ncadir   = ${confdir}/certs\nrun_dir = ${localstatedir}/run/${name}\ndb_dir = ${raddbdir}\n\n#libdir = /usr/local/lib/freeradius/freeradius\npidfile = ${run_dir}/${name}.pid\nmax_request_time = 30\n\ncleanup_delay = 5\nmax_requests = 16384\nhostname_lookups = no\n\nlog {\n\tdestination = files\n\tcolourise = yes\n\tfile = ${logdir}/radius.log\n\tsyslog_facility = daemon\n\tstripped_names = no\n\tauth = no\n\tauth_badpass = no\n\tauth_goodpass = no\n\tmsg_denied = \"You are already logged in - access denied\"\n}\ncheckrad = ${sbindir}/checkrad\n\nENV {\n}\n\nsecurity {\n###\tchroot = /etc/raddb\n\tuser = _freeradius\n\tgroup = _freeradius\n\tallow_core_dumps = no\n\tmax_attributes = 200\n\treject_delay = 1\n\tstatus_server = yes\n\tallow_vulnerable_openssl = no\n}\n\nproxy_requests  = yes\n$INCLUDE proxy.conf\n\n$INCLUDE clients.conf\n\nthread pool {\n\tstart_servers = 5\n\tmax_servers = 32\n\tmin_spare_servers = 3\n\tmax_spare_servers = 10\n\tmax_requests_per_server = 0\n\tauto_limit_acct = no\n}\n\n#$INCLUDE trigger.conf\nmodules {\n#\t$INCLUDE mods-enabled/sql\n\t$INCLUDE mods-enabled/\n}\n\ninstantiate {\n#\tdaily\n}\n\npolicy {\n\t$INCLUDE policy.d/\n}\n\n$INCLUDE sites-enabled/\n\n\nd. Create Client\nAs a basic example, we will create a client that can connect to the Freeradius server. In this example, we will create two clients that can connect directly to Freeradius:\nlocalhost client (127.0.0.1)\npfsense client (192.168.5.3).\n\nBelow is an example of a complete /etc/raddb/clients.conf script.\n\nclient localhost {\n\tipaddr = 127.0.0.1\n#\tipv6addr = ::\t# any.  ::1 == localhost\n\tproto = *\n\tsecret = testing123\n\trequire_message_authenticator = no\n#\tshortname = localhost\n\tnas_type\t = other\t# localhost isn't usually a NAS...\n\tlimit {\n\t\tmax_connections = 16\n\t\tlifetime = 0\n\t\tidle_timeout = 30\n\t}\n}\n\nclient pfsense {\n\tipaddr = 192.168.5.3\n\tsecret = router123\n\tshortname = router\n\tlimit {\n\t\tmax_connections = 16\n\t\tlifetime = 0\n\t\tidle_timeout = 30\n\t}\n}\n\n\ne. Create Users\nNext, create a user and password that can use Freeradius. Below is the complete script /etc/raddb/mods-config/files/authorize.\n\n#bob\tCleartext-Password := \"hello\"\n#\tReply-Message := \"Hello, %{User-Name}\"\n#\"John Doe\"\tCleartext-Password := \"hello\"\n#\t\tReply-Message = \"Hello, %{User-Name}\"\n\nsteve Cleartext-Password := \"steve123\"\n\"MaryRose\" Cleartext-Password := \"mary123\"\n\n\nf. Ownership\nBy default the OpenBSD system has created the user and group _freeradius:_freeradius. Run the command below to grant ownership rights to Freeradius.\n\nns3# chown -R _freeradius:_freeradius /etc/raddb/\nns3# chown -R _freeradius:_freeradius /var/log/radius/\n\n\ng. Activate Freeradius\nThen we run Freeradius so that it can run as a daemon on OpenBSD. Run the following command to activate Freeradius.\n\nns3# rcctl enable freeradius\nns3# rcctl restart freeradius\n\n\nh. Test Freeradius\nIn this section we will examine users who can connect to the Freeradisu server. Look at the example below to check each user connected to Freeradius.\n\nns3# radtest steve steve123 192.168.5.3 1812 router123\nSent Access-Request Id 29 from 0.0.0.0:482e to 192.168.5.3:1812 length 75\n\tUser-Name = \"steve\"\n\tUser-Password = \"steve123\"\n\tNAS-IP-Address = 192.168.5.3\n\tNAS-Port = 1812\n\tMessage-Authenticator = 0x00\n\tCleartext-Password = \"steve123\"\nReceived Access-Accept Id 29 from 192.168.5.3:714 to 192.168.5.3:18478 length 20\n\n\nns3# radtest steve steve123 127.0.0.1 1812 testing123\nns3# radtest steve steve123 localhost 1812 testing123\nns3# radtest MaryRose mary123 192.168.5.3 1812 router123\n\n\n2. Create user Freeradius with MySQL server\nWhen FreeRadius is used together with Mariadb or MySQL, Freeradius will use a database which is usually called ‘radius’ and within that database there is a database table called ‘radcheck’. This table is the table we need to use to interact between Mariadb and Freeradius, because it contains all the user accounts that can be authenticated with FreeRadius.\n\nIt’s important to remember that like many other things, you can choose the username to use, the database name for something, and you can even choose to use a remote MySQL server! However for this tutorial we will assume that MySQL and FreeRadius are on the same server, and the database is called ‘radius’ and the user account we will use with MySQL is root.\n\nTo create a radius database, first log in to the Mariadb database with the root account, after that create a radius database, see the example below.\n\nns3# mysql -u root -p\nMariaDB [(none)]&gt; CREATE DATABASE radius;\nMariaDB [(none)]&gt; CREATE USER 'userradius'@'localhost' IDENTIFIED BY 'radius123';\nMariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON radius.* TO 'userradius'@'localhost';\nMariaDB [(none)]&gt; FLUSH PRIVILEGES;\nMariaDB [(none)]&gt; exit;\n\n\na. Create Freeradius schema\nFor the first step, we need to create a schema.sql file, which contains the tables that Freeradius needs to communicate with Maridb. You can find an example of a schema.sql file at /etc/raddb/mods-config/sql/main/mysql/schema.sql.\n\nImport the schema.sql script into the newly created radius database.\n\nns3# mysql -uroot -prouter123 radius &lt; /etc/raddb/mods-config/sql/main/mysql/schema.sql\n\n\nroot: Mariadb server user\nrouter123: Mariadb server password\n\nb. Create db user and client\nNow we will create a new user which will be stored in the radius database. Run the insert command to add a new user. For this example the user we will add is Beyoncé, and she will have the following login details:\n\nUsername: testuser\nPassword: mariadb123\n\nns3# mysql -u root -prouter123\nMariaDB [(none)]&gt; use radius;\nMariaDB [radius]&gt; INSERT INTO radcheck (id, username, attribute, op, value) VALUES (1001,'testuser','Cleartext-Password',':=','mariadb123');\n\n\nMariaDB [radius]&gt; INSERT INTO nas (nasname, shortname, type, ports, secret) VALUES ('192.168.5.3', 'router', 'other', 1812,'router123');\n\n\nc. Create Freeradius SQL Module\nOne of the functions of the Radius module is to connect Freeradius with other applications such as the Mariadb database. In this example we will connect freeradius with Mariadb. To make this connection, you change the /etc/raddb/mods-available/sql file. You can see an example of the complete script below.\n\nsql {\n\tdialect = \"mysql\"\n\tdriver = \"rlm_sql_mysql\"\n\tsqlite {\n\t\tfilename = \"/tmp/freeradius.db\"\n\t\tbusy_timeout = 200\n\t\tbootstrap = \"${modconfdir}/${..:name}/main/sqlite/schema.sql\"\n\t}\n\n\tmysql {\n\t\twarnings = auto\n\t}\n\n\tserver = \"localhost\"\n\tport = 3306\n\tlogin = \"userradius\"\n\tpassword = \"radius123\"\n\tradius_db = \"radius\"\n\tacct_table1 = \"radacct\"\n\tacct_table2 = \"radacct\"\n\tpostauth_table = \"radpostauth\"\n\tauthcheck_table = \"radcheck\"\n\tgroupcheck_table = \"radgroupcheck\"\n\tauthreply_table = \"radreply\"\n\tgroupreply_table = \"radgroupreply\"\n\tusergroup_table = \"radusergroup\"\n\tdelete_stale_sessions = yes\n\n\tpool {\n\t\tstart = ${thread[pool].start_servers}\n\t\tmin = ${thread[pool].min_spare_servers}\n\t\tmax = ${thread[pool].max_servers}\n\t\tspare = ${thread[pool].max_spare_servers}\n\t\tuses = 0\n\t\tretry_delay = 30\n\t\tlifetime = 0\n\t\tidle_timeout = 60\n\t\tmax_retries = 5\n\t}\n\tread_clients = yes\n\tclient_table = \"nas\"\n\tgroup_attribute = \"SQL-Group\"\n\t$INCLUDE ${modconfdir}/${.:name}/main/${dialect}/queries.conf\n}\n\n\nThen you continue by creating a symlink.\n\nns3# ln -s /etc/raddb/mods-available/sql /etc/raddb/mods-enabled/\n\n\nd. Enable sql option\nBecause in this article we will connect Freeradius to the Mariadb database server, we have to activate the “sql” option in the “default” and “inner-tunnel” files. The file is located in the /etc/raddb/sites-available directory.\n\nIn the “default” and “inner-tunnel” file scripts, you remove the “#” and “-” signs (“#sql” and “-sql”) so that it just becomes a “sql” script.\n\ne. Test Freeradius SQL Module\nThis section is the most important step, because we will test whether the Freeradius server is connected to the Mariadb server. We will test it with the user and password that we created with the SQL command above. Run the following command to test the Freeradius server.\n\nns3# radtest testuser mariadb123 192.168.5.3 1812 router123\n\n\nIn conclusion, Freeradius is a powerful and flexible tool for improving network security and performance. Freeradius allows unique credentials for each user, as there is no unified password that is shared among a number of people, this can prevent the threat of hackers infiltrating your network.\n",
+  "datePublished": "2025-01-10 15:11:10 +0300",
+  "dateModified": "2025-01-10 15:11:10 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Configuring OpenBSD to Use Freeradius Auth with MySQL Server"><meta itemprop="description" content="FreeRADIUS is an excellent free server and provides centralized authentication and authorization services for devices including switches, routers, VPN gateways, and Wi-Fi access points"><meta itemprop="datePublished" content="2025-01-10"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-10T15:11:10+03:00">2025-01-10</time> </p><h1 class="page__title" itemprop="headline">Configuring OpenBSD to Use Freeradius Auth with MySQL Server
+</h1></header><section class="page__content" itemprop="text">
+        <p>In modern enterprise network architecture, it has a complex and complicated structure. Lots of devices are connected to each other simultaneously, making it convenient for offenders and anyone with illegal intentions. To overcome this problem, a mechanism for recording subject information in the network was developed. A RADIUS server that can provide 3 security functions: authentication, authorization and accounting. Every step in the system will be logged and all records and entry points will be monitored.</p>
+
+<p>FreeRADIUS is an excellent free server and provides centralized authentication and authorization services for devices including switches, routers, VPN gateways, and Wi-Fi access points. Its unique ability to manage user access to network resources based on various parameters such as identity, location, device characteristics and time of day, makes it a versatile solution for enterprise, education and service provider networks.</p>
+
+<p>The server supports multiple authentication methods and can integrate with external databases such as SQL, LDAP, and Kerberos to efficiently store and retrieve user and device information. With its scalability, flexibility and reliability, FreeRADIUS remains the top choice for organizations requiring a reliable and customizable RADIUS solution.
+<br /><br /></p>
+<h2 id="1-installing-and-configuring-freeradius">1. Installing and configuring FreeRADIUS</h2>
+<h3 id="a-update-package-pkg">a. Update package PKG</h3>
+<p>Before installing any software, we need to update the indexes and packages in OpenBSD.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# pkg_add -uvi
+</code></pre></div></div>
+
+<h3 id="b-install-freeradius">b. Install Freeradius</h3>
+<p>Install the Freeradius package with the pkg_add command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# pkg_add freeradius debug-freeradius-mysql freeradius-mysql
+</code></pre></div></div>
+
+<h3 id="c-edit-etcraddbradiusdconf">c. Edit /etc/raddb/radiusd.conf</h3>
+<p>Freeradius’ main configuration file is “radiusd.conf”. Before you configure other files, you must first edit radiusd.conf.</p>
+
+<p>Below is an example of the complete radiusd.conf script.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>prefix = /usr/local
+exec_prefix = ${prefix}
+sysconfdir = /etc
+localstatedir = /var
+sbindir = ${exec_prefix}/sbin
+logdir = ${localstatedir}/log/radius
+raddbdir = ${sysconfdir}/raddb
+radacctdir = ${logdir}/radacct
+
+name = radiusd
+confdir = ${raddbdir}
+modconfdir = ${confdir}/mods-config
+certdir = ${confdir}/certs
+cadir   = ${confdir}/certs
+run_dir = ${localstatedir}/run/${name}
+db_dir = ${raddbdir}
+
+#libdir = /usr/local/lib/freeradius/freeradius
+pidfile = ${run_dir}/${name}.pid
+max_request_time = 30
+
+cleanup_delay = 5
+max_requests = 16384
+hostname_lookups = no
+
+log {
+	destination = files
+	colourise = yes
+	file = ${logdir}/radius.log
+	syslog_facility = daemon
+	stripped_names = no
+	auth = no
+	auth_badpass = no
+	auth_goodpass = no
+	msg_denied = "You are already logged in - access denied"
+}
+checkrad = ${sbindir}/checkrad
+
+ENV {
+}
+
+security {
+###	chroot = /etc/raddb
+	user = _freeradius
+	group = _freeradius
+	allow_core_dumps = no
+	max_attributes = 200
+	reject_delay = 1
+	status_server = yes
+	allow_vulnerable_openssl = no
+}
+
+proxy_requests  = yes
+$INCLUDE proxy.conf
+
+$INCLUDE clients.conf
+
+thread pool {
+	start_servers = 5
+	max_servers = 32
+	min_spare_servers = 3
+	max_spare_servers = 10
+	max_requests_per_server = 0
+	auto_limit_acct = no
+}
+
+#$INCLUDE trigger.conf
+modules {
+#	$INCLUDE mods-enabled/sql
+	$INCLUDE mods-enabled/
+}
+
+instantiate {
+#	daily
+}
+
+policy {
+	$INCLUDE policy.d/
+}
+
+$INCLUDE sites-enabled/
+</code></pre></div></div>
+
+<h3 id="d-create-client">d. Create Client</h3>
+<p>As a basic example, we will create a client that can connect to the Freeradius server. In this example, we will create two clients that can connect directly to Freeradius:
+localhost client (127.0.0.1)
+pfsense client (192.168.5.3).</p>
+
+<p>Below is an example of a complete /etc/raddb/clients.conf script.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>client localhost {
+	ipaddr = 127.0.0.1
+#	ipv6addr = ::	# any.  ::1 == localhost
+	proto = *
+	secret = testing123
+	require_message_authenticator = no
+#	shortname = localhost
+	nas_type	 = other	# localhost isn't usually a NAS...
+	limit {
+		max_connections = 16
+		lifetime = 0
+		idle_timeout = 30
+	}
+}
+
+client pfsense {
+	ipaddr = 192.168.5.3
+	secret = router123
+	shortname = router
+	limit {
+		max_connections = 16
+		lifetime = 0
+		idle_timeout = 30
+	}
+}
+</code></pre></div></div>
+
+<h3 id="e-create-users">e. Create Users</h3>
+<p>Next, create a user and password that can use Freeradius. Below is the complete script /etc/raddb/mods-config/files/authorize.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#bob	Cleartext-Password := "hello"
+#	Reply-Message := "Hello, %{User-Name}"
+#"John Doe"	Cleartext-Password := "hello"
+#		Reply-Message = "Hello, %{User-Name}"
+
+steve Cleartext-Password := "steve123"
+"MaryRose" Cleartext-Password := "mary123"
+</code></pre></div></div>
+
+<h3 id="f-ownership">f. Ownership</h3>
+<p>By default the OpenBSD system has created the user and group _freeradius:_freeradius. Run the command below to grant ownership rights to Freeradius.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# chown -R _freeradius:_freeradius /etc/raddb/
+ns3# chown -R _freeradius:_freeradius /var/log/radius/
+</code></pre></div></div>
+
+<h3 id="g-activate-freeradius">g. Activate Freeradius</h3>
+<p>Then we run Freeradius so that it can run as a daemon on OpenBSD. Run the following command to activate Freeradius.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# rcctl enable freeradius
+ns3# rcctl restart freeradius
+</code></pre></div></div>
+
+<h3 id="h-test-freeradius">h. Test Freeradius</h3>
+<p>In this section we will examine users who can connect to the Freeradisu server. Look at the example below to check each user connected to Freeradius.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# radtest steve steve123 192.168.5.3 1812 router123
+Sent Access-Request Id 29 from 0.0.0.0:482e to 192.168.5.3:1812 length 75
+	User-Name = "steve"
+	User-Password = "steve123"
+	NAS-IP-Address = 192.168.5.3
+	NAS-Port = 1812
+	Message-Authenticator = 0x00
+	Cleartext-Password = "steve123"
+Received Access-Accept Id 29 from 192.168.5.3:714 to 192.168.5.3:18478 length 20
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# radtest steve steve123 127.0.0.1 1812 testing123
+ns3# radtest steve steve123 localhost 1812 testing123
+ns3# radtest MaryRose mary123 192.168.5.3 1812 router123
+</code></pre></div></div>
+<p><br /><br /></p>
+<h2 id="2-create-user-freeradius-with-mysql-server">2. Create user Freeradius with MySQL server</h2>
+<p>When FreeRadius is used together with Mariadb or MySQL, Freeradius will use a database which is usually called ‘radius’ and within that database there is a database table called ‘radcheck’. This table is the table we need to use to interact between Mariadb and Freeradius, because it contains all the user accounts that can be authenticated with FreeRadius.</p>
+
+<p>It’s important to remember that like many other things, you can choose the username to use, the database name for something, and you can even choose to use a remote MySQL server! However for this tutorial we will assume that MySQL and FreeRadius are on the same server, and the database is called ‘radius’ and the user account we will use with MySQL is root.</p>
+
+<p>To create a radius database, first log in to the Mariadb database with the root account, after that create a radius database, see the example below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# mysql -u root -p
+MariaDB [(none)]&gt; CREATE DATABASE radius;
+MariaDB [(none)]&gt; CREATE USER 'userradius'@'localhost' IDENTIFIED BY 'radius123';
+MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON radius.* TO 'userradius'@'localhost';
+MariaDB [(none)]&gt; FLUSH PRIVILEGES;
+MariaDB [(none)]&gt; exit;
+</code></pre></div></div>
+
+<h3 id="a-create-freeradius-schema">a. Create Freeradius schema</h3>
+<p>For the first step, we need to create a schema.sql file, which contains the tables that Freeradius needs to communicate with Maridb. You can find an example of a schema.sql file at /etc/raddb/mods-config/sql/main/mysql/schema.sql.</p>
+
+<p>Import the schema.sql script into the newly created radius database.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# mysql -uroot -prouter123 radius &lt; /etc/raddb/mods-config/sql/main/mysql/schema.sql
+</code></pre></div></div>
+
+<p>root: Mariadb server user
+router123: Mariadb server password</p>
+
+<h3 id="b-create-db-user-and-client">b. Create db user and client</h3>
+<p>Now we will create a new user which will be stored in the radius database. Run the insert command to add a new user. For this example the user we will add is Beyoncé, and she will have the following login details:</p>
+
+<p>Username: testuser
+Password: mariadb123</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# mysql -u root -prouter123
+MariaDB [(none)]&gt; use radius;
+MariaDB [radius]&gt; INSERT INTO radcheck (id, username, attribute, op, value) VALUES (1001,'testuser','Cleartext-Password',':=','mariadb123');
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MariaDB [radius]&gt; INSERT INTO nas (nasname, shortname, type, ports, secret) VALUES ('192.168.5.3', 'router', 'other', 1812,'router123');
+</code></pre></div></div>
+
+<h3 id="c-create-freeradius-sql-module">c. Create Freeradius SQL Module</h3>
+<p>One of the functions of the Radius module is to connect Freeradius with other applications such as the Mariadb database. In this example we will connect freeradius with Mariadb. To make this connection, you change the /etc/raddb/mods-available/sql file. You can see an example of the complete script below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sql {
+	dialect = "mysql"
+	driver = "rlm_sql_mysql"
+	sqlite {
+		filename = "/tmp/freeradius.db"
+		busy_timeout = 200
+		bootstrap = "${modconfdir}/${..:name}/main/sqlite/schema.sql"
+	}
+
+	mysql {
+		warnings = auto
+	}
+
+	server = "localhost"
+	port = 3306
+	login = "userradius"
+	password = "radius123"
+	radius_db = "radius"
+	acct_table1 = "radacct"
+	acct_table2 = "radacct"
+	postauth_table = "radpostauth"
+	authcheck_table = "radcheck"
+	groupcheck_table = "radgroupcheck"
+	authreply_table = "radreply"
+	groupreply_table = "radgroupreply"
+	usergroup_table = "radusergroup"
+	delete_stale_sessions = yes
+
+	pool {
+		start = ${thread[pool].start_servers}
+		min = ${thread[pool].min_spare_servers}
+		max = ${thread[pool].max_servers}
+		spare = ${thread[pool].max_spare_servers}
+		uses = 0
+		retry_delay = 30
+		lifetime = 0
+		idle_timeout = 60
+		max_retries = 5
+	}
+	read_clients = yes
+	client_table = "nas"
+	group_attribute = "SQL-Group"
+	$INCLUDE ${modconfdir}/${.:name}/main/${dialect}/queries.conf
+}
+</code></pre></div></div>
+
+<p>Then you continue by creating a symlink.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# ln -s /etc/raddb/mods-available/sql /etc/raddb/mods-enabled/
+</code></pre></div></div>
+
+<h3 id="d-enable-sql-option">d. Enable sql option</h3>
+<p>Because in this article we will connect Freeradius to the Mariadb database server, we have to activate the “sql” option in the “default” and “inner-tunnel” files. The file is located in the /etc/raddb/sites-available directory.</p>
+
+<p>In the “default” and “inner-tunnel” file scripts, you remove the “#” and “-” signs (“#sql” and “-sql”) so that it just becomes a “sql” script.</p>
+
+<h3 id="e-test-freeradius-sql-module">e. Test Freeradius SQL Module</h3>
+<p>This section is the most important step, because we will test whether the Freeradius server is connected to the Mariadb server. We will test it with the user and password that we created with the SQL command above. Run the following command to test the Freeradius server.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns3# radtest testuser mariadb123 192.168.5.3 1812 router123
+</code></pre></div></div>
+
+<p>In conclusion, Freeradius is a powerful and flexible tool for improving network security and performance. Freeradius allows unique credentials for each user, as there is no unified password that is shared among a number of people, this can prevent the threat of hackers infiltrating your network.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-10T15:11:10+03:00">2025-01-10</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#database" class="page__taxonomy-item" rel="tag">DataBase</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#en" class="page__taxonomy-item" rel="tag">en</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#openbsd" class="page__taxonomy-item" rel="tag">OpenBSD</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/linux/2025/01/02/install-mariadb-database-server-linux-ubuntu/" class="pagination--pager" title="Как установить сервер базы данных MariaDB на Linux Ubuntu
+">Previous</a><a href="https://penaadventure.com/en/freebsd/2025/01/11/unbound-caching-dnssec-freebsd-dot/" class="pagination--pager" title="CONFIGURATION UNBOUND FOR CACHING DNSSEC AND DOT WITH FREEBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

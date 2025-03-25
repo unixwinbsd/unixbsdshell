@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Build Instructions OBS Studio For GhostBSD Desktop FreeBSD  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Build Instructions OBS Studio For GhostBSD Desktop FreeBSD"><link rel="canonical" href="https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/">
+  <meta property="og:url" content="https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/"><meta property="og:description" content="OBS Studio also supports many plugins that can expand its functionality to include features such as NDI support"><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Build Instructions OBS Studio For GhostBSD Desktop FreeBSD">
+  <meta name="twitter:description" content="OBS Studio also supports many plugins that can expand its functionality to include features such as NDI support">
+  <meta name="twitter:url" content="https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-18T14:11:10+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#en" itemprop="item"><span itemprop="name">En</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#18" itemprop="item"><span itemprop="name">18</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Build Instructions OBS Studio For GhostBSD Desktop FreeBSD</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-01-18 14:11:10 +0300",
+"datePublished": "2025-01-18 14:11:10 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Build Instructions OBS Studio For GhostBSD Desktop FreeBSD",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "OBS Studio also supports many plugins that can expand its functionality to include features such as NDI support"
+},
+
+"datePublished": "2025-01-18 14:11:10 +0300",
+"dateModified": "2025-01-18 14:11:10 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/",
+"name": "Build Instructions OBS Studio For GhostBSD Desktop FreeBSD"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/",
+"name": "SysAdmin"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/",
+  "name": "Build Instructions OBS Studio For GhostBSD Desktop FreeBSD",
+  "headline": "Build Instructions OBS Studio For GhostBSD Desktop FreeBSD",
+  "keywords": "SysAdmin",
+  "description": "OBS Studio also supports many plugins that can expand its functionality to include features such as NDI support",
+  "articleBody": "OBS stands for Open Broadcaster Software, a free, open source live video production software supported by a large community of developers from around the world. OBS can be used for live video production, live streaming, and video recording. When you first download and install OBS, the setup wizard will ask if you want to optimize the software for recording or live streaming because OBS has the ability to combine many different audio visual sources into a live video production environment.\n\nOBS Studio also supports many plugins that can expand its functionality to include features such as NDI support, VST plugins, and stream deck control. OBS Studio plugins are software add-ons that are installed on the program to enable more features. In the case of OBS Studio, users have to install the plugin manually.\n\nPlugins in OBS Studio are usually new sources in the sources list. However, some of them may even install an entirely new tab or dock to your program. It completely depends on the functionality of the plugin.\n\nThe plugin function in OBS Studio is used to extend OBS functionality by adding custom code written to perform specific tasks. The most popular OBS plugins add support for NDI, which is an IP video production protocol. Another popular plugin is called VirtualCam, which lets you capture any video within OBS and connect it to another camera via a virtual webcam source.\n\nTypically independent developers identify areas that can be improved within OBS Studio and code solutions for them. They then host the files for their new software online, and OBS users can download and install them into their OBS Studio directory.\n\nWho uses OBS Studio. gamers, content creators, and online educators regularly use software to record content such as gameplay, tutorials, vlogs, and more. The program can also broadcast live video to popular streaming platforms and provides the option to customize the look and feel of the stream with themes, transitions, and other elements.\n\nOn this occasion, we will try to discuss how to install OBS Studio on a UNIX BSD based system. In this case we will try to install OBS Studio into the FReeBSD Desktop System. Because there are so many FreeBSD Desktop variants, this article will explain how to install OBS Studio on a GhostBSD system, one of the Desktop-based FreeBSD variants with a charming GUI display.\n\n1. System Specifications\n\n  OS: GhostBSD 23.06.01\n  CPU: Intel(R) Core(TM)2 Quad CPU Q9550 @ 2.83GHz\n  Memory: 4 GB\n  OBS version: obs-studio-29.1.3_2\n\n\n2. OBS Studio Dependencies\nDependencies are library files required to install OBS Studio. This library file is very important for a program to run perfectly on the FreeBSD system. There are several dependencies that must be installed before you install OBS Studio. The following are the dependencies that must be installed on GhostBSD.\n\nroot@ns3:~ # pkg install cmake ninja pkgconf curl ccache\nUpdating GhostBSD repository catalogue...\nGhostBSD repository is up to date.\nAll repositories are up to date.\nThe following 4 package(s) will be affected (of 0 checked):\n\nNew packages to be INSTALLED:\n\tccache: 3.7.12_4\n\tninja: 1.11.1,2\n\nInstalled packages to be UPGRADED:\n\tlibunibreak: 4.3,1 -&gt; 5.1,1\n\tpkgconf: 1.8.0_1,1 -&gt; 1.8.1,1\n\nNumber of packages to be installed: 2\nNumber of packages to be upgraded: 2\n\n241 KiB to be downloaded.\n\nProceed with this action? [y/N]: y\n[1/2] Fetching ccache-3.7.12_4.pkg: 100%  128 KiB 131.4kB/s    00:01    \n[2/2] Fetching ninja-1.11.1,2.pkg: 100%  113 KiB 115.3kB/s    00:01    \nChecking integrity... done (0 conflicting)\n[1/4] Installing ccache-3.7.12_4...\n[1/4] Extracting ccache-3.7.12_4: 100%\nCreate compiler links...\ncreate symlink for cc\ncreate symlink for cc (world)\ncreate symlink for c++\ncreate symlink for c++ (world)\ncreate symlink for CC\ncreate symlink for CC (world)\ncreate symlink for gcc\ncreate symlink for gcc (world)\ncreate symlink for g++\ncreate symlink for g++ (world)\ncreate symlink for gcc12\ncreate symlink for gcc12 (world)\ncreate symlink for g++12\ncreate symlink for g++12 (world)\ncreate symlink for cpp12\ncreate symlink for cpp12 (world)\ncreate symlink for clang\ncreate symlink for clang (world)\ncreate symlink for clang++\ncreate symlink for clang++ (world)\ncreate symlink for clang15\ncreate symlink for clang15 (world)\ncreate symlink for clang++15\ncreate symlink for clang++15 (world)\n[2/4] Installing ninja-1.11.1,2...\n[2/4] Extracting ninja-1.11.1,2: 100%\n[3/4] Upgrading libunibreak from 4.3,1 to 5.1,1...\n[3/4] Extracting libunibreak-5.1,1: 100%\n[4/4] Upgrading pkgconf from 1.8.0_1,1 to 1.8.1,1...\n[4/4] Extracting pkgconf-1.8.1,1: 100%\n=====\nMessage from ccache-3.7.12_4:\n\n--\nNOTE:\nPlease read /usr/local/share/doc/ccache/ccache-howto-freebsd.txt for\ninformation on using ccache with FreeBSD ports and src.\n\n\nNext, there are still more dependencies that you have to install.\n\nroot@ns3:~ # pkg install ffmpeg libx264 mbedtls mesa-libs jansson lua52 luajit python39 libX11 xorgproto libxcb libXcomposite libXext libXfixes libXinerama libXrandr swig dbus jansson libICE libSM libsysinfo\nUpdating GhostBSD repository catalogue...\nGhostBSD repository is up to date.\nAll repositories are up to date.\nThe following 5 package(s) will be affected (of 0 checked):\n\nNew packages to be INSTALLED:\n\tlua52: 5.2.4\n\tluajit: 2.0.5_6\n\tswig: 4.1.1\n\nInstalled packages to be UPGRADED:\n\tmbedtls: 2.28.2 -&gt; 2.28.3\n\txorgproto: 2022.1 -&gt; 2022.1_1\n\nNumber of packages to be installed: 3\nNumber of packages to be upgraded: 2\n\nThe process will require 23 MiB more space.\n6 MiB to be downloaded.\n\nProceed with this action? [y/N]: y\n[1/2] Fetching lua52-5.2.4.pkg: 100%  175 KiB 179.0kB/s    00:01    \n[2/2] Fetching swig-4.1.1.pkg: 100%    6 MiB 241.5kB/s    00:24    \nChecking integrity... done (2 conflicting)\n  - luajit-2.0.5_6 conflicts with luajit-devel-2.1.0.20230712 on /usr/local/bin/luajit\n  - luajit-2.0.5_6 conflicts with luajit-devel-2.1.0.20230712 on /usr/local/bin/luajit\nChecking integrity... done (0 conflicting)\nConflicts with the existing packages have been found.\nOne more solver iteration is needed to resolve them.\nThe following 8 package(s) will be affected (of 0 checked):\n\nInstalled packages to be REMOVED:\n\tluajit-devel: 2.1.0.20230712\n\tobs-studio: 29.1.3_2\n\nNew packages to be INSTALLED:\n\tlua52: 5.2.4\n\tluajit: 2.0.5_6\n\tswig: 4.1.1\n\nInstalled packages to be UPGRADED:\n\tmbedtls: 2.28.2 -&gt; 2.28.3\n\txorgproto: 2022.1 -&gt; 2022.1_1\n\nInstalled packages to be REINSTALLED:\n\tlibXxf86dga-1.1.6\n\nNumber of packages to be removed: 2\nNumber of packages to be installed: 3\nNumber of packages to be upgraded: 2\nNumber of packages to be reinstalled: 1\n\nThe operation will free 9 MiB.\n\nProceed with this action? [y/N]: y\n[1/8] Deinstalling luajit-devel-2.1.0.20230712...\n[1/8] Deleting files for luajit-devel-2.1.0.20230712: 100%\n[2/8] Deinstalling obs-studio-29.1.3_2...\n[2/8] Deleting files for obs-studio-29.1.3_2: 100%\n[3/8] Upgrading xorgproto from 2022.1 to 2022.1_1...\n[3/8] Extracting xorgproto-2022.1_1: 100%\n[4/8] Installing luajit-2.0.5_6...\n[4/8] Extracting luajit-2.0.5_6: 100%\n[5/8] Reinstalling libXxf86dga-1.1.6...\n[5/8] Extracting libXxf86dga-1.1.6: 100%\n[6/8] Installing lua52-5.2.4...\n[6/8] Extracting lua52-5.2.4: 100%\n[7/8] Installing swig-4.1.1...\n[7/8] Extracting swig-4.1.1: 100%\n[8/8] Upgrading mbedtls from 2.28.2 to 2.28.3...\n[8/8] Extracting mbedtls-2.28.3: 100%\n==&gt; Running trigger: gtk-update-icon-cache.ucl\nGenerating GTK icon cache for /usr/local/share/icons/hicolor\n==&gt; Running trigger: desktop-file-utils.ucl\nBuilding cache database of MIME types\n\n\n3. OBS Studio installation\nAfter the above dependencies are installed, we continue by installing the main program, namely OBS Studio. To install OBS Studio on Ghost BSD you must log in as a root user. Follow these steps to install OBS Studio.\n\nroot@ns3:~ # cd /usr/ports/ports-mgmt/portmaster\nroot@ns3:/usr/ports/ports-mgmt/portmaster # make install clean\nroot@ns3:/usr/ports/ports-mgmt/portmaster # cd /usr/ports/ports-mgmt/portupgrade\nroot@ns3:/usr/ports/ports-mgmt/portupgrade # make install clean\n\n\nThe command above is used to prepare updates and upgrades to the ports system on GhosBSD. After both programs are installed, continue by updating the GhostBSD system ports.\n\nroot@ns3:/usr/ports/ports-mgmt/portupgrade # portmaster -af\nroot@ns3:/usr/ports/ports-mgmt/portupgrade # portupgrade -af\n\n\nThe portupgrade -af and portmaster -af scripts are for updating the GhostBSD ports system. After completing the ports update, we can immediately install OBS Studio. The following are the commands to install OBS Studio.\n\nroot@ns3:/usr/ports/ports-mgmt/portupgrade # cd /usr/ports/multimedia/obs-studio\nroot@ns3:/usr/ports/multimedia/obs-studio # make install clean\n\n\nOn GhostBSD, sometimes the installation using the ports system is unsuccessful or errors often occur. If the installation fails with the ports system, we can try installing OBS Studio with the FreeBSD pkg package. Here’s how to install it.\n\nroot@ns3:/usr/ports/multimedia/obs-studio # pkg install obs-studio\nUpdating GhostBSD repository catalogue...\nGhostBSD repository is up to date.\nAll repositories are up to date.\nChecking integrity... done (2 conflicting)\n  - luajit-devel-2.1.0.20230712 conflicts with luajit-2.0.5_6 on /usr/local/bin/luajit\n  - luajit-devel-2.1.0.20230712 conflicts with luajit-2.0.5_6 on /usr/local/bin/luajit\nChecking integrity... done (0 conflicting)\nThe following 3 package(s) will be affected (of 0 checked):\n\nInstalled packages to be REMOVED:\n\tluajit: 2.0.5_6\n\nNew packages to be INSTALLED:\n\tluajit-devel: 2.1.0.20230712\n\tobs-studio: 29.1.3_2\n\nNumber of packages to be removed: 1\nNumber of packages to be installed: 2\n\nThe process will require 30 MiB more space.\n\nProceed with this action? [y/N]: y\n[1/3] Deinstalling luajit-2.0.5_6...\n[1/3] Deleting files for luajit-2.0.5_6: 100%\n[2/3] Installing luajit-devel-2.1.0.20230712...\n[2/3] Extracting luajit-devel-2.1.0.20230712: 100%\n[3/3] Installing obs-studio-29.1.3_2...\n[3/3] Extracting obs-studio-29.1.3_2: 100%\n==&gt; Running trigger: gtk-update-icon-cache.ucl\nGenerating GTK icon cache for /usr/local/share/icons/hicolor\n==&gt; Running trigger: desktop-file-utils.ucl\nBuilding cache database of MIME types\n\n\nAfter OBS Studio is installed, we continue by typing the following command in the /etc/rc.conf file.\n\nroot@ns3:~ # ee /etc/rc.conf\nkld_list=\"cuse4bsd\"\nwebcamd_enable=\"YES\"\n\n\nThe command above is used to activate the webcam plugin, so that OBS Studio can record using the webcam.\n\n4. How to Run OBS Studio\nOn GhsotBSD, running OBS Studio is very easy, on the GhostBSD Desktop display, right click the mouse and select the “Open in Terminal” menu. After entering the Ghost BSD command shell menu, type the command “obs” followed by the “enter” key on the keyboard.\n\nsemeru@ns3:/usr/home/semeru/Desktop $ obs\n\n\nThen the OBS Studio program will appear on your monitor screen.\n\nOBS Studio is a great program for advanced users. The program can be configured to suit your needs as a recording program and even create professional-level final products for sites like YouTube and Twitch.\n\n",
+  "datePublished": "2025-01-18 14:11:10 +0300",
+  "dateModified": "2025-01-18 14:11:10 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Build Instructions OBS Studio For GhostBSD Desktop FreeBSD"><meta itemprop="description" content="OBS Studio also supports many plugins that can expand its functionality to include features such as NDI support"><meta itemprop="datePublished" content="2025-01-18"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-18T14:11:10+03:00">2025-01-18</time> </p><h1 class="page__title" itemprop="headline">Build Instructions OBS Studio For GhostBSD Desktop FreeBSD
+</h1></header><section class="page__content" itemprop="text">
+        <p>OBS stands for Open Broadcaster Software, a free, open source live video production software supported by a large community of developers from around the world. OBS can be used for live video production, live streaming, and video recording. When you first download and install OBS, the setup wizard will ask if you want to optimize the software for recording or live streaming because OBS has the ability to combine many different audio visual sources into a live video production environment.</p>
+
+<p>OBS Studio also supports many plugins that can expand its functionality to include features such as NDI support, VST plugins, and stream deck control. OBS Studio plugins are software add-ons that are installed on the program to enable more features. In the case of OBS Studio, users have to install the plugin manually.</p>
+
+<p>Plugins in OBS Studio are usually new sources in the sources list. However, some of them may even install an entirely new tab or dock to your program. It completely depends on the functionality of the plugin.</p>
+
+<p>The plugin function in OBS Studio is used to extend OBS functionality by adding custom code written to perform specific tasks. The most popular OBS plugins add support for NDI, which is an IP video production protocol. Another popular plugin is called VirtualCam, which lets you capture any video within OBS and connect it to another camera via a virtual webcam source.</p>
+
+<p>Typically independent developers identify areas that can be improved within OBS Studio and code solutions for them. They then host the files for their new software online, and OBS users can download and install them into their OBS Studio directory.</p>
+
+<p>Who uses OBS Studio. gamers, content creators, and online educators regularly use software to record content such as gameplay, tutorials, vlogs, and more. The program can also broadcast live video to popular streaming platforms and provides the option to customize the look and feel of the stream with themes, transitions, and other elements.</p>
+
+<p>On this occasion, we will try to discuss how to install OBS Studio on a UNIX BSD based system. In this case we will try to install OBS Studio into the FReeBSD Desktop System. Because there are so many FreeBSD Desktop variants, this article will explain how to install OBS Studio on a GhostBSD system, one of the Desktop-based FreeBSD variants with a charming GUI display.</p>
+
+<h2 id="1-system-specifications">1. System Specifications</h2>
+<ul>
+  <li>OS: GhostBSD 23.06.01</li>
+  <li>CPU: Intel(R) Core(TM)2 Quad CPU Q9550 @ 2.83GHz</li>
+  <li>Memory: 4 GB</li>
+  <li>OBS version: obs-studio-29.1.3_2</li>
+</ul>
+
+<h2 id="2-obs-studio-dependencies">2. OBS Studio Dependencies</h2>
+<p>Dependencies are library files required to install OBS Studio. This library file is very important for a program to run perfectly on the FreeBSD system. There are several dependencies that must be installed before you install OBS Studio. The following are the dependencies that must be installed on GhostBSD.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # pkg install cmake ninja pkgconf curl ccache
+Updating GhostBSD repository catalogue...
+GhostBSD repository is up to date.
+All repositories are up to date.
+The following 4 package(s) will be affected (of 0 checked):
+
+New packages to be INSTALLED:
+	ccache: 3.7.12_4
+	ninja: 1.11.1,2
+
+Installed packages to be UPGRADED:
+	libunibreak: 4.3,1 -&gt; 5.1,1
+	pkgconf: 1.8.0_1,1 -&gt; 1.8.1,1
+
+Number of packages to be installed: 2
+Number of packages to be upgraded: 2
+
+241 KiB to be downloaded.
+
+Proceed with this action? [y/N]: y
+[1/2] Fetching ccache-3.7.12_4.pkg: 100%  128 KiB 131.4kB/s    00:01    
+[2/2] Fetching ninja-1.11.1,2.pkg: 100%  113 KiB 115.3kB/s    00:01    
+Checking integrity... done (0 conflicting)
+[1/4] Installing ccache-3.7.12_4...
+[1/4] Extracting ccache-3.7.12_4: 100%
+Create compiler links...
+create symlink for cc
+create symlink for cc (world)
+create symlink for c++
+create symlink for c++ (world)
+create symlink for CC
+create symlink for CC (world)
+create symlink for gcc
+create symlink for gcc (world)
+create symlink for g++
+create symlink for g++ (world)
+create symlink for gcc12
+create symlink for gcc12 (world)
+create symlink for g++12
+create symlink for g++12 (world)
+create symlink for cpp12
+create symlink for cpp12 (world)
+create symlink for clang
+create symlink for clang (world)
+create symlink for clang++
+create symlink for clang++ (world)
+create symlink for clang15
+create symlink for clang15 (world)
+create symlink for clang++15
+create symlink for clang++15 (world)
+[2/4] Installing ninja-1.11.1,2...
+[2/4] Extracting ninja-1.11.1,2: 100%
+[3/4] Upgrading libunibreak from 4.3,1 to 5.1,1...
+[3/4] Extracting libunibreak-5.1,1: 100%
+[4/4] Upgrading pkgconf from 1.8.0_1,1 to 1.8.1,1...
+[4/4] Extracting pkgconf-1.8.1,1: 100%
+=====
+Message from ccache-3.7.12_4:
+
+--
+NOTE:
+Please read /usr/local/share/doc/ccache/ccache-howto-freebsd.txt for
+information on using ccache with FreeBSD ports and src.
+</code></pre></div></div>
+
+<p>Next, there are still more dependencies that you have to install.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # pkg install ffmpeg libx264 mbedtls mesa-libs jansson lua52 luajit python39 libX11 xorgproto libxcb libXcomposite libXext libXfixes libXinerama libXrandr swig dbus jansson libICE libSM libsysinfo
+Updating GhostBSD repository catalogue...
+GhostBSD repository is up to date.
+All repositories are up to date.
+The following 5 package(s) will be affected (of 0 checked):
+
+New packages to be INSTALLED:
+	lua52: 5.2.4
+	luajit: 2.0.5_6
+	swig: 4.1.1
+
+Installed packages to be UPGRADED:
+	mbedtls: 2.28.2 -&gt; 2.28.3
+	xorgproto: 2022.1 -&gt; 2022.1_1
+
+Number of packages to be installed: 3
+Number of packages to be upgraded: 2
+
+The process will require 23 MiB more space.
+6 MiB to be downloaded.
+
+Proceed with this action? [y/N]: y
+[1/2] Fetching lua52-5.2.4.pkg: 100%  175 KiB 179.0kB/s    00:01    
+[2/2] Fetching swig-4.1.1.pkg: 100%    6 MiB 241.5kB/s    00:24    
+Checking integrity... done (2 conflicting)
+  - luajit-2.0.5_6 conflicts with luajit-devel-2.1.0.20230712 on /usr/local/bin/luajit
+  - luajit-2.0.5_6 conflicts with luajit-devel-2.1.0.20230712 on /usr/local/bin/luajit
+Checking integrity... done (0 conflicting)
+Conflicts with the existing packages have been found.
+One more solver iteration is needed to resolve them.
+The following 8 package(s) will be affected (of 0 checked):
+
+Installed packages to be REMOVED:
+	luajit-devel: 2.1.0.20230712
+	obs-studio: 29.1.3_2
+
+New packages to be INSTALLED:
+	lua52: 5.2.4
+	luajit: 2.0.5_6
+	swig: 4.1.1
+
+Installed packages to be UPGRADED:
+	mbedtls: 2.28.2 -&gt; 2.28.3
+	xorgproto: 2022.1 -&gt; 2022.1_1
+
+Installed packages to be REINSTALLED:
+	libXxf86dga-1.1.6
+
+Number of packages to be removed: 2
+Number of packages to be installed: 3
+Number of packages to be upgraded: 2
+Number of packages to be reinstalled: 1
+
+The operation will free 9 MiB.
+
+Proceed with this action? [y/N]: y
+[1/8] Deinstalling luajit-devel-2.1.0.20230712...
+[1/8] Deleting files for luajit-devel-2.1.0.20230712: 100%
+[2/8] Deinstalling obs-studio-29.1.3_2...
+[2/8] Deleting files for obs-studio-29.1.3_2: 100%
+[3/8] Upgrading xorgproto from 2022.1 to 2022.1_1...
+[3/8] Extracting xorgproto-2022.1_1: 100%
+[4/8] Installing luajit-2.0.5_6...
+[4/8] Extracting luajit-2.0.5_6: 100%
+[5/8] Reinstalling libXxf86dga-1.1.6...
+[5/8] Extracting libXxf86dga-1.1.6: 100%
+[6/8] Installing lua52-5.2.4...
+[6/8] Extracting lua52-5.2.4: 100%
+[7/8] Installing swig-4.1.1...
+[7/8] Extracting swig-4.1.1: 100%
+[8/8] Upgrading mbedtls from 2.28.2 to 2.28.3...
+[8/8] Extracting mbedtls-2.28.3: 100%
+==&gt; Running trigger: gtk-update-icon-cache.ucl
+Generating GTK icon cache for /usr/local/share/icons/hicolor
+==&gt; Running trigger: desktop-file-utils.ucl
+Building cache database of MIME types
+</code></pre></div></div>
+
+<h2 id="3-obs-studio-installation">3. OBS Studio installation</h2>
+<p>After the above dependencies are installed, we continue by installing the main program, namely OBS Studio. To install OBS Studio on Ghost BSD you must log in as a root user. Follow these steps to install OBS Studio.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/ports/ports-mgmt/portmaster
+root@ns3:/usr/ports/ports-mgmt/portmaster # make install clean
+root@ns3:/usr/ports/ports-mgmt/portmaster # cd /usr/ports/ports-mgmt/portupgrade
+root@ns3:/usr/ports/ports-mgmt/portupgrade # make install clean
+</code></pre></div></div>
+
+<p>The command above is used to prepare <a href="https://www.inchimediatama.org/2025/02/update-paket-pkg-freebsd-14-dengan.html">updates and upgrades to the ports system</a> on GhosBSD. After both programs are installed, continue by updating the GhostBSD system ports.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/ports/ports-mgmt/portupgrade # portmaster -af
+root@ns3:/usr/ports/ports-mgmt/portupgrade # portupgrade -af
+</code></pre></div></div>
+
+<p>The portupgrade -af and portmaster -af scripts are for updating the GhostBSD ports system. After completing the ports update, we can immediately install OBS Studio. The following are the commands to install OBS Studio.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/ports/ports-mgmt/portupgrade # cd /usr/ports/multimedia/obs-studio
+root@ns3:/usr/ports/multimedia/obs-studio # make install clean
+</code></pre></div></div>
+
+<p>On GhostBSD, sometimes the installation using the ports system is unsuccessful or errors often occur. If the installation fails with the ports system, we can try installing OBS Studio with the FreeBSD pkg package. Here’s how to install it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/ports/multimedia/obs-studio # pkg install obs-studio
+Updating GhostBSD repository catalogue...
+GhostBSD repository is up to date.
+All repositories are up to date.
+Checking integrity... done (2 conflicting)
+  - luajit-devel-2.1.0.20230712 conflicts with luajit-2.0.5_6 on /usr/local/bin/luajit
+  - luajit-devel-2.1.0.20230712 conflicts with luajit-2.0.5_6 on /usr/local/bin/luajit
+Checking integrity... done (0 conflicting)
+The following 3 package(s) will be affected (of 0 checked):
+
+Installed packages to be REMOVED:
+	luajit: 2.0.5_6
+
+New packages to be INSTALLED:
+	luajit-devel: 2.1.0.20230712
+	obs-studio: 29.1.3_2
+
+Number of packages to be removed: 1
+Number of packages to be installed: 2
+
+The process will require 30 MiB more space.
+
+Proceed with this action? [y/N]: y
+[1/3] Deinstalling luajit-2.0.5_6...
+[1/3] Deleting files for luajit-2.0.5_6: 100%
+[2/3] Installing luajit-devel-2.1.0.20230712...
+[2/3] Extracting luajit-devel-2.1.0.20230712: 100%
+[3/3] Installing obs-studio-29.1.3_2...
+[3/3] Extracting obs-studio-29.1.3_2: 100%
+==&gt; Running trigger: gtk-update-icon-cache.ucl
+Generating GTK icon cache for /usr/local/share/icons/hicolor
+==&gt; Running trigger: desktop-file-utils.ucl
+Building cache database of MIME types
+</code></pre></div></div>
+
+<p>After OBS Studio is installed, we continue by typing the following command in the /etc/rc.conf file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # ee /etc/rc.conf
+kld_list="cuse4bsd"
+webcamd_enable="YES"
+</code></pre></div></div>
+
+<p>The command above is used to activate the webcam plugin, so that OBS Studio can record using the webcam.</p>
+
+<h2 id="4-how-to-run-obs-studio">4. How to Run OBS Studio</h2>
+<p>On GhsotBSD, running OBS Studio is very easy, on the GhostBSD Desktop display, right click the mouse and select the “Open in Terminal” menu. After entering the Ghost BSD command shell menu, type the command “obs” followed by the “enter” key on the keyboard.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>semeru@ns3:/usr/home/semeru/Desktop $ obs
+</code></pre></div></div>
+
+<p>Then the OBS Studio program will appear on your monitor screen.</p>
+
+<p>OBS Studio is a great program for advanced users. The program can be configured to suit your needs as a recording program and even create professional-level final products for sites like YouTube and Twitch.</p>
+
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-18T14:11:10+03:00">2025-01-18</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#sysadmin" class="page__taxonomy-item" rel="tag">SysAdmin</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#en" class="page__taxonomy-item" rel="tag">en</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/en/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/" class="pagination--pager" title="Building a FreeBSD Private Cloud Server With Seafile Seahub Server
+">Previous</a><a href="https://penaadventure.com/en/freebsd/2025/01/19/checking-status-open-portson-windows-and-freebsd/" class="pagination--pager" title="Checking the Status of Open Ports on Windows and FreeBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

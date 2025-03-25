@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/06/19/dns-command-utility-in-freebsd-with-doggo/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Утилита управления DNS на FreeBSD с Doggo  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Утилита управления DNS на FreeBSD с Doggo"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2024/06/19/dns-command-utility-in-freebsd-with-doggo/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2024/06/19/dns-command-utility-in-freebsd-with-doggo/"><meta property="og:description" content="Doggo — современный DNS-клиент командной строки, написанный на Golang. Поэтому не будет ошибкой назвать его «dog + go = doggo»."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Утилита управления DNS на FreeBSD с Doggo">
+  <meta name="twitter:description" content="Doggo — современный DNS-клиент командной строки, написанный на Golang. Поэтому не будет ошибкой назвать его «dog + go = doggo».">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2024/06/19/dns-command-utility-in-freebsd-with-doggo/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-06-19T19:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/06/19/dns-command-utility-in-freebsd-with-doggo/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#ru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#06" itemprop="item"><span itemprop="name">06</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#19" itemprop="item"><span itemprop="name">19</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Утилита управления DNS на FreeBSD с Doggo</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2024-06-19 19:00:00 +0300",
+"datePublished": "2024-06-19 19:00:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Утилита управления DNS на FreeBSD с Doggo",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "Doggo — современный DNS-клиент командной строки, написанный на Golang. Поэтому не будет ошибкой назвать его «dog + go = doggo»."
+},
+
+"datePublished": "2024-06-19 19:00:00 +0300",
+"dateModified": "2024-06-19 19:00:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/ru/freebsd/2024/06/19/dns-command-utility-in-freebsd-with-doggo/",
+"name": "Утилита управления DNS на FreeBSD с Doggo"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/ru/freebsd/2024/06/19/dns-command-utility-in-freebsd-with-doggo/",
+"name": "DNSServer"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/ru/freebsd/2024/06/19/dns-command-utility-in-freebsd-with-doggo/",
+  "name": "Утилита управления DNS на FreeBSD с Doggo",
+  "headline": "Утилита управления DNS на FreeBSD с Doggo",
+  "keywords": "DNSServer",
+  "description": "Doggo — современный DNS-клиент командной строки, написанный на Golang. Поэтому не будет ошибкой назвать его «dog + go = doggo».",
+  "articleBody": "Doggo — это современная утилита командной строки для поиска DNS, похожая на dig, с цветным выводом, поддержкой протоколов DNS-over-TLS и DNS-over-HTTPS и многим другим. Doggo доступен практически во всех операционных системах UNIX, Linux, macOS, а также Microsoft Windows. Благодаря красочному выводу и поддержке DNSCrypt, DOT и DOT Doggo очень удобен в использовании.\n\nDoggo — современный DNS-клиент командной строки, написанный на Golang. Поэтому не будет ошибкой назвать его «dog + go = doggo». Утилита Doggo отображает информацию лаконично и аккуратно. Утилита doggo очень похожа на dig: doggo выполняет поиск DNS и отображает ответы, возвращенные запрошенными серверами имен, что полезно для устранения неполадок DNS.\n\nВ этой статье мы обсудим, как установить и использовать doggo в системе FreeBSD.\n\nОсобенности Doggo\n\n  Цветной вывод\n  Поддерживает формат json\n  Поддерживает несколько транспортных протоколов\nDNS через HTTPS (DoH)\nDNS через TLS (DoT)\nDNS через QUIC (DoQ)\nDNS через TCP\nDNS через UDP\nDNS через DNSCrypt\n  Поддерживает ndots и конфигурацию поиска из resolv.conf или аргументов командной строки.\n  Поддерживает IP4 и IP6.\n  Поддерживает несколько резолверов одновременно.\n  Доступно как веб-инструмент, посетите: https://doggo.mrkaran.dev.\n  Можно использовать с zsh и fish shell.\n  Возможность выполнять обратный DNS-поиск.\n\n\nПроцесс установки Doggo\nЧтобы установить Doggo на FreeBSD, необходимо использовать систему портов FreeBSD. Вот пример скрипта установки doggo.\n\nroot@ns1:~ # cd /usr/ports/dns/doggo\nroot@ns1:/usr/ports/dns/doggo # make install clean\n\n\nКак использовать Doggo\nа. Выполните поиск DNS на google.com\n\nroot@ns1:~ # doggo google.com\n\n\nЗапрос записи MX для google.com с использованием Resolver 8.8.8.8\n\nroot@ns1:~ # doggo MX google.com @8.8.8.8\n\nroot@ns1:~ # doggo -t MX -n 1.1.1.1 google.com\nNAME       \tTYPE\tCLASS\tTTL \tADDRESS            \t        NAMESERVER \ngoogle.com.\tMX  \tIN   \t        300s\t10 smtp.google.com.\t1.1.1.1:53\t\ngoogle.com.\tMX  \tIN   \t        300s\t10 smtp.google.com.\t1.0.0.1:53\n\n\nОтображение записей DNS запроса для archive.org с использованием DoH-резолвера Cloudflare\n\nroot@ns1:~ # doggo archive.org @https://cloudflare-dns.com/dns-query \nNAME        \tTYPE\tCLASS\tTTL \tADDRESS      \tNAMESERVER                           \narchive.org.\tA   \tIN   \t216s\t207.241.224.2\thttps://cloudflare-dns.com/dns-query\n\n\nЗапрос данных DNS для unixwinbsd.blogspot.com с выводом JSON\n\nroot@ns1:~ # doggo unixwinbsd.blogspot.com --json\n[\n    {\n        \"answers\": [\n            {\n                \"name\": \"unixwinbsd.blogspot.com.\",\n                \"type\": \"CNAME\",\n                \"class\": \"IN\",\n                \"ttl\": \"300s\",\n                \"address\": \"blogspot.l.googleusercontent.com.\",\n                \"status\": \"\",\n                \"rtt\": \"19ms\",\n                \"nameserver\": \"1.1.1.1:53\"\n            },\n            {\n                \"name\": \"blogspot.l.googleusercontent.com.\",\n                \"type\": \"A\",\n                \"class\": \"IN\",\n                \"ttl\": \"263s\",\n                \"address\": \"74.125.200.132\",\n                \"status\": \"\",\n                \"rtt\": \"19ms\",\n                \"nameserver\": \"1.1.1.1:53\"\n            }\n        ],\n        \"authorities\": null,\n        \"questions\": [\n            {\n                \"name\": \"unixwinbsd.blogspot.com.\",\n                \"type\": \"A\",\n                \"class\": \"IN\"\n            }\n        ]\n    },\n    {\n        \"answers\": [\n            {\n                \"name\": \"unixwinbsd.blogspot.com.\",\n                \"type\": \"CNAME\",\n                \"class\": \"IN\",\n                \"ttl\": \"300s\",\n                \"address\": \"blogspot.l.googleusercontent.com.\",\n                \"status\": \"\",\n                \"rtt\": \"0ms\",\n                \"nameserver\": \"1.0.0.1:53\"\n            },\n            {\n                \"name\": \"blogspot.l.googleusercontent.com.\",\n                \"type\": \"A\",\n                \"class\": \"IN\",\n                \"ttl\": \"263s\",\n                \"address\": \"74.125.200.132\",\n                \"status\": \"\",\n                \"rtt\": \"0ms\",\n                \"nameserver\": \"1.0.0.1:53\"\n            }\n        ],\n        \"authorities\": null,\n        \"questions\": [\n            {\n                \"name\": \"unixwinbsd.blogspot.com.\",\n                \"type\": \"A\",\n                \"class\": \"IN\"\n            }\n        ]\n    }\n\n\nЗапрос данных DNS для google.com и отображение RTT\n\nroot@ns1:~ # doggo google.com --time\nNAME                       \t        TYPE \t    CLASS\tTTL   \tADDRESS                    \t        NAMESERVER\tTIME TAKEN \ngoogle.com.                \t        CNAME\t    IN   \t        265s  \tforcesafesearch.google.com.\t1.1.1.1:53\t        8ms       \t\nforcesafesearch.google.com.\tA    \t            IN   \t        81816s\t216.239.38.120             \t        1.1.1.1:53\t        8ms       \t\ngoogle.com.                \t        CNAME\t    IN   \t        265s  \tforcesafesearch.google.com.\t1.0.0.1:53\t        0ms       \t    \nforcesafesearch.google.com.\tA    \t            IN       \t        81816s\t216.239.38.120             \t        1.0.0.1:53\t        0ms\n\n\nЗапросить записи A, NS и MX для домена duckduckgo.com\n\nroot@ns1:~ # doggo google.com A NS MX\nNAME                       \t        TYPE \tCLASS\tTTL    \tADDRESS                    \t        NAMESERVER \ngoogle.com.                \t        CNAME\tIN   \t        145s   \tforcesafesearch.google.com.\t1.1.1.1:53\t\nforcesafesearch.google.com.\tA    \t        IN   \t        66288s \t216.239.38.120             \t        1.1.1.1:53\t\ngoogle.com.                \t        CNAME\tIN   \t        145s   \tforcesafesearch.google.com.\t1.0.0.1:53\t\nforcesafesearch.google.com.\tA    \t        IN   \t        66288s \t216.239.38.120             \t        1.0.0.1:53\t\ngoogle.com.                \t        NS   \tIN   \t        177459s\tns2.google.com.            \t        1.1.1.1:53\t\ngoogle.com.                \t        NS   \tIN   \t        177459s\tns3.google.com.            \t        1.1.1.1:53\t\ngoogle.com.                \t        NS   \tIN   \t        177459s\tns4.google.com.            \t        1.1.1.1:53\t\ngoogle.com.                \t        NS   \tIN   \t        177459s\tns1.google.com.            \t        1.1.1.1:53\t\ngoogle.com.                \t        NS   \tIN   \t        177484s\tns4.google.com.            \t        1.0.0.1:53\t\ngoogle.com.                \t        NS   \tIN   \t        177484s\tns2.google.com.            \t        1.0.0.1:53\t\ngoogle.com.                \t        NS   \tIN   \t        177484s\tns3.google.com.            \t        1.0.0.1:53\t\ngoogle.com.                \t        NS   \tIN   \t        177484s\tns1.google.com.            \t        1.0.0.1:53\t\ngoogle.com.                \t        MX   \tIN   \t        300s   \t10 smtp.google.com.        \t1.1.1.1:53\t\ngoogle.com.                \t        MX   \tIN   \t        300s   \t10 smtp.google.com.        \t1.0.0.1:53\n\n\nОтправка запроса DOT на порт 853\n\nroot@ns1:~ # doggo google.com @tls://@1.1.1.1\nNAME       \tTYPE\tCLASS\tTTL \tADDRESS       \tNAMESERVER  \ngoogle.com.\tA   \t        IN   \t        181s\t142.251.12.138\t1.1.1.1:853\t\ngoogle.com.\tA   \t        IN   \t        181s\t142.251.12.139\t1.1.1.1:853\t\ngoogle.com.\tA   \t        IN   \t        181s\t142.251.12.102\t1.1.1.1:853\t\ngoogle.com.\tA   \t        IN   \t        181s\t142.251.12.101\t1.1.1.1:853\t\ngoogle.com.\tA   \t        IN           \t181s\t142.251.12.100\t1.1.1.1:853\t\ngoogle.com.\tA   \t        IN   \t        181s\t142.251.12.113\t1.1.1.1:853\n\n\nХотя Doggo и менее популярен, чем Dig, его существование стало серьезной проблемой для системных администраторов, желающих заменить Dig. Благодаря своим полным характеристикам и немонотонному внешнему виду Doggo готов конкурировать с Dig.\n",
+  "datePublished": "2024-06-19 19:00:00 +0300",
+  "dateModified": "2024-06-19 19:00:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Утилита управления DNS на FreeBSD с Doggo"><meta itemprop="description" content="Doggo — современный DNS-клиент командной строки, написанный на Golang. Поэтому не будет ошибкой назвать его «dog + go = doggo»."><meta itemprop="datePublished" content="2024-06-19"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-06-19T19:00:00+03:00">2024-06-19</time> </p><h1 class="page__title" itemprop="headline">Утилита управления DNS на FreeBSD с Doggo
+</h1></header><section class="page__content" itemprop="text">
+        <p>Doggo — это современная утилита командной строки для поиска DNS, похожая на dig, с цветным выводом, поддержкой протоколов DNS-over-TLS и DNS-over-HTTPS и многим другим. Doggo доступен практически во всех операционных системах UNIX, Linux, macOS, а также Microsoft Windows. Благодаря красочному выводу и поддержке DNSCrypt, DOT и DOT Doggo очень удобен в использовании.</p>
+
+<p>Doggo — современный DNS-клиент командной строки, написанный на Golang. Поэтому не будет ошибкой назвать его «dog + go = doggo». Утилита Doggo отображает информацию лаконично и аккуратно. Утилита doggo очень похожа на dig: doggo выполняет поиск DNS и отображает ответы, возвращенные запрошенными серверами имен, что полезно для устранения неполадок DNS.</p>
+
+<p>В этой статье мы обсудим, как установить и использовать doggo в системе FreeBSD.</p>
+
+<h2 id="особенности-doggo">Особенности Doggo</h2>
+<ol>
+  <li>Цветной вывод</li>
+  <li>Поддерживает формат json</li>
+  <li>Поддерживает несколько транспортных протоколов
+DNS через HTTPS (DoH)
+DNS через TLS (DoT)
+DNS через QUIC (DoQ)
+DNS через TCP
+DNS через UDP
+DNS через DNSCrypt</li>
+  <li>Поддерживает ndots и конфигурацию поиска из resolv.conf или аргументов командной строки.</li>
+  <li>Поддерживает IP4 и IP6.</li>
+  <li>Поддерживает несколько резолверов одновременно.</li>
+  <li>Доступно как веб-инструмент, посетите: https://doggo.mrkaran.dev.</li>
+  <li>Можно использовать с zsh и fish shell.</li>
+  <li>Возможность выполнять обратный DNS-поиск.</li>
+</ol>
+
+<h2 id="процесс-установки-doggo">Процесс установки Doggo</h2>
+<p>Чтобы установить Doggo на FreeBSD, необходимо использовать систему портов FreeBSD. Вот пример скрипта установки doggo.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # cd /usr/ports/dns/doggo
+root@ns1:/usr/ports/dns/doggo # make install clean
+</code></pre></div></div>
+
+<h2 id="как-использовать-doggo">Как использовать Doggo</h2>
+<h3 id="а-выполните-поиск-dns-на-googlecom">а. Выполните поиск DNS на google.com</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # doggo google.com
+</code></pre></div></div>
+
+<h3 id="запрос-записи-mx-для-googlecom-с-использованием-resolver-8888">Запрос записи MX для google.com с использованием Resolver 8.8.8.8</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # doggo MX google.com @8.8.8.8
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # doggo -t MX -n 1.1.1.1 google.com
+NAME       	TYPE	CLASS	TTL 	ADDRESS            	        NAMESERVER 
+google.com.	MX  	IN   	        300s	10 smtp.google.com.	1.1.1.1:53	
+google.com.	MX  	IN   	        300s	10 smtp.google.com.	1.0.0.1:53
+</code></pre></div></div>
+
+<h3 id="отображение-записей-dns-запроса-для-archiveorg-с-использованием-doh-резолвера-cloudflare">Отображение записей DNS запроса для archive.org с использованием DoH-резолвера Cloudflare</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # doggo archive.org @https://cloudflare-dns.com/dns-query 
+NAME        	TYPE	CLASS	TTL 	ADDRESS      	NAMESERVER                           
+archive.org.	A   	IN   	216s	207.241.224.2	https://cloudflare-dns.com/dns-query
+</code></pre></div></div>
+
+<h3 id="запрос-данных-dns-для-unixwinbsdblogspotcom-с-выводом-json">Запрос данных DNS для unixwinbsd.blogspot.com с выводом JSON</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # doggo unixwinbsd.blogspot.com --json
+[
+    {
+        "answers": [
+            {
+                "name": "unixwinbsd.blogspot.com.",
+                "type": "CNAME",
+                "class": "IN",
+                "ttl": "300s",
+                "address": "blogspot.l.googleusercontent.com.",
+                "status": "",
+                "rtt": "19ms",
+                "nameserver": "1.1.1.1:53"
+            },
+            {
+                "name": "blogspot.l.googleusercontent.com.",
+                "type": "A",
+                "class": "IN",
+                "ttl": "263s",
+                "address": "74.125.200.132",
+                "status": "",
+                "rtt": "19ms",
+                "nameserver": "1.1.1.1:53"
+            }
+        ],
+        "authorities": null,
+        "questions": [
+            {
+                "name": "unixwinbsd.blogspot.com.",
+                "type": "A",
+                "class": "IN"
+            }
+        ]
+    },
+    {
+        "answers": [
+            {
+                "name": "unixwinbsd.blogspot.com.",
+                "type": "CNAME",
+                "class": "IN",
+                "ttl": "300s",
+                "address": "blogspot.l.googleusercontent.com.",
+                "status": "",
+                "rtt": "0ms",
+                "nameserver": "1.0.0.1:53"
+            },
+            {
+                "name": "blogspot.l.googleusercontent.com.",
+                "type": "A",
+                "class": "IN",
+                "ttl": "263s",
+                "address": "74.125.200.132",
+                "status": "",
+                "rtt": "0ms",
+                "nameserver": "1.0.0.1:53"
+            }
+        ],
+        "authorities": null,
+        "questions": [
+            {
+                "name": "unixwinbsd.blogspot.com.",
+                "type": "A",
+                "class": "IN"
+            }
+        ]
+    }
+</code></pre></div></div>
+
+<h3 id="запрос-данных-dns-для-googlecom-и-отображение-rtt">Запрос данных DNS для google.com и отображение RTT</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # doggo google.com --time
+NAME                       	        TYPE 	    CLASS	TTL   	ADDRESS                    	        NAMESERVER	TIME TAKEN 
+google.com.                	        CNAME	    IN   	        265s  	forcesafesearch.google.com.	1.1.1.1:53	        8ms       	
+forcesafesearch.google.com.	A    	            IN   	        81816s	216.239.38.120             	        1.1.1.1:53	        8ms       	
+google.com.                	        CNAME	    IN   	        265s  	forcesafesearch.google.com.	1.0.0.1:53	        0ms       	    
+forcesafesearch.google.com.	A    	            IN       	        81816s	216.239.38.120             	        1.0.0.1:53	        0ms
+</code></pre></div></div>
+
+<h3 id="запросить-записи-a-ns-и-mx-для-домена-duckduckgocom">Запросить записи A, NS и MX для домена duckduckgo.com</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # doggo google.com A NS MX
+NAME                       	        TYPE 	CLASS	TTL    	ADDRESS                    	        NAMESERVER 
+google.com.                	        CNAME	IN   	        145s   	forcesafesearch.google.com.	1.1.1.1:53	
+forcesafesearch.google.com.	A    	        IN   	        66288s 	216.239.38.120             	        1.1.1.1:53	
+google.com.                	        CNAME	IN   	        145s   	forcesafesearch.google.com.	1.0.0.1:53	
+forcesafesearch.google.com.	A    	        IN   	        66288s 	216.239.38.120             	        1.0.0.1:53	
+google.com.                	        NS   	IN   	        177459s	ns2.google.com.            	        1.1.1.1:53	
+google.com.                	        NS   	IN   	        177459s	ns3.google.com.            	        1.1.1.1:53	
+google.com.                	        NS   	IN   	        177459s	ns4.google.com.            	        1.1.1.1:53	
+google.com.                	        NS   	IN   	        177459s	ns1.google.com.            	        1.1.1.1:53	
+google.com.                	        NS   	IN   	        177484s	ns4.google.com.            	        1.0.0.1:53	
+google.com.                	        NS   	IN   	        177484s	ns2.google.com.            	        1.0.0.1:53	
+google.com.                	        NS   	IN   	        177484s	ns3.google.com.            	        1.0.0.1:53	
+google.com.                	        NS   	IN   	        177484s	ns1.google.com.            	        1.0.0.1:53	
+google.com.                	        MX   	IN   	        300s   	10 smtp.google.com.        	1.1.1.1:53	
+google.com.                	        MX   	IN   	        300s   	10 smtp.google.com.        	1.0.0.1:53
+</code></pre></div></div>
+
+<h3 id="отправка-запроса-dot-на-порт-853">Отправка запроса DOT на порт 853</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # doggo google.com @tls://@1.1.1.1
+NAME       	TYPE	CLASS	TTL 	ADDRESS       	NAMESERVER  
+google.com.	A   	        IN   	        181s	142.251.12.138	1.1.1.1:853	
+google.com.	A   	        IN   	        181s	142.251.12.139	1.1.1.1:853	
+google.com.	A   	        IN   	        181s	142.251.12.102	1.1.1.1:853	
+google.com.	A   	        IN   	        181s	142.251.12.101	1.1.1.1:853	
+google.com.	A   	        IN           	181s	142.251.12.100	1.1.1.1:853	
+google.com.	A   	        IN   	        181s	142.251.12.113	1.1.1.1:853
+</code></pre></div></div>
+
+<p>Хотя Doggo и менее популярен, чем Dig, его существование стало серьезной проблемой для системных администраторов, желающих заменить Dig. Благодаря своим полным характеристикам и немонотонному внешнему виду Doggo готов конкурировать с Dig.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-06-19T19:00:00+03:00">2024-06-19</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#dnsserver" class="page__taxonomy-item" rel="tag">DNSServer</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2024/05/22/installing-yii-php-framework-on-freebsd/" class="pagination--pager" title="Пошаговое руководство FreeBSD по установке Yii PHP Framework
+">Previous</a><a href="https://penaadventure.com/ru/freebsd/2024/07/24/freebsd-guide-creating-custom-drupal-theme/" class="pagination--pager" title="Руководство FreeBSD по созданию пользовательской темы Drupal
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

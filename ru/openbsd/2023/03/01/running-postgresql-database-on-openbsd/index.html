@@ -1,0 +1,1402 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/openbsd/2023/03/01/running-postgresql-database-on-openbsd/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Запуск базы данных PostgreSQL на OpenBSD  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Запуск базы данных PostgreSQL на OpenBSD"><link rel="canonical" href="https://penaadventure.com/ru/openbsd/2023/03/01/running-postgresql-database-on-openbsd/">
+  <meta property="og:url" content="https://penaadventure.com/ru/openbsd/2023/03/01/running-postgresql-database-on-openbsd/"><meta property="og:description" content="OpenBSD имеет систему пакетов, которая несколько отличается от многих других операционных систем; в частности, пакеты тщательно проверяются перед установкой."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Запуск базы данных PostgreSQL на OpenBSD">
+  <meta name="twitter:description" content="OpenBSD имеет систему пакетов, которая несколько отличается от многих других операционных систем; в частности, пакеты тщательно проверяются перед установкой.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/openbsd/2023/03/01/running-postgresql-database-on-openbsd/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2023-03-01T09:30:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/openbsd/2023/03/01/running-postgresql-database-on-openbsd/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#ru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#openbsd" itemprop="item"><span itemprop="name">Openbsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2023" itemprop="item"><span itemprop="name">2023</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#03" itemprop="item"><span itemprop="name">03</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Запуск базы данных PostgreSQL на OpenBSD</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2023-03-01 09:30:00 +0300",
+"datePublished": "2023-03-01 09:30:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Запуск базы данных PostgreSQL на OpenBSD",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "OpenBSD имеет систему пакетов, которая несколько отличается от многих других операционных систем; в частности, пакеты тщательно проверяются перед установкой."
+},
+
+"datePublished": "2023-03-01 09:30:00 +0300",
+"dateModified": "2023-03-01 09:30:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/ru/openbsd/2023/03/01/running-postgresql-database-on-openbsd/",
+"name": "Запуск базы данных PostgreSQL на OpenBSD"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/ru/openbsd/2023/03/01/running-postgresql-database-on-openbsd/",
+"name": "DataBase"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/ru/openbsd/2023/03/01/running-postgresql-database-on-openbsd/",
+  "name": "Запуск базы данных PostgreSQL на OpenBSD",
+  "headline": "Запуск базы данных PostgreSQL на OpenBSD",
+  "keywords": "DataBase",
+  "description": "OpenBSD имеет систему пакетов, которая несколько отличается от многих других операционных систем; в частности, пакеты тщательно проверяются перед установкой.",
+  "articleBody": "OpenBSD — очень надежная, безопасная и оригинальная операционная система Unix, в то время как PostgreSQL — очень стабильная, мощная, современная и полнофункциональная реляционная база данных корпоративного уровня. Можно ли объединить оба варианта, чтобы создать отличную базу данных на операционной системе OpenBSD? Ответ: Да, конечно! Все это можно легко сделать с помощью OpenBSD.\n\nOpenBSD имеет систему пакетов, которая чем-то отличается от многих других операционных систем; В частности, пакеты тщательно проверяются перед установкой, поэтому процесс установки запустится только в том случае, если есть полная уверенность в том, что установка будет успешной. Кроме того, операционная система OpenBSD предоставляет простой и гибкий способ управления службами демонов PostgreSQL.\n\nВ этой короткой статье я покажу вам, как начать работать с PostgreSQL в OpenBSD.\n\nТехнические характеристики системы\n\n  OS: OpenBSD 7.6 amd64\n  Host: Acer Aspire M1800\n  Uptime: 17 mins\n  Packages: 102 (pkg_info)\n  Shell: ksh v5.2.14 99/07/13.2\n  Terminal: /dev/ttyp0\n  CPU: Intel Core 2 Duo E8400 (2) @ 3.000GHz\n  Memory: 55MiB / 1775MiB\n  Hostname: ns2\n  IP Address: 192.168.5.3\n  Domain: inchimediatama.org\n  Versi PostgreSQL: postgresql-server-16.4p0\n  Versi PHP: php-8.2.27p0\n\n\nУстановить зависимости PostgreSQL\nЗависимости играют важную роль в приложениях PostgreSQL. Благодаря зависимостям PostgreSQL может нормально работать на OpenBSD. Наиболее распространенными зависимостями, которые вам придется установить, являются PHP-зависимости.\n\nПеред установкой зависимостей убедитесь, что у вас установлены PHP и PHP-FPM. Ниже приведены команды, которые можно использовать для установки зависимостей PostgreSQL.\n\nns2# pkg_add php-curl-8.2.27 php-gd-8.2.27 php-intl-8.2.27 php-pdo_pgsql-8.2.27 php-zip-8.2.27 redis pecl82-redis\n\n\nУстановить базу данных PostgreSQL\nПосле успешной установки зависимостей PHP, PHP-FPM и PostgreSQL можно приступить к процессу установки базы данных PostgreSQL. OpenBSD использует пакет pkg, который управляет всеми механизмами упаковки для установки каждого приложения.\n\nХотя верно, что вы можете устанавливать приложения из портов, как и другие системы BSD, OpenBSD рекомендует установку через пакеты, поскольку система может легко отслеживать, что вы установили на данный момент, и, следовательно, может легко выполнять обновления.\n\nПоэтому первое, что необходимо сделать, — это выполнить процесс обновления пакета OpenBSD pkg.\n\nns2# pkg_add -uvi\nns2# pkg_add postgresql-server\n\n\nИнициализация базы данных PostgreSQL\nПеред ручной настройкой PostgreSQL важно понять команду initdb. Если PostgreSQL не настроен должным образом на раннем этапе, он не будет выполнять запросы на более позднем этапе. Пользователи могут настраивать сервер PostgreSQL вручную с помощью различных команд. В худшем случае сервер PostgreSQL может не определить путь к каталогу данных и не запуститься.\n\nКоманда initdb используется в процессе инициализации кластера базы данных. После процесса инициализации с помощью команды initdb в кластере баз данных будет создана база данных с именем postgres. Postgres служит базой данных по умолчанию, используемой пользователями, утилитами и сторонними приложениями. Помимо создания базы данных postgres в кластере, в каждом кластере также создается еще одна база данных с именем template1.\n\nБаза данных template1 служит шаблоном для баз данных, создаваемых позднее в кластере. Помните, кластер базы данных — это каталог данных в файловой системе. Чтобы запустить процесс initdb, вы можете выполнить следующую команду.\n\nns2# rm -rf /var/postgresql/data\nns2# su - _postgresql\n$ initdb -D /var/postgresql/data/ -U postgres -k -E UTF-8 -A md5 -W\nThe files belonging to this database system will be owned by user \"_postgresql\".\nThis user must also own the server process.\n\nThe database cluster will be initialized with locale \"C\".\nThe default text search configuration will be set to \"english\".\n\nData page checksums are enabled.\n\nEnter new superuser password:\nEnter it again:\n\ncreating directory /var/postgresql/data ... ok\ncreating subdirectories ... ok\nselecting dynamic shared memory implementation ... posix\nselecting default max_connections ... 20\nselecting default shared_buffers ... 128MB\nselecting default time zone ... Asia/Jakarta\ncreating configuration files ... ok\nrunning bootstrap script ... ok\nperforming post-bootstrap initialization ... ok\nsyncing data to disk ... ok\n\nSuccess. You can now start the database server using:\n\n    pg_ctl -D /var/postgresql/data/ -l logfile start\n\n\nПосле этого вы можете запустить службу postgresql.\n\n$ pg_ctl -D /var/postgresql/data/ -l logfile start\nwaiting for server to start.... done\nserver started\n$ exit\n\n\nВключение PostgreSQL\nПосле завершения процесса инициализации базы данных (initdb) вы можете немедленно приступить к активации PostgreSQL.\n\nns2# rcctl enable postgresql\nns2# rcctl restart postgresql\npostgresql(ok)\npostgresql(ok)\n\n\nЧтобы дополнительно убедиться в правильной работе демона postgresql, выполните следующую команду.\n\nns2# rcctl check postgresql\npostgresql(ok)\n\n\nВсе базы данных и файлы конфигурации можно найти в каталоге /var/postgresql/data. Вы можете изменить содержимое файла скрипта «/var/postgresql/data/postgresql.conf», например, если вы хотите использовать частный IP-адрес или можете использовать localhost.\n\n# -----------------------------\n# PostgreSQL configuration file\n# -----------------------------\n#\n# This file consists of lines of the form:\n#\n#   name = value\n#\n# (The \"=\" is optional.)  Whitespace may be used.  Comments are introduced with\n# \"#\" anywhere on a line.  The complete list of parameter names and allowed\n# values can be found in the PostgreSQL documentation.\n#\n# The commented-out settings shown in this file represent the default values.\n# Re-commenting a setting is NOT sufficient to revert it to the default value;\n# you need to reload the server.\n#\n# This file is read on server startup and when the server receives a SIGHUP\n# signal.  If you edit the file on a running system, you have to SIGHUP the\n# server for the changes to take effect, run \"pg_ctl reload\", or execute\n# \"SELECT pg_reload_conf()\".  Some parameters, which are marked below,\n# require a server shutdown and restart to take effect.\n#\n# Any parameter can also be given as a command-line option to the server, e.g.,\n# \"postgres -c log_connections=on\".  Some parameters can be changed at run time\n# with the \"SET\" SQL command.\n#\n# Memory units:  B  = bytes            Time units:  us  = microseconds\n#                kB = kilobytes                     ms  = milliseconds\n#                MB = megabytes                     s   = seconds\n#                GB = gigabytes                     min = minutes\n#                TB = terabytes                     h   = hours\n#                                                   d   = days\n\n\n#------------------------------------------------------------------------------\n# FILE LOCATIONS\n#------------------------------------------------------------------------------\n\n# The default values of these variables are driven from the -D command-line\n# option or PGDATA environment variable, represented here as ConfigDir.\n\n#data_directory = 'ConfigDir'\t\t# use data in another directory\n\t\t\t\t\t# (change requires restart)\n#hba_file = 'ConfigDir/pg_hba.conf'\t# host-based authentication file\n\t\t\t\t\t# (change requires restart)\n#ident_file = 'ConfigDir/pg_ident.conf'\t# ident configuration file\n\t\t\t\t\t# (change requires restart)\n\n# If external_pid_file is not explicitly set, no extra PID file is written.\n#external_pid_file = ''\t\t\t# write an extra PID file\n\t\t\t\t\t# (change requires restart)\n\n\n#------------------------------------------------------------------------------\n# CONNECTIONS AND AUTHENTICATION\n#------------------------------------------------------------------------------\n\n# - Connection Settings -\n\nlisten_addresses = '192.168.5.3'\t\t# what IP address(es) to listen on;\n\t\t\t\t\t# comma-separated list of addresses;\n\t\t\t\t\t# defaults to 'localhost'; use '*' for all\n\t\t\t\t\t# (change requires restart)\nport = 5432\t\t\t\t# (change requires restart)\nmax_connections = 20\t\t\t# (change requires restart)\n#reserved_connections = 0\t\t# (change requires restart)\n#superuser_reserved_connections = 3\t# (change requires restart)\n#unix_socket_directories = '/tmp'\t# comma-separated list of directories\n\t\t\t\t\t# (change requires restart)\n#unix_socket_group = ''\t\t\t# (change requires restart)\n#unix_socket_permissions = 0777\t\t# begin with 0 to use octal notation\n\t\t\t\t\t# (change requires restart)\n#bonjour = off\t\t\t\t# advertise server via Bonjour\n\t\t\t\t\t# (change requires restart)\n#bonjour_name = ''\t\t\t# defaults to the computer name\n\t\t\t\t\t# (change requires restart)\n\n# - TCP settings -\n# see \"man tcp\" for details\n\n#tcp_keepalives_idle = 0\t\t# TCP_KEEPIDLE, in seconds;\n\t\t\t\t\t# 0 selects the system default\n#tcp_keepalives_interval = 0\t\t# TCP_KEEPINTVL, in seconds;\n\t\t\t\t\t# 0 selects the system default\n#tcp_keepalives_count = 0\t\t# TCP_KEEPCNT;\n\t\t\t\t\t# 0 selects the system default\n#tcp_user_timeout = 0\t\t\t# TCP_USER_TIMEOUT, in milliseconds;\n\t\t\t\t\t# 0 selects the system default\n\n#client_connection_check_interval = 0\t# time between checks for client\n\t\t\t\t\t# disconnection while running queries;\n\t\t\t\t\t# 0 for never\n\n# - Authentication -\n\n#authentication_timeout = 1min\t\t# 1s-600s\npassword_encryption = md5\t\t# scram-sha-256 or md5\n#scram_iterations = 4096\n#db_user_namespace = off\n\n# GSSAPI using Kerberos\n#krb_server_keyfile = 'FILE:${sysconfdir}/krb5.keytab'\n#krb_caseins_users = off\n#gss_accept_delegation = off\n\n# - SSL -\n\n#ssl = off\n#ssl_ca_file = ''\n#ssl_cert_file = 'server.crt'\n#ssl_crl_file = ''\n#ssl_crl_dir = ''\n#ssl_key_file = 'server.key'\n#ssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL' # allowed SSL ciphers\n#ssl_prefer_server_ciphers = on\n#ssl_ecdh_curve = 'prime256v1'\n#ssl_min_protocol_version = 'TLSv1.2'\n#ssl_max_protocol_version = ''\n#ssl_dh_params_file = ''\n#ssl_passphrase_command = ''\n#ssl_passphrase_command_supports_reload = off\n\n\n#------------------------------------------------------------------------------\n# RESOURCE USAGE (except WAL)\n#------------------------------------------------------------------------------\n\n# - Memory -\n\nshared_buffers = 128MB\t\t\t# min 128kB\n\t\t\t\t\t# (change requires restart)\n#huge_pages = try\t\t\t# on, off, or try\n\t\t\t\t\t# (change requires restart)\n#huge_page_size = 0\t\t\t# zero for system default\n\t\t\t\t\t# (change requires restart)\n#temp_buffers = 8MB\t\t\t# min 800kB\n#max_prepared_transactions = 0\t\t# zero disables the feature\n\t\t\t\t\t# (change requires restart)\n# Caution: it is not advisable to set max_prepared_transactions nonzero unless\n# you actively intend to use prepared transactions.\n#work_mem = 4MB\t\t\t\t# min 64kB\n#hash_mem_multiplier = 2.0\t\t# 1-1000.0 multiplier on hash table work_mem\n#maintenance_work_mem = 64MB\t\t# min 1MB\n#autovacuum_work_mem = -1\t\t# min 1MB, or -1 to use maintenance_work_mem\n#logical_decoding_work_mem = 64MB\t# min 64kB\n#max_stack_depth = 2MB\t\t\t# min 100kB\n#shared_memory_type = mmap\t\t# the default is the first option\n\t\t\t\t\t# supported by the operating system:\n\t\t\t\t\t#   mmap\n\t\t\t\t\t#   sysv\n\t\t\t\t\t#   windows\n\t\t\t\t\t# (change requires restart)\ndynamic_shared_memory_type = posix\t# the default is usually the first option\n\t\t\t\t\t# supported by the operating system:\n\t\t\t\t\t#   posix\n\t\t\t\t\t#   sysv\n\t\t\t\t\t#   windows\n\t\t\t\t\t#   mmap\n\t\t\t\t\t# (change requires restart)\n#min_dynamic_shared_memory = 0MB\t# (change requires restart)\n#vacuum_buffer_usage_limit = 256kB\t# size of vacuum and analyze buffer access strategy ring;\n\t\t\t\t\t# 0 to disable vacuum buffer access strategy;\n\t\t\t\t\t# range 128kB to 16GB\n\n# - Disk -\n\n#temp_file_limit = -1\t\t\t# limits per-process temp file space\n\t\t\t\t\t# in kilobytes, or -1 for no limit\n\n# - Kernel Resources -\n\n#max_files_per_process = 1000\t\t# min 64\n\t\t\t\t\t# (change requires restart)\n\n# - Cost-Based Vacuum Delay -\n\n#vacuum_cost_delay = 0\t\t\t# 0-100 milliseconds (0 disables)\n#vacuum_cost_page_hit = 1\t\t# 0-10000 credits\n#vacuum_cost_page_miss = 2\t\t# 0-10000 credits\n#vacuum_cost_page_dirty = 20\t\t# 0-10000 credits\n#vacuum_cost_limit = 200\t\t# 1-10000 credits\n\n# - Background Writer -\n\n#bgwriter_delay = 200ms\t\t\t# 10-10000ms between rounds\n#bgwriter_lru_maxpages = 100\t\t# max buffers written/round, 0 disables\n#bgwriter_lru_multiplier = 2.0\t\t# 0-10.0 multiplier on buffers scanned/round\n#bgwriter_flush_after = 0\t\t# measured in pages, 0 disables\n\n# - Asynchronous Behavior -\n\n#backend_flush_after = 0\t\t# measured in pages, 0 disables\n#effective_io_concurrency = 0\t\t# 1-1000; 0 disables prefetching\n#maintenance_io_concurrency = 10\t# 1-1000; 0 disables prefetching\n#max_worker_processes = 8\t\t# (change requires restart)\n#max_parallel_workers_per_gather = 2\t# limited by max_parallel_workers\n#max_parallel_maintenance_workers = 2\t# limited by max_parallel_workers\n#max_parallel_workers = 8\t\t# number of max_worker_processes that\n\t\t\t\t\t# can be used in parallel operations\n#parallel_leader_participation = on\n#old_snapshot_threshold = -1\t\t# 1min-60d; -1 disables; 0 is immediate\n\t\t\t\t\t# (change requires restart)\n\n\n#------------------------------------------------------------------------------\n# WRITE-AHEAD LOG\n#------------------------------------------------------------------------------\n\n# - Settings -\n\n#wal_level = replica\t\t\t# minimal, replica, or logical\n\t\t\t\t\t# (change requires restart)\n#fsync = on\t\t\t\t# flush data to disk for crash safety\n\t\t\t\t\t# (turning this off can cause\n\t\t\t\t\t# unrecoverable data corruption)\n#synchronous_commit = on\t\t# synchronization level;\n\t\t\t\t\t# off, local, remote_write, remote_apply, or on\n#wal_sync_method = fsync\t\t# the default is the first option\n\t\t\t\t\t# supported by the operating system:\n\t\t\t\t\t#   open_datasync\n\t\t\t\t\t#   fdatasync (default on Linux and FreeBSD)\n\t\t\t\t\t#   fsync\n\t\t\t\t\t#   fsync_writethrough\n\t\t\t\t\t#   open_sync\n#full_page_writes = on\t\t\t# recover from partial page writes\n#wal_log_hints = off\t\t\t# also do full page writes of non-critical updates\n\t\t\t\t\t# (change requires restart)\n#wal_compression = off\t\t\t# enables compression of full-page writes;\n\t\t\t\t\t# off, pglz, lz4, zstd, or on\n#wal_init_zero = on\t\t\t# zero-fill new WAL files\n#wal_recycle = on\t\t\t# recycle WAL files\n#wal_buffers = -1\t\t\t# min 32kB, -1 sets based on shared_buffers\n\t\t\t\t\t# (change requires restart)\n#wal_writer_delay = 200ms\t\t# 1-10000 milliseconds\n#wal_writer_flush_after = 1MB\t\t# measured in pages, 0 disables\n#wal_skip_threshold = 2MB\n\n#commit_delay = 0\t\t\t# range 0-100000, in microseconds\n#commit_siblings = 5\t\t\t# range 1-1000\n\n# - Checkpoints -\n\n#checkpoint_timeout = 5min\t\t# range 30s-1d\n#checkpoint_completion_target = 0.9\t# checkpoint target duration, 0.0 - 1.0\n#checkpoint_flush_after = 0\t\t# measured in pages, 0 disables\n#checkpoint_warning = 30s\t\t# 0 disables\nmax_wal_size = 1GB\nmin_wal_size = 80MB\n\n# - Prefetching during recovery -\n\n#recovery_prefetch = try\t\t# prefetch pages referenced in the WAL?\n#wal_decode_buffer_size = 512kB\t\t# lookahead window used for prefetching\n\t\t\t\t\t# (change requires restart)\n\n# - Archiving -\n\n#archive_mode = off\t\t# enables archiving; off, on, or always\n\t\t\t\t# (change requires restart)\n#archive_library = ''\t\t# library to use to archive a WAL file\n\t\t\t\t# (empty string indicates archive_command should\n\t\t\t\t# be used)\n#archive_command = ''\t\t# command to use to archive a WAL file\n\t\t\t\t# placeholders: %p = path of file to archive\n\t\t\t\t#               %f = file name only\n\t\t\t\t# e.g. 'test ! -f /mnt/server/archivedir/%f &amp;&amp; cp %p /mnt/server/archivedir/%f'\n#archive_timeout = 0\t\t# force a WAL file switch after this\n\t\t\t\t# number of seconds; 0 disables\n\n# - Archive Recovery -\n\n# These are only used in recovery mode.\n\n#restore_command = ''\t\t# command to use to restore an archived WAL file\n\t\t\t\t# placeholders: %p = path of file to restore\n\t\t\t\t#               %f = file name only\n\t\t\t\t# e.g. 'cp /mnt/server/archivedir/%f %p'\n#archive_cleanup_command = ''\t# command to execute at every restartpoint\n#recovery_end_command = ''\t# command to execute at completion of recovery\n\n# - Recovery Target -\n\n# Set these only when performing a targeted recovery.\n\n#recovery_target = ''\t\t# 'immediate' to end recovery as soon as a\n                                # consistent state is reached\n\t\t\t\t# (change requires restart)\n#recovery_target_name = ''\t# the named restore point to which recovery will proceed\n\t\t\t\t# (change requires restart)\n#recovery_target_time = ''\t# the time stamp up to which recovery will proceed\n\t\t\t\t# (change requires restart)\n#recovery_target_xid = ''\t# the transaction ID up to which recovery will proceed\n\t\t\t\t# (change requires restart)\n#recovery_target_lsn = ''\t# the WAL LSN up to which recovery will proceed\n\t\t\t\t# (change requires restart)\n#recovery_target_inclusive = on # Specifies whether to stop:\n\t\t\t\t# just after the specified recovery target (on)\n\t\t\t\t# just before the recovery target (off)\n\t\t\t\t# (change requires restart)\n#recovery_target_timeline = 'latest'\t# 'current', 'latest', or timeline ID\n\t\t\t\t# (change requires restart)\n#recovery_target_action = 'pause'\t# 'pause', 'promote', 'shutdown'\n\t\t\t\t# (change requires restart)\n\n\n#------------------------------------------------------------------------------\n# REPLICATION\n#------------------------------------------------------------------------------\n\n# - Sending Servers -\n\n# Set these on the primary and on any standby that will send replication data.\n\n#max_wal_senders = 10\t\t# max number of walsender processes\n\t\t\t\t# (change requires restart)\n#max_replication_slots = 10\t# max number of replication slots\n\t\t\t\t# (change requires restart)\n#wal_keep_size = 0\t\t# in megabytes; 0 disables\n#max_slot_wal_keep_size = -1\t# in megabytes; -1 disables\n#wal_sender_timeout = 60s\t# in milliseconds; 0 disables\n#track_commit_timestamp = off\t# collect timestamp of transaction commit\n\t\t\t\t# (change requires restart)\n\n# - Primary Server -\n\n# These settings are ignored on a standby server.\n\n#synchronous_standby_names = ''\t# standby servers that provide sync rep\n\t\t\t\t# method to choose sync standbys, number of sync standbys,\n\t\t\t\t# and comma-separated list of application_name\n\t\t\t\t# from standby(s); '*' = all\n\n# - Standby Servers -\n\n# These settings are ignored on a primary server.\n\n#primary_conninfo = ''\t\t\t# connection string to sending server\n#primary_slot_name = ''\t\t\t# replication slot on sending server\n#hot_standby = on\t\t\t# \"off\" disallows queries during recovery\n\t\t\t\t\t# (change requires restart)\n#max_standby_archive_delay = 30s\t# max delay before canceling queries\n\t\t\t\t\t# when reading WAL from archive;\n\t\t\t\t\t# -1 allows indefinite delay\n#max_standby_streaming_delay = 30s\t# max delay before canceling queries\n\t\t\t\t\t# when reading streaming WAL;\n\t\t\t\t\t# -1 allows indefinite delay\n#wal_receiver_create_temp_slot = off\t# create temp slot if primary_slot_name\n\t\t\t\t\t# is not set\n#wal_receiver_status_interval = 10s\t# send replies at least this often\n\t\t\t\t\t# 0 disables\n#hot_standby_feedback = off\t\t# send info from standby to prevent\n\t\t\t\t\t# query conflicts\n#wal_receiver_timeout = 60s\t\t# time that receiver waits for\n\t\t\t\t\t# communication from primary\n\t\t\t\t\t# in milliseconds; 0 disables\n#wal_retrieve_retry_interval = 5s\t# time to wait before retrying to\n\t\t\t\t\t# retrieve WAL after a failed attempt\n#recovery_min_apply_delay = 0\t\t# minimum delay for applying changes during recovery\n\n# - Subscribers -\n\n# These settings are ignored on a publisher.\n\n#max_logical_replication_workers = 4\t# taken from max_worker_processes\n\t\t\t\t\t# (change requires restart)\n#max_sync_workers_per_subscription = 2\t# taken from max_logical_replication_workers\n#max_parallel_apply_workers_per_subscription = 2\t# taken from max_logical_replication_workers\n\n\n#------------------------------------------------------------------------------\n# QUERY TUNING\n#------------------------------------------------------------------------------\n\n# - Planner Method Configuration -\n\n#enable_async_append = on\n#enable_bitmapscan = on\n#enable_gathermerge = on\n#enable_hashagg = on\n#enable_hashjoin = on\n#enable_incremental_sort = on\n#enable_indexscan = on\n#enable_indexonlyscan = on\n#enable_material = on\n#enable_memoize = on\n#enable_mergejoin = on\n#enable_nestloop = on\n#enable_parallel_append = on\n#enable_parallel_hash = on\n#enable_partition_pruning = on\n#enable_partitionwise_join = off\n#enable_partitionwise_aggregate = off\n#enable_presorted_aggregate = on\n#enable_seqscan = on\n#enable_sort = on\n#enable_tidscan = on\n\n# - Planner Cost Constants -\n\n#seq_page_cost = 1.0\t\t\t# measured on an arbitrary scale\n#random_page_cost = 4.0\t\t\t# same scale as above\n#cpu_tuple_cost = 0.01\t\t\t# same scale as above\n#cpu_index_tuple_cost = 0.005\t\t# same scale as above\n#cpu_operator_cost = 0.0025\t\t# same scale as above\n#parallel_setup_cost = 1000.0\t# same scale as above\n#parallel_tuple_cost = 0.1\t\t# same scale as above\n#min_parallel_table_scan_size = 8MB\n#min_parallel_index_scan_size = 512kB\n#effective_cache_size = 4GB\n\n#jit_above_cost = 100000\t\t# perform JIT compilation if available\n\t\t\t\t\t# and query more expensive than this;\n\t\t\t\t\t# -1 disables\n#jit_inline_above_cost = 500000\t\t# inline small functions if query is\n\t\t\t\t\t# more expensive than this; -1 disables\n#jit_optimize_above_cost = 500000\t# use expensive JIT optimizations if\n\t\t\t\t\t# query is more expensive than this;\n\t\t\t\t\t# -1 disables\n\n# - Genetic Query Optimizer -\n\n#geqo = on\n#geqo_threshold = 12\n#geqo_effort = 5\t\t\t# range 1-10\n#geqo_pool_size = 0\t\t\t# selects default based on effort\n#geqo_generations = 0\t\t\t# selects default based on effort\n#geqo_selection_bias = 2.0\t\t# range 1.5-2.0\n#geqo_seed = 0.0\t\t\t# range 0.0-1.0\n\n# - Other Planner Options -\n\n#default_statistics_target = 100\t# range 1-10000\n#constraint_exclusion = partition\t# on, off, or partition\n#cursor_tuple_fraction = 0.1\t\t# range 0.0-1.0\n#from_collapse_limit = 8\n#jit = on\t\t\t\t# allow JIT compilation\n#join_collapse_limit = 8\t\t# 1 disables collapsing of explicit\n\t\t\t\t\t# JOIN clauses\n#plan_cache_mode = auto\t\t\t# auto, force_generic_plan or\n\t\t\t\t\t# force_custom_plan\n#recursive_worktable_factor = 10.0\t# range 0.001-1000000\n\n\n#------------------------------------------------------------------------------\n# REPORTING AND LOGGING\n#------------------------------------------------------------------------------\n\n# - Where to Log -\n\n#log_destination = 'stderr'\t\t# Valid values are combinations of\n\t\t\t\t\t# stderr, csvlog, jsonlog, syslog, and\n\t\t\t\t\t# eventlog, depending on platform.\n\t\t\t\t\t# csvlog and jsonlog require\n\t\t\t\t\t# logging_collector to be on.\n\n# This is used when logging to stderr:\n#logging_collector = off\t\t# Enable capturing of stderr, jsonlog,\n\t\t\t\t\t# and csvlog into log files. Required\n\t\t\t\t\t# to be on for csvlogs and jsonlogs.\n\t\t\t\t\t# (change requires restart)\n\n# These are only used if logging_collector is on:\n#log_directory = 'log'\t\t\t# directory where log files are written,\n\t\t\t\t\t# can be absolute or relative to PGDATA\n#log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'\t# log file name pattern,\n\t\t\t\t\t# can include strftime() escapes\n#log_file_mode = 0600\t\t\t# creation mode for log files,\n\t\t\t\t\t# begin with 0 to use octal notation\n#log_rotation_age = 1d\t\t\t# Automatic rotation of logfiles will\n\t\t\t\t\t# happen after that time.  0 disables.\n#log_rotation_size = 10MB\t\t# Automatic rotation of logfiles will\n\t\t\t\t\t# happen after that much log output.\n\t\t\t\t\t# 0 disables.\n#log_truncate_on_rotation = off\t\t# If on, an existing log file with the\n\t\t\t\t\t# same name as the new log file will be\n\t\t\t\t\t# truncated rather than appended to.\n\t\t\t\t\t# But such truncation only occurs on\n\t\t\t\t\t# time-driven rotation, not on restarts\n\t\t\t\t\t# or size-driven rotation.  Default is\n\t\t\t\t\t# off, meaning append to existing files\n\t\t\t\t\t# in all cases.\n\n# These are relevant when logging to syslog:\n#syslog_facility = 'LOCAL0'\n#syslog_ident = 'postgres'\n#syslog_sequence_numbers = on\n#syslog_split_messages = on\n\n# This is only relevant when logging to eventlog (Windows):\n# (change requires restart)\n#event_source = 'PostgreSQL'\n\n# - When to Log -\n\n#log_min_messages = warning\t\t# values in order of decreasing detail:\n\t\t\t\t\t#   debug5\n\t\t\t\t\t#   debug4\n\t\t\t\t\t#   debug3\n\t\t\t\t\t#   debug2\n\t\t\t\t\t#   debug1\n\t\t\t\t\t#   info\n\t\t\t\t\t#   notice\n\t\t\t\t\t#   warning\n\t\t\t\t\t#   error\n\t\t\t\t\t#   log\n\t\t\t\t\t#   fatal\n\t\t\t\t\t#   panic\n\n#log_min_error_statement = error\t# values in order of decreasing detail:\n\t\t\t\t\t#   debug5\n\t\t\t\t\t#   debug4\n\t\t\t\t\t#   debug3\n\t\t\t\t\t#   debug2\n\t\t\t\t\t#   debug1\n\t\t\t\t\t#   info\n\t\t\t\t\t#   notice\n\t\t\t\t\t#   warning\n\t\t\t\t\t#   error\n\t\t\t\t\t#   log\n\t\t\t\t\t#   fatal\n\t\t\t\t\t#   panic (effectively off)\n\n#log_min_duration_statement = -1\t# -1 is disabled, 0 logs all statements\n\t\t\t\t\t# and their durations, &gt; 0 logs only\n\t\t\t\t\t# statements running at least this number\n\t\t\t\t\t# of milliseconds\n\n#log_min_duration_sample = -1\t\t# -1 is disabled, 0 logs a sample of statements\n\t\t\t\t\t# and their durations, &gt; 0 logs only a sample of\n\t\t\t\t\t# statements running at least this number\n\t\t\t\t\t# of milliseconds;\n\t\t\t\t\t# sample fraction is determined by log_statement_sample_rate\n\n#log_statement_sample_rate = 1.0\t# fraction of logged statements exceeding\n\t\t\t\t\t# log_min_duration_sample to be logged;\n\t\t\t\t\t# 1.0 logs all such statements, 0.0 never logs\n\n\n#log_transaction_sample_rate = 0.0\t# fraction of transactions whose statements\n\t\t\t\t\t# are logged regardless of their duration; 1.0 logs all\n\t\t\t\t\t# statements from all transactions, 0.0 never logs\n\n#log_startup_progress_interval = 10s\t# Time between progress updates for\n\t\t\t\t\t# long-running startup operations.\n\t\t\t\t\t# 0 disables the feature, &gt; 0 indicates\n\t\t\t\t\t# the interval in milliseconds.\n\n# - What to Log -\n\n#debug_print_parse = off\n#debug_print_rewritten = off\n#debug_print_plan = off\n#debug_pretty_print = on\n#log_autovacuum_min_duration = 10min\t# log autovacuum activity;\n\t\t\t\t\t# -1 disables, 0 logs all actions and\n\t\t\t\t\t# their durations, &gt; 0 logs only\n\t\t\t\t\t# actions running at least this number\n\t\t\t\t\t# of milliseconds.\n#log_checkpoints = on\n#log_connections = off\n#log_disconnections = off\n#log_duration = off\n#log_error_verbosity = default\t\t# terse, default, or verbose messages\n#log_hostname = off\n#log_line_prefix = '%m [%p] '\t\t# special values:\n\t\t\t\t\t#   %a = application name\n\t\t\t\t\t#   %u = user name\n\t\t\t\t\t#   %d = database name\n\t\t\t\t\t#   %r = remote host and port\n\t\t\t\t\t#   %h = remote host\n\t\t\t\t\t#   %b = backend type\n\t\t\t\t\t#   %p = process ID\n\t\t\t\t\t#   %P = process ID of parallel group leader\n\t\t\t\t\t#   %t = timestamp without milliseconds\n\t\t\t\t\t#   %m = timestamp with milliseconds\n\t\t\t\t\t#   %n = timestamp with milliseconds (as a Unix epoch)\n\t\t\t\t\t#   %Q = query ID (0 if none or not computed)\n\t\t\t\t\t#   %i = command tag\n\t\t\t\t\t#   %e = SQL state\n\t\t\t\t\t#   %c = session ID\n\t\t\t\t\t#   %l = session line number\n\t\t\t\t\t#   %s = session start timestamp\n\t\t\t\t\t#   %v = virtual transaction ID\n\t\t\t\t\t#   %x = transaction ID (0 if none)\n\t\t\t\t\t#   %q = stop here in non-session\n\t\t\t\t\t#        processes\n\t\t\t\t\t#   %% = '%'\n\t\t\t\t\t# e.g. '&lt;%u%%%d&gt; '\n#log_lock_waits = off\t\t\t# log lock waits &gt;= deadlock_timeout\n#log_recovery_conflict_waits = off\t# log standby recovery conflict waits\n\t\t\t\t\t# &gt;= deadlock_timeout\n#log_parameter_max_length = -1\t\t# when logging statements, limit logged\n\t\t\t\t\t# bind-parameter values to N bytes;\n\t\t\t\t\t# -1 means print in full, 0 disables\n#log_parameter_max_length_on_error = 0\t# when logging an error, limit logged\n\t\t\t\t\t# bind-parameter values to N bytes;\n\t\t\t\t\t# -1 means print in full, 0 disables\n#log_statement = 'none'\t\t\t# none, ddl, mod, all\n#log_replication_commands = off\n#log_temp_files = -1\t\t\t# log temporary files equal or larger\n\t\t\t\t\t# than the specified size in kilobytes;\n\t\t\t\t\t# -1 disables, 0 logs all temp files\nlog_timezone = 'Asia/Jakarta'\n\n# - Process Title -\n\n#cluster_name = ''\t\t\t# added to process titles if nonempty\n\t\t\t\t\t# (change requires restart)\n#update_process_title = on\n\n\n#------------------------------------------------------------------------------\n# STATISTICS\n#------------------------------------------------------------------------------\n\n# - Cumulative Query and Index Statistics -\n\n#track_activities = on\n#track_activity_query_size = 1024\t# (change requires restart)\n#track_counts = on\n#track_io_timing = off\n#track_wal_io_timing = off\n#track_functions = none\t\t\t# none, pl, all\n#stats_fetch_consistency = cache\t# cache, none, snapshot\n\n\n# - Monitoring -\n\n#compute_query_id = auto\n#log_statement_stats = off\n#log_parser_stats = off\n#log_planner_stats = off\n#log_executor_stats = off\n\n\n#------------------------------------------------------------------------------\n# AUTOVACUUM\n#------------------------------------------------------------------------------\n\n#autovacuum = on\t\t\t# Enable autovacuum subprocess?  'on'\n\t\t\t\t\t# requires track_counts to also be on.\n#autovacuum_max_workers = 3\t\t# max number of autovacuum subprocesses\n\t\t\t\t\t# (change requires restart)\n#autovacuum_naptime = 1min\t\t# time between autovacuum runs\n#autovacuum_vacuum_threshold = 50\t# min number of row updates before\n\t\t\t\t\t# vacuum\n#autovacuum_vacuum_insert_threshold = 1000\t# min number of row inserts\n\t\t\t\t\t# before vacuum; -1 disables insert\n\t\t\t\t\t# vacuums\n#autovacuum_analyze_threshold = 50\t# min number of row updates before\n\t\t\t\t\t# analyze\n#autovacuum_vacuum_scale_factor = 0.2\t# fraction of table size before vacuum\n#autovacuum_vacuum_insert_scale_factor = 0.2\t# fraction of inserts over table\n\t\t\t\t\t# size before insert vacuum\n#autovacuum_analyze_scale_factor = 0.1\t# fraction of table size before analyze\n#autovacuum_freeze_max_age = 200000000\t# maximum XID age before forced vacuum\n\t\t\t\t\t# (change requires restart)\n#autovacuum_multixact_freeze_max_age = 400000000\t# maximum multixact age\n\t\t\t\t\t# before forced vacuum\n\t\t\t\t\t# (change requires restart)\n#autovacuum_vacuum_cost_delay = 2ms\t# default vacuum cost delay for\n\t\t\t\t\t# autovacuum, in milliseconds;\n\t\t\t\t\t# -1 means use vacuum_cost_delay\n#autovacuum_vacuum_cost_limit = -1\t# default vacuum cost limit for\n\t\t\t\t\t# autovacuum, -1 means use\n\t\t\t\t\t# vacuum_cost_limit\n\n\n#------------------------------------------------------------------------------\n# CLIENT CONNECTION DEFAULTS\n#------------------------------------------------------------------------------\n\n# - Statement Behavior -\n\n#client_min_messages = notice\t\t# values in order of decreasing detail:\n\t\t\t\t\t#   debug5\n\t\t\t\t\t#   debug4\n\t\t\t\t\t#   debug3\n\t\t\t\t\t#   debug2\n\t\t\t\t\t#   debug1\n\t\t\t\t\t#   log\n\t\t\t\t\t#   notice\n\t\t\t\t\t#   warning\n\t\t\t\t\t#   error\n#search_path = '\"$user\", public'\t# schema names\n#row_security = on\n#default_table_access_method = 'heap'\n#default_tablespace = ''\t\t# a tablespace name, '' uses the default\n#default_toast_compression = 'pglz'\t# 'pglz' or 'lz4'\n#temp_tablespaces = ''\t\t\t# a list of tablespace names, '' uses\n\t\t\t\t\t# only default tablespace\n#check_function_bodies = on\n#default_transaction_isolation = 'read committed'\n#default_transaction_read_only = off\n#default_transaction_deferrable = off\n#session_replication_role = 'origin'\n#statement_timeout = 0\t\t\t# in milliseconds, 0 is disabled\n#lock_timeout = 0\t\t\t# in milliseconds, 0 is disabled\n#idle_in_transaction_session_timeout = 0\t# in milliseconds, 0 is disabled\n#idle_session_timeout = 0\t\t# in milliseconds, 0 is disabled\n#vacuum_freeze_table_age = 150000000\n#vacuum_freeze_min_age = 50000000\n#vacuum_failsafe_age = 1600000000\n#vacuum_multixact_freeze_table_age = 150000000\n#vacuum_multixact_freeze_min_age = 5000000\n#vacuum_multixact_failsafe_age = 1600000000\n#bytea_output = 'hex'\t\t\t# hex, escape\n#xmlbinary = 'base64'\n#xmloption = 'content'\n#gin_pending_list_limit = 4MB\n#createrole_self_grant = ''\t\t# set and/or inherit\n\n# - Locale and Formatting -\n\ndatestyle = 'iso, mdy'\n#intervalstyle = 'postgres'\ntimezone = 'Asia/Jakarta'\n#timezone_abbreviations = 'Default'     # Select the set of available time zone\n\t\t\t\t\t# abbreviations.  Currently, there are\n\t\t\t\t\t#   Default\n\t\t\t\t\t#   Australia (historical usage)\n\t\t\t\t\t#   India\n\t\t\t\t\t# You can create your own file in\n\t\t\t\t\t# share/timezonesets/.\n#extra_float_digits = 1\t\t\t# min -15, max 3; any value &gt;0 actually\n\t\t\t\t\t# selects precise output mode\n#client_encoding = sql_ascii\t\t# actually, defaults to database\n\t\t\t\t\t# encoding\n\n# These settings are initialized by initdb, but they can be changed.\nlc_messages = C\t\t\t\t# locale for system error message\n\t\t\t\t\t# strings\nlc_monetary = C\t\t\t\t# locale for monetary formatting\nlc_numeric = C\t\t\t\t# locale for number formatting\nlc_time = C\t\t\t\t# locale for time formatting\n\n#icu_validation_level = warning\t\t# report ICU locale validation\n\t\t\t\t\t# errors at the given level\n\n# default configuration for text search\ndefault_text_search_config = 'pg_catalog.english'\n\n# - Shared Library Preloading -\n\n#local_preload_libraries = ''\n#session_preload_libraries = ''\n#shared_preload_libraries = ''\t# (change requires restart)\n#jit_provider = 'llvmjit'\t\t# JIT library to use\n\n# - Other Defaults -\n\n#dynamic_library_path = '$libdir'\n#gin_fuzzy_search_limit = 0\n\n\n#------------------------------------------------------------------------------\n# LOCK MANAGEMENT\n#------------------------------------------------------------------------------\n\n#deadlock_timeout = 1s\n#max_locks_per_transaction = 64\t\t# min 10\n\t\t\t\t\t# (change requires restart)\n#max_pred_locks_per_transaction = 64\t# min 10\n\t\t\t\t\t# (change requires restart)\n#max_pred_locks_per_relation = -2\t# negative values mean\n\t\t\t\t\t# (max_pred_locks_per_transaction\n\t\t\t\t\t#  / -max_pred_locks_per_relation) - 1\n#max_pred_locks_per_page = 2            # min 0\n\n\n#------------------------------------------------------------------------------\n# VERSION AND PLATFORM COMPATIBILITY\n#------------------------------------------------------------------------------\n\n# - Previous PostgreSQL Versions -\n\n#array_nulls = on\n#backslash_quote = safe_encoding\t# on, off, or safe_encoding\n#escape_string_warning = on\n#lo_compat_privileges = off\n#quote_all_identifiers = off\n#standard_conforming_strings = on\n#synchronize_seqscans = on\n\n# - Other Platforms and Clients -\n\n#transform_null_equals = off\n\n\n#------------------------------------------------------------------------------\n# ERROR HANDLING\n#------------------------------------------------------------------------------\n\n#exit_on_error = off\t\t\t# terminate session on any error?\n#restart_after_crash = on\t\t# reinitialize after backend crash?\n#data_sync_retry = off\t\t\t# retry or panic on failure to fsync\n\t\t\t\t\t# data?\n\t\t\t\t\t# (change requires restart)\n#recovery_init_sync_method = fsync\t# fsync, syncfs (Linux 5.8+)\n\n\n#------------------------------------------------------------------------------\n# CONFIG FILE INCLUDES\n#------------------------------------------------------------------------------\n\n# These options allow settings to be loaded from files other than the\n# default postgresql.conf.  Note that these are directives, not variable\n# assignments, so they can usefully be given more than once.\n\n#include_dir = '...'\t\t\t# include files ending in '.conf' from\n\t\t\t\t\t# a directory, e.g., 'conf.d'\n#include_if_exists = '...'\t\t# include file only if it exists\n#include = '...'\t\t\t# include file\n\n\n#------------------------------------------------------------------------------\n# CUSTOMIZED OPTIONS\n#------------------------------------------------------------------------------\n\n# Add settings for extensions here\n\n\nВам необходимо сопоставить IP-адрес для «listen_addresses» с IP-адресом вашего сервера OpenBSD. На момент написания этой статьи наш сервер OpenBSD использовал IP-адрес «192.168.5.3». После этого вы немного изменяете скрипт из файла “/var/postgresql/data/pg_hba.conf”, чтобы он мог подключиться к IP-адресу сервера OpenBSD.\n\nhost    all             all             192.168.5.0/24            trust\nhost    replication     all             192.168.5.0/24            trust\n\n\nЗапуск PostgreSQL\nПосле того, как вы все настроили согласно инструкциям выше, теперь попробуем запустить PostgreSQL, создав новую базу данных.\n\nns2# psql -U postgres\nPassword for user postgres:\npsql (16.4)\nType \"help\" for help.\n\npostgres=#\n\n\nПосле успешного входа в систему базы данных PostgreSQL вы можете создавать пользователей, базы данных или что-либо еще, связанное с базой данных.\n\npostgres=# CREATE ROLE bromo SUPERUSER;\npostgres=# ALTER ROLE bromo PASSWORD 'ranupani1234'\npostgres-# ALTER USER bromo PASSWORD 'ranupani1234' LOGIN;\npostgres=# \\q\n\n\nПосле выхода из базы данных PostgreSQL вы входите в нее под именем пользователя «bromo».\n\nns2# psql postgres bromo\nPassword for user bromo:\npsql (16.4)\nType \"help\" for help.\n\npostgres=# select user;\n user\n-------\n bromo\n(1 row)\n\n\nПосле этого попробуйте создать базу данных с именем «oroombo».\n\npostgres=# CREATE DATABASE oroombo;\nCREATE DATABASE\n\n\nКонечно, PostgreSQL может прекрасно работать в системах OpenBSD. PostgreSQL также можно управлять с помощью интегрированного обработчика служб, называемого rcctl, и его скриптов rc, а также вручную с помощью утилит PostgreSQL (например, pg_ctl).\n\n",
+  "datePublished": "2023-03-01 09:30:00 +0300",
+  "dateModified": "2023-03-01 09:30:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Запуск базы данных PostgreSQL на OpenBSD"><meta itemprop="description" content="OpenBSD имеет систему пакетов, которая несколько отличается от многих других операционных систем; в частности, пакеты тщательно проверяются перед установкой."><meta itemprop="datePublished" content="2023-03-01"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2023-03-01T09:30:00+03:00">2023-03-01</time> </p><h1 class="page__title" itemprop="headline">Запуск базы данных PostgreSQL на OpenBSD
+</h1></header><section class="page__content" itemprop="text">
+        <p>OpenBSD — очень надежная, безопасная и оригинальная операционная система Unix, в то время как PostgreSQL — очень стабильная, мощная, современная и полнофункциональная реляционная база данных корпоративного уровня. Можно ли объединить оба варианта, чтобы создать отличную базу данных на операционной системе OpenBSD? Ответ: Да, конечно! Все это можно легко сделать с помощью OpenBSD.</p>
+
+<p>OpenBSD имеет систему пакетов, которая чем-то отличается от многих других операционных систем; В частности, пакеты тщательно проверяются перед установкой, поэтому процесс установки запустится только в том случае, если есть полная уверенность в том, что установка будет успешной. Кроме того, операционная система OpenBSD предоставляет простой и гибкий способ управления службами демонов PostgreSQL.</p>
+
+<p>В этой короткой статье я покажу вам, как начать работать с <a href="https://www.postgresql.org/download/openbsd/">PostgreSQL в OpenBSD.</a></p>
+
+<h1 id="технические-характеристики-системы">Технические характеристики системы</h1>
+<ul>
+  <li>OS: OpenBSD 7.6 amd64</li>
+  <li>Host: Acer Aspire M1800</li>
+  <li>Uptime: 17 mins</li>
+  <li>Packages: 102 (pkg_info)</li>
+  <li>Shell: ksh v5.2.14 99/07/13.2</li>
+  <li>Terminal: /dev/ttyp0</li>
+  <li>CPU: Intel Core 2 Duo E8400 (2) @ 3.000GHz</li>
+  <li>Memory: 55MiB / 1775MiB</li>
+  <li>Hostname: ns2</li>
+  <li>IP Address: 192.168.5.3</li>
+  <li>Domain: inchimediatama.org</li>
+  <li>Versi PostgreSQL: postgresql-server-16.4p0</li>
+  <li>Versi PHP: php-8.2.27p0</li>
+</ul>
+
+<h2 id="установить-зависимости-postgresql">Установить зависимости PostgreSQL</h2>
+<p>Зависимости играют важную роль в приложениях PostgreSQL. Благодаря зависимостям PostgreSQL может нормально работать на OpenBSD. Наиболее распространенными зависимостями, которые вам придется установить, являются PHP-зависимости.</p>
+
+<p>Перед установкой зависимостей убедитесь, что у вас установлены PHP и PHP-FPM. Ниже приведены команды, которые можно использовать для установки зависимостей PostgreSQL.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns2# pkg_add php-curl-8.2.27 php-gd-8.2.27 php-intl-8.2.27 php-pdo_pgsql-8.2.27 php-zip-8.2.27 redis pecl82-redis
+</code></pre></div></div>
+
+<h2 id="установить-базу-данных-postgresql">Установить базу данных PostgreSQL</h2>
+<p>После успешной установки зависимостей PHP, PHP-FPM и PostgreSQL можно приступить к процессу установки базы данных PostgreSQL. OpenBSD использует пакет pkg, который управляет всеми механизмами упаковки для установки каждого приложения.</p>
+
+<p>Хотя верно, что вы можете устанавливать приложения из портов, как и другие системы BSD, OpenBSD рекомендует установку через пакеты, поскольку система может легко отслеживать, что вы установили на данный момент, и, следовательно, может легко выполнять обновления.</p>
+
+<p>Поэтому первое, что необходимо сделать, — это выполнить процесс обновления пакета OpenBSD pkg.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns2# pkg_add -uvi
+ns2# pkg_add postgresql-server
+</code></pre></div></div>
+
+<h2 id="инициализация-базы-данных-postgresql">Инициализация базы данных PostgreSQL</h2>
+<p>Перед ручной настройкой PostgreSQL важно понять команду initdb. Если PostgreSQL не настроен должным образом на раннем этапе, он не будет выполнять запросы на более позднем этапе. Пользователи могут настраивать сервер PostgreSQL вручную с помощью различных команд. В худшем случае сервер PostgreSQL может не определить путь к каталогу данных и не запуститься.</p>
+
+<p>Команда initdb используется в процессе инициализации кластера базы данных. После процесса инициализации с помощью команды initdb в кластере баз данных будет создана база данных с именем postgres. Postgres служит базой данных по умолчанию, используемой пользователями, утилитами и сторонними приложениями. Помимо создания базы данных postgres в кластере, в каждом кластере также создается еще одна база данных с именем template1.</p>
+
+<p>База данных template1 служит шаблоном для баз данных, создаваемых позднее в кластере. Помните, кластер базы данных — это каталог данных в файловой системе. Чтобы запустить процесс initdb, вы можете выполнить следующую команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns2# rm -rf /var/postgresql/data
+ns2# su - _postgresql
+$ initdb -D /var/postgresql/data/ -U postgres -k -E UTF-8 -A md5 -W
+The files belonging to this database system will be owned by user "_postgresql".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default text search configuration will be set to "english".
+
+Data page checksums are enabled.
+
+Enter new superuser password:
+Enter it again:
+
+creating directory /var/postgresql/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 20
+selecting default shared_buffers ... 128MB
+selecting default time zone ... Asia/Jakarta
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    pg_ctl -D /var/postgresql/data/ -l logfile start
+</code></pre></div></div>
+
+<p>После этого вы можете запустить службу postgresql.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ pg_ctl -D /var/postgresql/data/ -l logfile start
+waiting for server to start.... done
+server started
+$ exit
+</code></pre></div></div>
+
+<h2 id="включение-postgresql">Включение PostgreSQL</h2>
+<p>После завершения процесса инициализации базы данных (initdb) вы можете немедленно приступить к активации PostgreSQL.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns2# rcctl enable postgresql
+ns2# rcctl restart postgresql
+postgresql(ok)
+postgresql(ok)
+</code></pre></div></div>
+
+<p>Чтобы дополнительно убедиться в правильной работе демона postgresql, выполните следующую команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns2# rcctl check postgresql
+postgresql(ok)
+</code></pre></div></div>
+
+<p>Все базы данных и файлы конфигурации можно найти в каталоге /var/postgresql/data. Вы можете изменить содержимое файла скрипта «/var/postgresql/data/postgresql.conf», например, если вы хотите использовать частный IP-адрес или можете использовать localhost.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># -----------------------------
+# PostgreSQL configuration file
+# -----------------------------
+#
+# This file consists of lines of the form:
+#
+#   name = value
+#
+# (The "=" is optional.)  Whitespace may be used.  Comments are introduced with
+# "#" anywhere on a line.  The complete list of parameter names and allowed
+# values can be found in the PostgreSQL documentation.
+#
+# The commented-out settings shown in this file represent the default values.
+# Re-commenting a setting is NOT sufficient to revert it to the default value;
+# you need to reload the server.
+#
+# This file is read on server startup and when the server receives a SIGHUP
+# signal.  If you edit the file on a running system, you have to SIGHUP the
+# server for the changes to take effect, run "pg_ctl reload", or execute
+# "SELECT pg_reload_conf()".  Some parameters, which are marked below,
+# require a server shutdown and restart to take effect.
+#
+# Any parameter can also be given as a command-line option to the server, e.g.,
+# "postgres -c log_connections=on".  Some parameters can be changed at run time
+# with the "SET" SQL command.
+#
+# Memory units:  B  = bytes            Time units:  us  = microseconds
+#                kB = kilobytes                     ms  = milliseconds
+#                MB = megabytes                     s   = seconds
+#                GB = gigabytes                     min = minutes
+#                TB = terabytes                     h   = hours
+#                                                   d   = days
+
+
+#------------------------------------------------------------------------------
+# FILE LOCATIONS
+#------------------------------------------------------------------------------
+
+# The default values of these variables are driven from the -D command-line
+# option or PGDATA environment variable, represented here as ConfigDir.
+
+#data_directory = 'ConfigDir'		# use data in another directory
+					# (change requires restart)
+#hba_file = 'ConfigDir/pg_hba.conf'	# host-based authentication file
+					# (change requires restart)
+#ident_file = 'ConfigDir/pg_ident.conf'	# ident configuration file
+					# (change requires restart)
+
+# If external_pid_file is not explicitly set, no extra PID file is written.
+#external_pid_file = ''			# write an extra PID file
+					# (change requires restart)
+
+
+#------------------------------------------------------------------------------
+# CONNECTIONS AND AUTHENTICATION
+#------------------------------------------------------------------------------
+
+# - Connection Settings -
+
+listen_addresses = '192.168.5.3'		# what IP address(es) to listen on;
+					# comma-separated list of addresses;
+					# defaults to 'localhost'; use '*' for all
+					# (change requires restart)
+port = 5432				# (change requires restart)
+max_connections = 20			# (change requires restart)
+#reserved_connections = 0		# (change requires restart)
+#superuser_reserved_connections = 3	# (change requires restart)
+#unix_socket_directories = '/tmp'	# comma-separated list of directories
+					# (change requires restart)
+#unix_socket_group = ''			# (change requires restart)
+#unix_socket_permissions = 0777		# begin with 0 to use octal notation
+					# (change requires restart)
+#bonjour = off				# advertise server via Bonjour
+					# (change requires restart)
+#bonjour_name = ''			# defaults to the computer name
+					# (change requires restart)
+
+# - TCP settings -
+# see "man tcp" for details
+
+#tcp_keepalives_idle = 0		# TCP_KEEPIDLE, in seconds;
+					# 0 selects the system default
+#tcp_keepalives_interval = 0		# TCP_KEEPINTVL, in seconds;
+					# 0 selects the system default
+#tcp_keepalives_count = 0		# TCP_KEEPCNT;
+					# 0 selects the system default
+#tcp_user_timeout = 0			# TCP_USER_TIMEOUT, in milliseconds;
+					# 0 selects the system default
+
+#client_connection_check_interval = 0	# time between checks for client
+					# disconnection while running queries;
+					# 0 for never
+
+# - Authentication -
+
+#authentication_timeout = 1min		# 1s-600s
+password_encryption = md5		# scram-sha-256 or md5
+#scram_iterations = 4096
+#db_user_namespace = off
+
+# GSSAPI using Kerberos
+#krb_server_keyfile = 'FILE:${sysconfdir}/krb5.keytab'
+#krb_caseins_users = off
+#gss_accept_delegation = off
+
+# - SSL -
+
+#ssl = off
+#ssl_ca_file = ''
+#ssl_cert_file = 'server.crt'
+#ssl_crl_file = ''
+#ssl_crl_dir = ''
+#ssl_key_file = 'server.key'
+#ssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL' # allowed SSL ciphers
+#ssl_prefer_server_ciphers = on
+#ssl_ecdh_curve = 'prime256v1'
+#ssl_min_protocol_version = 'TLSv1.2'
+#ssl_max_protocol_version = ''
+#ssl_dh_params_file = ''
+#ssl_passphrase_command = ''
+#ssl_passphrase_command_supports_reload = off
+
+
+#------------------------------------------------------------------------------
+# RESOURCE USAGE (except WAL)
+#------------------------------------------------------------------------------
+
+# - Memory -
+
+shared_buffers = 128MB			# min 128kB
+					# (change requires restart)
+#huge_pages = try			# on, off, or try
+					# (change requires restart)
+#huge_page_size = 0			# zero for system default
+					# (change requires restart)
+#temp_buffers = 8MB			# min 800kB
+#max_prepared_transactions = 0		# zero disables the feature
+					# (change requires restart)
+# Caution: it is not advisable to set max_prepared_transactions nonzero unless
+# you actively intend to use prepared transactions.
+#work_mem = 4MB				# min 64kB
+#hash_mem_multiplier = 2.0		# 1-1000.0 multiplier on hash table work_mem
+#maintenance_work_mem = 64MB		# min 1MB
+#autovacuum_work_mem = -1		# min 1MB, or -1 to use maintenance_work_mem
+#logical_decoding_work_mem = 64MB	# min 64kB
+#max_stack_depth = 2MB			# min 100kB
+#shared_memory_type = mmap		# the default is the first option
+					# supported by the operating system:
+					#   mmap
+					#   sysv
+					#   windows
+					# (change requires restart)
+dynamic_shared_memory_type = posix	# the default is usually the first option
+					# supported by the operating system:
+					#   posix
+					#   sysv
+					#   windows
+					#   mmap
+					# (change requires restart)
+#min_dynamic_shared_memory = 0MB	# (change requires restart)
+#vacuum_buffer_usage_limit = 256kB	# size of vacuum and analyze buffer access strategy ring;
+					# 0 to disable vacuum buffer access strategy;
+					# range 128kB to 16GB
+
+# - Disk -
+
+#temp_file_limit = -1			# limits per-process temp file space
+					# in kilobytes, or -1 for no limit
+
+# - Kernel Resources -
+
+#max_files_per_process = 1000		# min 64
+					# (change requires restart)
+
+# - Cost-Based Vacuum Delay -
+
+#vacuum_cost_delay = 0			# 0-100 milliseconds (0 disables)
+#vacuum_cost_page_hit = 1		# 0-10000 credits
+#vacuum_cost_page_miss = 2		# 0-10000 credits
+#vacuum_cost_page_dirty = 20		# 0-10000 credits
+#vacuum_cost_limit = 200		# 1-10000 credits
+
+# - Background Writer -
+
+#bgwriter_delay = 200ms			# 10-10000ms between rounds
+#bgwriter_lru_maxpages = 100		# max buffers written/round, 0 disables
+#bgwriter_lru_multiplier = 2.0		# 0-10.0 multiplier on buffers scanned/round
+#bgwriter_flush_after = 0		# measured in pages, 0 disables
+
+# - Asynchronous Behavior -
+
+#backend_flush_after = 0		# measured in pages, 0 disables
+#effective_io_concurrency = 0		# 1-1000; 0 disables prefetching
+#maintenance_io_concurrency = 10	# 1-1000; 0 disables prefetching
+#max_worker_processes = 8		# (change requires restart)
+#max_parallel_workers_per_gather = 2	# limited by max_parallel_workers
+#max_parallel_maintenance_workers = 2	# limited by max_parallel_workers
+#max_parallel_workers = 8		# number of max_worker_processes that
+					# can be used in parallel operations
+#parallel_leader_participation = on
+#old_snapshot_threshold = -1		# 1min-60d; -1 disables; 0 is immediate
+					# (change requires restart)
+
+
+#------------------------------------------------------------------------------
+# WRITE-AHEAD LOG
+#------------------------------------------------------------------------------
+
+# - Settings -
+
+#wal_level = replica			# minimal, replica, or logical
+					# (change requires restart)
+#fsync = on				# flush data to disk for crash safety
+					# (turning this off can cause
+					# unrecoverable data corruption)
+#synchronous_commit = on		# synchronization level;
+					# off, local, remote_write, remote_apply, or on
+#wal_sync_method = fsync		# the default is the first option
+					# supported by the operating system:
+					#   open_datasync
+					#   fdatasync (default on Linux and FreeBSD)
+					#   fsync
+					#   fsync_writethrough
+					#   open_sync
+#full_page_writes = on			# recover from partial page writes
+#wal_log_hints = off			# also do full page writes of non-critical updates
+					# (change requires restart)
+#wal_compression = off			# enables compression of full-page writes;
+					# off, pglz, lz4, zstd, or on
+#wal_init_zero = on			# zero-fill new WAL files
+#wal_recycle = on			# recycle WAL files
+#wal_buffers = -1			# min 32kB, -1 sets based on shared_buffers
+					# (change requires restart)
+#wal_writer_delay = 200ms		# 1-10000 milliseconds
+#wal_writer_flush_after = 1MB		# measured in pages, 0 disables
+#wal_skip_threshold = 2MB
+
+#commit_delay = 0			# range 0-100000, in microseconds
+#commit_siblings = 5			# range 1-1000
+
+# - Checkpoints -
+
+#checkpoint_timeout = 5min		# range 30s-1d
+#checkpoint_completion_target = 0.9	# checkpoint target duration, 0.0 - 1.0
+#checkpoint_flush_after = 0		# measured in pages, 0 disables
+#checkpoint_warning = 30s		# 0 disables
+max_wal_size = 1GB
+min_wal_size = 80MB
+
+# - Prefetching during recovery -
+
+#recovery_prefetch = try		# prefetch pages referenced in the WAL?
+#wal_decode_buffer_size = 512kB		# lookahead window used for prefetching
+					# (change requires restart)
+
+# - Archiving -
+
+#archive_mode = off		# enables archiving; off, on, or always
+				# (change requires restart)
+#archive_library = ''		# library to use to archive a WAL file
+				# (empty string indicates archive_command should
+				# be used)
+#archive_command = ''		# command to use to archive a WAL file
+				# placeholders: %p = path of file to archive
+				#               %f = file name only
+				# e.g. 'test ! -f /mnt/server/archivedir/%f &amp;&amp; cp %p /mnt/server/archivedir/%f'
+#archive_timeout = 0		# force a WAL file switch after this
+				# number of seconds; 0 disables
+
+# - Archive Recovery -
+
+# These are only used in recovery mode.
+
+#restore_command = ''		# command to use to restore an archived WAL file
+				# placeholders: %p = path of file to restore
+				#               %f = file name only
+				# e.g. 'cp /mnt/server/archivedir/%f %p'
+#archive_cleanup_command = ''	# command to execute at every restartpoint
+#recovery_end_command = ''	# command to execute at completion of recovery
+
+# - Recovery Target -
+
+# Set these only when performing a targeted recovery.
+
+#recovery_target = ''		# 'immediate' to end recovery as soon as a
+                                # consistent state is reached
+				# (change requires restart)
+#recovery_target_name = ''	# the named restore point to which recovery will proceed
+				# (change requires restart)
+#recovery_target_time = ''	# the time stamp up to which recovery will proceed
+				# (change requires restart)
+#recovery_target_xid = ''	# the transaction ID up to which recovery will proceed
+				# (change requires restart)
+#recovery_target_lsn = ''	# the WAL LSN up to which recovery will proceed
+				# (change requires restart)
+#recovery_target_inclusive = on # Specifies whether to stop:
+				# just after the specified recovery target (on)
+				# just before the recovery target (off)
+				# (change requires restart)
+#recovery_target_timeline = 'latest'	# 'current', 'latest', or timeline ID
+				# (change requires restart)
+#recovery_target_action = 'pause'	# 'pause', 'promote', 'shutdown'
+				# (change requires restart)
+
+
+#------------------------------------------------------------------------------
+# REPLICATION
+#------------------------------------------------------------------------------
+
+# - Sending Servers -
+
+# Set these on the primary and on any standby that will send replication data.
+
+#max_wal_senders = 10		# max number of walsender processes
+				# (change requires restart)
+#max_replication_slots = 10	# max number of replication slots
+				# (change requires restart)
+#wal_keep_size = 0		# in megabytes; 0 disables
+#max_slot_wal_keep_size = -1	# in megabytes; -1 disables
+#wal_sender_timeout = 60s	# in milliseconds; 0 disables
+#track_commit_timestamp = off	# collect timestamp of transaction commit
+				# (change requires restart)
+
+# - Primary Server -
+
+# These settings are ignored on a standby server.
+
+#synchronous_standby_names = ''	# standby servers that provide sync rep
+				# method to choose sync standbys, number of sync standbys,
+				# and comma-separated list of application_name
+				# from standby(s); '*' = all
+
+# - Standby Servers -
+
+# These settings are ignored on a primary server.
+
+#primary_conninfo = ''			# connection string to sending server
+#primary_slot_name = ''			# replication slot on sending server
+#hot_standby = on			# "off" disallows queries during recovery
+					# (change requires restart)
+#max_standby_archive_delay = 30s	# max delay before canceling queries
+					# when reading WAL from archive;
+					# -1 allows indefinite delay
+#max_standby_streaming_delay = 30s	# max delay before canceling queries
+					# when reading streaming WAL;
+					# -1 allows indefinite delay
+#wal_receiver_create_temp_slot = off	# create temp slot if primary_slot_name
+					# is not set
+#wal_receiver_status_interval = 10s	# send replies at least this often
+					# 0 disables
+#hot_standby_feedback = off		# send info from standby to prevent
+					# query conflicts
+#wal_receiver_timeout = 60s		# time that receiver waits for
+					# communication from primary
+					# in milliseconds; 0 disables
+#wal_retrieve_retry_interval = 5s	# time to wait before retrying to
+					# retrieve WAL after a failed attempt
+#recovery_min_apply_delay = 0		# minimum delay for applying changes during recovery
+
+# - Subscribers -
+
+# These settings are ignored on a publisher.
+
+#max_logical_replication_workers = 4	# taken from max_worker_processes
+					# (change requires restart)
+#max_sync_workers_per_subscription = 2	# taken from max_logical_replication_workers
+#max_parallel_apply_workers_per_subscription = 2	# taken from max_logical_replication_workers
+
+
+#------------------------------------------------------------------------------
+# QUERY TUNING
+#------------------------------------------------------------------------------
+
+# - Planner Method Configuration -
+
+#enable_async_append = on
+#enable_bitmapscan = on
+#enable_gathermerge = on
+#enable_hashagg = on
+#enable_hashjoin = on
+#enable_incremental_sort = on
+#enable_indexscan = on
+#enable_indexonlyscan = on
+#enable_material = on
+#enable_memoize = on
+#enable_mergejoin = on
+#enable_nestloop = on
+#enable_parallel_append = on
+#enable_parallel_hash = on
+#enable_partition_pruning = on
+#enable_partitionwise_join = off
+#enable_partitionwise_aggregate = off
+#enable_presorted_aggregate = on
+#enable_seqscan = on
+#enable_sort = on
+#enable_tidscan = on
+
+# - Planner Cost Constants -
+
+#seq_page_cost = 1.0			# measured on an arbitrary scale
+#random_page_cost = 4.0			# same scale as above
+#cpu_tuple_cost = 0.01			# same scale as above
+#cpu_index_tuple_cost = 0.005		# same scale as above
+#cpu_operator_cost = 0.0025		# same scale as above
+#parallel_setup_cost = 1000.0	# same scale as above
+#parallel_tuple_cost = 0.1		# same scale as above
+#min_parallel_table_scan_size = 8MB
+#min_parallel_index_scan_size = 512kB
+#effective_cache_size = 4GB
+
+#jit_above_cost = 100000		# perform JIT compilation if available
+					# and query more expensive than this;
+					# -1 disables
+#jit_inline_above_cost = 500000		# inline small functions if query is
+					# more expensive than this; -1 disables
+#jit_optimize_above_cost = 500000	# use expensive JIT optimizations if
+					# query is more expensive than this;
+					# -1 disables
+
+# - Genetic Query Optimizer -
+
+#geqo = on
+#geqo_threshold = 12
+#geqo_effort = 5			# range 1-10
+#geqo_pool_size = 0			# selects default based on effort
+#geqo_generations = 0			# selects default based on effort
+#geqo_selection_bias = 2.0		# range 1.5-2.0
+#geqo_seed = 0.0			# range 0.0-1.0
+
+# - Other Planner Options -
+
+#default_statistics_target = 100	# range 1-10000
+#constraint_exclusion = partition	# on, off, or partition
+#cursor_tuple_fraction = 0.1		# range 0.0-1.0
+#from_collapse_limit = 8
+#jit = on				# allow JIT compilation
+#join_collapse_limit = 8		# 1 disables collapsing of explicit
+					# JOIN clauses
+#plan_cache_mode = auto			# auto, force_generic_plan or
+					# force_custom_plan
+#recursive_worktable_factor = 10.0	# range 0.001-1000000
+
+
+#------------------------------------------------------------------------------
+# REPORTING AND LOGGING
+#------------------------------------------------------------------------------
+
+# - Where to Log -
+
+#log_destination = 'stderr'		# Valid values are combinations of
+					# stderr, csvlog, jsonlog, syslog, and
+					# eventlog, depending on platform.
+					# csvlog and jsonlog require
+					# logging_collector to be on.
+
+# This is used when logging to stderr:
+#logging_collector = off		# Enable capturing of stderr, jsonlog,
+					# and csvlog into log files. Required
+					# to be on for csvlogs and jsonlogs.
+					# (change requires restart)
+
+# These are only used if logging_collector is on:
+#log_directory = 'log'			# directory where log files are written,
+					# can be absolute or relative to PGDATA
+#log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'	# log file name pattern,
+					# can include strftime() escapes
+#log_file_mode = 0600			# creation mode for log files,
+					# begin with 0 to use octal notation
+#log_rotation_age = 1d			# Automatic rotation of logfiles will
+					# happen after that time.  0 disables.
+#log_rotation_size = 10MB		# Automatic rotation of logfiles will
+					# happen after that much log output.
+					# 0 disables.
+#log_truncate_on_rotation = off		# If on, an existing log file with the
+					# same name as the new log file will be
+					# truncated rather than appended to.
+					# But such truncation only occurs on
+					# time-driven rotation, not on restarts
+					# or size-driven rotation.  Default is
+					# off, meaning append to existing files
+					# in all cases.
+
+# These are relevant when logging to syslog:
+#syslog_facility = 'LOCAL0'
+#syslog_ident = 'postgres'
+#syslog_sequence_numbers = on
+#syslog_split_messages = on
+
+# This is only relevant when logging to eventlog (Windows):
+# (change requires restart)
+#event_source = 'PostgreSQL'
+
+# - When to Log -
+
+#log_min_messages = warning		# values in order of decreasing detail:
+					#   debug5
+					#   debug4
+					#   debug3
+					#   debug2
+					#   debug1
+					#   info
+					#   notice
+					#   warning
+					#   error
+					#   log
+					#   fatal
+					#   panic
+
+#log_min_error_statement = error	# values in order of decreasing detail:
+					#   debug5
+					#   debug4
+					#   debug3
+					#   debug2
+					#   debug1
+					#   info
+					#   notice
+					#   warning
+					#   error
+					#   log
+					#   fatal
+					#   panic (effectively off)
+
+#log_min_duration_statement = -1	# -1 is disabled, 0 logs all statements
+					# and their durations, &gt; 0 logs only
+					# statements running at least this number
+					# of milliseconds
+
+#log_min_duration_sample = -1		# -1 is disabled, 0 logs a sample of statements
+					# and their durations, &gt; 0 logs only a sample of
+					# statements running at least this number
+					# of milliseconds;
+					# sample fraction is determined by log_statement_sample_rate
+
+#log_statement_sample_rate = 1.0	# fraction of logged statements exceeding
+					# log_min_duration_sample to be logged;
+					# 1.0 logs all such statements, 0.0 never logs
+
+
+#log_transaction_sample_rate = 0.0	# fraction of transactions whose statements
+					# are logged regardless of their duration; 1.0 logs all
+					# statements from all transactions, 0.0 never logs
+
+#log_startup_progress_interval = 10s	# Time between progress updates for
+					# long-running startup operations.
+					# 0 disables the feature, &gt; 0 indicates
+					# the interval in milliseconds.
+
+# - What to Log -
+
+#debug_print_parse = off
+#debug_print_rewritten = off
+#debug_print_plan = off
+#debug_pretty_print = on
+#log_autovacuum_min_duration = 10min	# log autovacuum activity;
+					# -1 disables, 0 logs all actions and
+					# their durations, &gt; 0 logs only
+					# actions running at least this number
+					# of milliseconds.
+#log_checkpoints = on
+#log_connections = off
+#log_disconnections = off
+#log_duration = off
+#log_error_verbosity = default		# terse, default, or verbose messages
+#log_hostname = off
+#log_line_prefix = '%m [%p] '		# special values:
+					#   %a = application name
+					#   %u = user name
+					#   %d = database name
+					#   %r = remote host and port
+					#   %h = remote host
+					#   %b = backend type
+					#   %p = process ID
+					#   %P = process ID of parallel group leader
+					#   %t = timestamp without milliseconds
+					#   %m = timestamp with milliseconds
+					#   %n = timestamp with milliseconds (as a Unix epoch)
+					#   %Q = query ID (0 if none or not computed)
+					#   %i = command tag
+					#   %e = SQL state
+					#   %c = session ID
+					#   %l = session line number
+					#   %s = session start timestamp
+					#   %v = virtual transaction ID
+					#   %x = transaction ID (0 if none)
+					#   %q = stop here in non-session
+					#        processes
+					#   %% = '%'
+					# e.g. '&lt;%u%%%d&gt; '
+#log_lock_waits = off			# log lock waits &gt;= deadlock_timeout
+#log_recovery_conflict_waits = off	# log standby recovery conflict waits
+					# &gt;= deadlock_timeout
+#log_parameter_max_length = -1		# when logging statements, limit logged
+					# bind-parameter values to N bytes;
+					# -1 means print in full, 0 disables
+#log_parameter_max_length_on_error = 0	# when logging an error, limit logged
+					# bind-parameter values to N bytes;
+					# -1 means print in full, 0 disables
+#log_statement = 'none'			# none, ddl, mod, all
+#log_replication_commands = off
+#log_temp_files = -1			# log temporary files equal or larger
+					# than the specified size in kilobytes;
+					# -1 disables, 0 logs all temp files
+log_timezone = 'Asia/Jakarta'
+
+# - Process Title -
+
+#cluster_name = ''			# added to process titles if nonempty
+					# (change requires restart)
+#update_process_title = on
+
+
+#------------------------------------------------------------------------------
+# STATISTICS
+#------------------------------------------------------------------------------
+
+# - Cumulative Query and Index Statistics -
+
+#track_activities = on
+#track_activity_query_size = 1024	# (change requires restart)
+#track_counts = on
+#track_io_timing = off
+#track_wal_io_timing = off
+#track_functions = none			# none, pl, all
+#stats_fetch_consistency = cache	# cache, none, snapshot
+
+
+# - Monitoring -
+
+#compute_query_id = auto
+#log_statement_stats = off
+#log_parser_stats = off
+#log_planner_stats = off
+#log_executor_stats = off
+
+
+#------------------------------------------------------------------------------
+# AUTOVACUUM
+#------------------------------------------------------------------------------
+
+#autovacuum = on			# Enable autovacuum subprocess?  'on'
+					# requires track_counts to also be on.
+#autovacuum_max_workers = 3		# max number of autovacuum subprocesses
+					# (change requires restart)
+#autovacuum_naptime = 1min		# time between autovacuum runs
+#autovacuum_vacuum_threshold = 50	# min number of row updates before
+					# vacuum
+#autovacuum_vacuum_insert_threshold = 1000	# min number of row inserts
+					# before vacuum; -1 disables insert
+					# vacuums
+#autovacuum_analyze_threshold = 50	# min number of row updates before
+					# analyze
+#autovacuum_vacuum_scale_factor = 0.2	# fraction of table size before vacuum
+#autovacuum_vacuum_insert_scale_factor = 0.2	# fraction of inserts over table
+					# size before insert vacuum
+#autovacuum_analyze_scale_factor = 0.1	# fraction of table size before analyze
+#autovacuum_freeze_max_age = 200000000	# maximum XID age before forced vacuum
+					# (change requires restart)
+#autovacuum_multixact_freeze_max_age = 400000000	# maximum multixact age
+					# before forced vacuum
+					# (change requires restart)
+#autovacuum_vacuum_cost_delay = 2ms	# default vacuum cost delay for
+					# autovacuum, in milliseconds;
+					# -1 means use vacuum_cost_delay
+#autovacuum_vacuum_cost_limit = -1	# default vacuum cost limit for
+					# autovacuum, -1 means use
+					# vacuum_cost_limit
+
+
+#------------------------------------------------------------------------------
+# CLIENT CONNECTION DEFAULTS
+#------------------------------------------------------------------------------
+
+# - Statement Behavior -
+
+#client_min_messages = notice		# values in order of decreasing detail:
+					#   debug5
+					#   debug4
+					#   debug3
+					#   debug2
+					#   debug1
+					#   log
+					#   notice
+					#   warning
+					#   error
+#search_path = '"$user", public'	# schema names
+#row_security = on
+#default_table_access_method = 'heap'
+#default_tablespace = ''		# a tablespace name, '' uses the default
+#default_toast_compression = 'pglz'	# 'pglz' or 'lz4'
+#temp_tablespaces = ''			# a list of tablespace names, '' uses
+					# only default tablespace
+#check_function_bodies = on
+#default_transaction_isolation = 'read committed'
+#default_transaction_read_only = off
+#default_transaction_deferrable = off
+#session_replication_role = 'origin'
+#statement_timeout = 0			# in milliseconds, 0 is disabled
+#lock_timeout = 0			# in milliseconds, 0 is disabled
+#idle_in_transaction_session_timeout = 0	# in milliseconds, 0 is disabled
+#idle_session_timeout = 0		# in milliseconds, 0 is disabled
+#vacuum_freeze_table_age = 150000000
+#vacuum_freeze_min_age = 50000000
+#vacuum_failsafe_age = 1600000000
+#vacuum_multixact_freeze_table_age = 150000000
+#vacuum_multixact_freeze_min_age = 5000000
+#vacuum_multixact_failsafe_age = 1600000000
+#bytea_output = 'hex'			# hex, escape
+#xmlbinary = 'base64'
+#xmloption = 'content'
+#gin_pending_list_limit = 4MB
+#createrole_self_grant = ''		# set and/or inherit
+
+# - Locale and Formatting -
+
+datestyle = 'iso, mdy'
+#intervalstyle = 'postgres'
+timezone = 'Asia/Jakarta'
+#timezone_abbreviations = 'Default'     # Select the set of available time zone
+					# abbreviations.  Currently, there are
+					#   Default
+					#   Australia (historical usage)
+					#   India
+					# You can create your own file in
+					# share/timezonesets/.
+#extra_float_digits = 1			# min -15, max 3; any value &gt;0 actually
+					# selects precise output mode
+#client_encoding = sql_ascii		# actually, defaults to database
+					# encoding
+
+# These settings are initialized by initdb, but they can be changed.
+lc_messages = C				# locale for system error message
+					# strings
+lc_monetary = C				# locale for monetary formatting
+lc_numeric = C				# locale for number formatting
+lc_time = C				# locale for time formatting
+
+#icu_validation_level = warning		# report ICU locale validation
+					# errors at the given level
+
+# default configuration for text search
+default_text_search_config = 'pg_catalog.english'
+
+# - Shared Library Preloading -
+
+#local_preload_libraries = ''
+#session_preload_libraries = ''
+#shared_preload_libraries = ''	# (change requires restart)
+#jit_provider = 'llvmjit'		# JIT library to use
+
+# - Other Defaults -
+
+#dynamic_library_path = '$libdir'
+#gin_fuzzy_search_limit = 0
+
+
+#------------------------------------------------------------------------------
+# LOCK MANAGEMENT
+#------------------------------------------------------------------------------
+
+#deadlock_timeout = 1s
+#max_locks_per_transaction = 64		# min 10
+					# (change requires restart)
+#max_pred_locks_per_transaction = 64	# min 10
+					# (change requires restart)
+#max_pred_locks_per_relation = -2	# negative values mean
+					# (max_pred_locks_per_transaction
+					#  / -max_pred_locks_per_relation) - 1
+#max_pred_locks_per_page = 2            # min 0
+
+
+#------------------------------------------------------------------------------
+# VERSION AND PLATFORM COMPATIBILITY
+#------------------------------------------------------------------------------
+
+# - Previous PostgreSQL Versions -
+
+#array_nulls = on
+#backslash_quote = safe_encoding	# on, off, or safe_encoding
+#escape_string_warning = on
+#lo_compat_privileges = off
+#quote_all_identifiers = off
+#standard_conforming_strings = on
+#synchronize_seqscans = on
+
+# - Other Platforms and Clients -
+
+#transform_null_equals = off
+
+
+#------------------------------------------------------------------------------
+# ERROR HANDLING
+#------------------------------------------------------------------------------
+
+#exit_on_error = off			# terminate session on any error?
+#restart_after_crash = on		# reinitialize after backend crash?
+#data_sync_retry = off			# retry or panic on failure to fsync
+					# data?
+					# (change requires restart)
+#recovery_init_sync_method = fsync	# fsync, syncfs (Linux 5.8+)
+
+
+#------------------------------------------------------------------------------
+# CONFIG FILE INCLUDES
+#------------------------------------------------------------------------------
+
+# These options allow settings to be loaded from files other than the
+# default postgresql.conf.  Note that these are directives, not variable
+# assignments, so they can usefully be given more than once.
+
+#include_dir = '...'			# include files ending in '.conf' from
+					# a directory, e.g., 'conf.d'
+#include_if_exists = '...'		# include file only if it exists
+#include = '...'			# include file
+
+
+#------------------------------------------------------------------------------
+# CUSTOMIZED OPTIONS
+#------------------------------------------------------------------------------
+
+# Add settings for extensions here
+</code></pre></div></div>
+
+<p>Вам необходимо сопоставить IP-адрес для «listen_addresses» с IP-адресом вашего сервера OpenBSD. На момент написания этой статьи наш сервер OpenBSD использовал IP-адрес «192.168.5.3». После этого вы немного изменяете скрипт из файла “/var/postgresql/data/pg_hba.conf”, чтобы он мог подключиться к IP-адресу сервера OpenBSD.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>host    all             all             192.168.5.0/24            trust
+host    replication     all             192.168.5.0/24            trust
+</code></pre></div></div>
+
+<h2 id="запуск-postgresql">Запуск PostgreSQL</h2>
+<p>После того, как вы все настроили согласно инструкциям выше, теперь попробуем запустить PostgreSQL, создав новую базу данных.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns2# psql -U postgres
+Password for user postgres:
+psql (16.4)
+Type "help" for help.
+
+postgres=#
+</code></pre></div></div>
+
+<p>После успешного входа в систему базы данных PostgreSQL вы можете создавать пользователей, базы данных или что-либо еще, связанное с базой данных.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>postgres=# CREATE ROLE bromo SUPERUSER;
+postgres=# ALTER ROLE bromo PASSWORD 'ranupani1234'
+postgres-# ALTER USER bromo PASSWORD 'ranupani1234' LOGIN;
+postgres=# \q
+</code></pre></div></div>
+
+<p>После выхода из базы данных PostgreSQL вы входите в нее под именем пользователя «bromo».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ns2# psql postgres bromo
+Password for user bromo:
+psql (16.4)
+Type "help" for help.
+
+postgres=# select user;
+ user
+-------
+ bromo
+(1 row)
+</code></pre></div></div>
+
+<p>После этого попробуйте создать базу данных с именем «oroombo».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>postgres=# CREATE DATABASE oroombo;
+CREATE DATABASE
+</code></pre></div></div>
+
+<p>Конечно, PostgreSQL может прекрасно работать в системах OpenBSD. PostgreSQL также можно управлять с помощью интегрированного обработчика служб, называемого rcctl, и его скриптов rc, а также вручную с помощью утилит PostgreSQL (например, pg_ctl).</p>
+
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2023-03-01T09:30:00+03:00">2023-03-01</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#database" class="page__taxonomy-item" rel="tag">DataBase</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#openbsd" class="page__taxonomy-item" rel="tag">OpenBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/openbsd/2023/01/01/openbsd-acme-client-lets-encrypt-certificate/" class="pagination--pager" title="Как создать сертификат Lets Encrypt с помощью клиента Acme OpenBSD
+">Previous</a><a href="https://penaadventure.com/ru/openbsd/2023/04/11/ssh-lockout-freebsd/" class="pagination--pager" title="Учебник SSHLOCKOUT для OpenBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

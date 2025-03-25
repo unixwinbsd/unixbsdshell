@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Building a FreeBSD Private Cloud Server With Seafile Seahub Server  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Building a FreeBSD Private Cloud Server With Seafile Seahub Server"><link rel="canonical" href="https://penaadventure.com/en/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/">
+  <meta property="og:url" content="https://penaadventure.com/en/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/"><meta property="og:description" content="Seafile is a high performance and best file sharing application solution. Seafile open source cloud storage is written using the Python Django framework"><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Building a FreeBSD Private Cloud Server With Seafile Seahub Server">
+  <meta name="twitter:description" content="Seafile is a high performance and best file sharing application solution. Seafile open source cloud storage is written using the Python Django framework">
+  <meta name="twitter:url" content="https://penaadventure.com/en/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-17T12:10:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#en" itemprop="item"><span itemprop="name">En</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#17" itemprop="item"><span itemprop="name">17</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Building a FreeBSD Private Cloud Server With Seafile Seahub Server</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-01-17 12:10:00 +0300",
+"datePublished": "2025-01-17 12:10:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Building a FreeBSD Private Cloud Server With Seafile Seahub Server",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "Seafile is a high performance and best file sharing application solution. Seafile open source cloud storage is written using the Python Django framework"
+},
+
+"datePublished": "2025-01-17 12:10:00 +0300",
+"dateModified": "2025-01-17 12:10:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/en/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/",
+"name": "Building a FreeBSD Private Cloud Server With Seafile Seahub Server"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/en/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/",
+"name": "SysAdmin"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/en/freebsd/2025/01/17/building-freebsd-private-cloud-server-seafile-seahub/",
+  "name": "Building a FreeBSD Private Cloud Server With Seafile Seahub Server",
+  "headline": "Building a FreeBSD Private Cloud Server With Seafile Seahub Server",
+  "keywords": "SysAdmin",
+  "description": "Seafile is a high performance and best file sharing application solution. Seafile open source cloud storage is written using the Python Django framework",
+  "articleBody": "Seafile is a cross-platform self-hosted cloud storage and sync solution. In other words, Seafile is very similar to Dropbox or Google Drive except you have full control over your platform instance. As such, Seafile operates in direct competition with Nextcloud and Owncloud.\n\nThe Seafile software system comes in three parts: server software, desktop and mobile sync applications, and Drive software. The latter is desktop only and creates a virtual drive to access and upload files stored on your Seafile server.\n\nSeafile is a high performance and best file sharing application solution. Seafile open source cloud storage is written using the Python Django framework and functions very similarly to Dropbox and Google Drive clouds. Seafile open source file storage server consists of WYSIWYG Markdown editing, Wiki, file labels, from django Seahub, Seafile server and Ccnet server.\n\nOne of the advantages of Seafile is that its features are no less than Dropbox or Google Drive. One of Seafile’s features includes file encryption, version control, two-factor authentication, online editing, file locking, backup, data recovery, and much more. When looking at the Github site, the hosted open source file sharing software Seafile has 8.7k GitHub stars and 1.3k GitHub forks. It’s really amazing data.\n\nOn FreeBSD systems Seafile is often used as a self-hosted file synchronization and sharing solution and as a cross-platform cloud file hosting service that can be used to store files on a central server.\n\nSeafile file collections are synchronized with personal computers or mobile device clients separately. Files or libraries can also be encrypted with a user-selected password. Seafile file sharing tool also allows users to create groups and easily share files into groups. Seafile manages files using libraries and each library has an owner. Owners can share libraries with other users or with groups with read-only or read-write permissions.\n\nIts fantastic features have attracted the attention of Open source fans to make Seafile an alternative to Dropbox or Google Drive. With various advantages and a multitude of users, it would not be wrong if in this article we will discuss the installation and configuration process of Seafile as a private cloud.\n\nSystem Specifications\n\n  OS FreeBSD 13.3\n  IP Private FreeBSD: 192.168.5.2\n  Host dan Domain: ns1@unixexplore.com\n  Apache24 sebagai Reverse PRoxy\n  Seahub version: Seahub-9.0.10_1\n  Seafile version: Seafile-9.0.10\n\n\n1. Fusefs Kernel Installation\n\nBefore we install Seafile, the fusefs kernel must be installed first, because if the fusefs kernel is not installed the Seafile server will not run perfectly. To activate the fusefs kernel, type the following command in the /boot/loader.conf file.\n\nroot@ns1:~ # ee /boot/loader.conf\nfusefs_load=\"YES\"\nfuse_load=\"YES\"\n\n\nThen so that the kernel can be loaded automatically, type the following script in the /etc/rc.conf file. Use the “ee” editor or the “nano” editor to enter the following script.\n\nroot@ns1:~ # ee /etc/rc.conf\nkld_list=\"fuse\"\nkld_list=\"fusefs\"\nkld_list=\"/boot/kernel/fusefs.ko\"\n\n\n2. Seafile and Seahub installation\n\nTo start installing Seafile, you should use the ports system in FreeBSD. Update the ports first before installing Seafile.\n\nroot@ns1:~ # portupgrade -af\nroot@ns1:~ # portmaster -af\n\n\nAfter you have finished updating the ports, type the following command to start the Seafile installation.\n\nroot@ns1:~ # cd /usr/ports/net-mgmt/seafile-server\nroot@ns1:/usr/ports/net-mgmt/seafile-server # make install clean\n====&gt; Compressing man pages (compress-man)\n===&gt; Staging rc.d startup script(s)\n===&gt;  Installing for seafile-server-9.0.10\n===&gt;  Checking if seafile-server is already installed\n===&gt;   Registering installation for seafile-server-9.0.10\nInstalling seafile-server-9.0.10...\n===&gt; Creating groups.\nUsing existing group 'seafile'.\n===&gt; Creating users\nUsing existing user 'seafile'.\nnet-mgmt/seafile-server is a dependency of Seafile. To install the\nfull application, www/seahub must be installed.\n\n\nOnce complete, continue with the Seahub installation.\n\nroot@ns1:/usr/ports/net-mgmt/seafile-server # cd /usr/ports/www/seahub\nroot@ns1:/usr/ports/www/seahub # make install clean\n===&gt;   Registering installation for seahub-9.0.10\nInstalling seahub-9.0.10...\n===&gt; Creating groups.\nUsing existing group 'seafile'.\n===&gt; Creating users\nUsing existing user 'seafile'.\nTo generate a new config,\ncd /usr/local/www/haiwen/seafile-server\nThen choose sqlite or mysql, mysql needs to be setup with root.\nsqlite: ./setup-seafile.sh\nmysql: ./setup-seafile-mysql.sh\nFurther instructions will be provided after the setup script is finished.\n\n\nIf a new config is created, run this to setup admin.\n\n/usr/local/www/haiwen/seafile-server/reset-admin.sh\n\n\nDon't forget to run update scripts after every minor and major update located in\n\t/usr/local/www/haiwen/seafile-server/upgrade\n\nPatch updates (5.1.x) don't require these scripts, however do required a restarted.\n\n\nWhen installing Seafile and Seahub, the fusefs-libs library is usually not installed completely. Type the following command to install the fusefs-libs library.\n\nroot@ns1:~ # find /usr/local/lib -name '*.la' | xargs grep -l 'libiconv\\.la' | xargs pkg which\n\n\nThen update portmaster to see the version of fusefs-lib used.\n\nroot@ns1:~ # portmaster -L | grep fusefs-lib\n===&gt;&gt;&gt; fusefs-libs-2.9.9_2\n\n\nTry looking at the version of fusefs-lib, from the example script above the version of fusefs-lib is fusefs-libs-2.9.9_2. After the fusefs-libs version type the following command.\n\nroot@ns1:~ # portmaster -o sysutils/fusefs-libs fusefs-libs-2.9.9_2\n\n\n3. Seafile and Seahub configuration\nThe first step that must be done to configure Seafile is to activate the SQL database, type the following command to activate SQLite3.\n\nroot@ns1:~ # cd /usr/local/www/haiwen/seafile-server\nroot@ns1:/usr/local/www/haiwen/seafile-server # ./setup-seafile.sh\n-----------------------------------------------------------------\nThis script will guide you to config and setup your seafile server.\n\nMake sure you have read seafile server manual at \n\n\thttps://download.seafile.com/published/seafile-manual/home.md\n\nNote: This script will guide your to setup seafile server using sqlite3,\nwhich may have problems if your disk is on a NFS/CIFS/USB.\nIn these cases, we suggest you setup seafile server using MySQL.\n\nPress [ENTER] to continue\n-----------------------------------------------------------------\n\nChecking packages needed by seafile ...\n\nChecking python on this machine ...\nFind python: python3.9\n\n  Checking python module: python-sqlite3 ... Done.\n\nChecking for sqlite3 ...Done.\n\nChecking Done.\n\nWhat would you like to use as the name of this seafile server?\nYour seafile users will be able to see the name in their seafile client.\nYou can use a-z, A-Z, 0-9, _ and -, and the length should be 3 ~ 15\n[server name]: unixexplore\n\nWhat is the ip or domain of this server?\nFor example, www.mycompany.com, or, 192.168.1.101\n\n[This server's ip or domain]: 192.168.5.2\n\nWhat tcp port do you want to use for seafile fileserver?\n8082 is the recommended port.\n[default: 8082 ] 8082\n\nThis is your config information:\n\nserver name:        unixexplore\nserver ip/domain:   192.168.5.2\nseafile data dir:   /usr/local/www/haiwen/seafile-data\nfileserver port:    8082\n\nIf you are OK with the configuration, press [ENTER] to continue.\n\nGenerating ccnet configuration in /usr/local/www/haiwen/ccnet...\n\nGenerating seafile configuration in /usr/local/www/haiwen/seafile-data ...\n\n-----------------------------------------------------------------\nSeahub is the web interface for seafile server.\nNow let's setup seahub configuration. Press [ENTER] to continue\n-----------------------------------------------------------------\n\nCreating database now, it may take one minute, please wait... \n\n/usr/local/www/haiwen/seafile-server\n\nDone.\n\ncreating seafile-server-latest symbolic link ... done\n\n-----------------------------------------------------------------\nYour seafile server configuration has been completed successfully.\n-----------------------------------------------------------------\n\nrun seafile server:     sysrc seafile_enable=YES\n                        service seafile { start | stop | restart }\nrun seahub  server:     sysrc seahub_enable=YES\n                        service seahub { start | stop | restart }\nrun reset-admin:        ./reset-admin.sh\n\n-----------------------------------------------------------------\nIf the server is behind a firewall, remember to open these tcp ports:\n-----------------------------------------------------------------\n\nport of seafile fileserver:   8082\nport of seahub:               8000\n\nWhen problems occur, refer to\n\n      https://download.seafile.com/published/seafile-manual/home.md\n\nfor more information.\n\n\nAfter that restart Seafile and Seahub.\n\nroot@ns1:~ # service seafile restart\nStopping seafile.\nStarting seafile server, please wait ...\n** Message: 21:29:16.716: seafile-controller.c(678): No seafevents.\n\nSeafile server started\n\nroot@ns1:~ # service seahub restart\nSeahub is not running\nLC_ALL is not set in ENV, set to en_US.UTF-8\nStarting seahub at port 8000 ...\n\nSeahub is started\n\n\nCreate a Seafile user and password.\n\nroot@ns1:~ # cd /usr/local/www/haiwen/seafile-server\nroot@ns1:/usr/local/www/haiwen/seafile-server # ./reset-admin.sh\nE-mail address: datainchi@gmail.com\nPassword: ketikkan passwor\nPassword (again): ketikkan password (harus sama dengan atas)\nSuperuser created successfully.\n\n\nNext, type the following command.\n\nroot@ns1:/usr/local/www/haiwen/seafile-server # pgrep -f seafile-controller\n3217\nroot@ns1:/usr/local/www/haiwen/seafile-server # pgrep -f seahub\n3233\n3235\n3236\n3237\n3238\n3239\n\n\nAfter all the installation is complete, now you can set up a private cloud server from the Seafile server. You can directly use the server to synchronize files, add users and groups, and share files between them or with the public without relying on external services.\n",
+  "datePublished": "2025-01-17 12:10:00 +0300",
+  "dateModified": "2025-01-17 12:10:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Building a FreeBSD Private Cloud Server With Seafile Seahub Server"><meta itemprop="description" content="Seafile is a high performance and best file sharing application solution. Seafile open source cloud storage is written using the Python Django framework"><meta itemprop="datePublished" content="2025-01-17"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-17T12:10:00+03:00">2025-01-17</time> </p><h1 class="page__title" itemprop="headline">Building a FreeBSD Private Cloud Server With Seafile Seahub Server
+</h1></header><section class="page__content" itemprop="text">
+        <p>Seafile is a cross-platform self-hosted cloud storage and sync solution. In other words, Seafile is very similar to Dropbox or Google Drive except you have full control over your platform instance. As such, Seafile operates in direct competition with Nextcloud and Owncloud.</p>
+
+<p>The Seafile software system comes in three parts: server software, desktop and mobile sync applications, and Drive software. The latter is desktop only and creates a virtual drive to access and upload files stored on your Seafile server.</p>
+
+<p>Seafile is a high performance and best file sharing application solution. Seafile open source cloud storage is written using the Python Django framework and functions very similarly to Dropbox and Google Drive clouds. Seafile open source file storage server consists of WYSIWYG Markdown editing, Wiki, file labels, from django Seahub, Seafile server and Ccnet server.</p>
+
+<p>One of the advantages of Seafile is that its features are no less than Dropbox or Google Drive. One of Seafile’s features includes file encryption, version control, two-factor authentication, online editing, file locking, backup, data recovery, and much more. When looking at the Github site, the hosted open source file sharing software Seafile has 8.7k GitHub stars and 1.3k GitHub forks. It’s really amazing data.</p>
+
+<p>On FreeBSD systems Seafile is often used as a self-hosted file synchronization and sharing solution and as a cross-platform cloud file hosting service that can be used to store files on a central server.</p>
+
+<p>Seafile file collections are synchronized with personal computers or mobile device clients separately. Files or libraries can also be encrypted with a user-selected password. Seafile file sharing tool also allows users to create groups and easily share files into groups. Seafile manages files using libraries and each library has an owner. Owners can share libraries with other users or with groups with read-only or read-write permissions.</p>
+
+<p>Its fantastic features have attracted the attention of Open source fans to make Seafile an alternative to Dropbox or Google Drive. With various advantages and a multitude of users, it would not be wrong if in this article we will discuss the installation and configuration process of Seafile as a private cloud.</p>
+
+<h1 id="system-specifications">System Specifications</h1>
+<ol>
+  <li>OS FreeBSD 13.3</li>
+  <li>IP Private FreeBSD: 192.168.5.2</li>
+  <li>Host dan Domain: ns1@unixexplore.com</li>
+  <li>Apache24 sebagai Reverse PRoxy</li>
+  <li>Seahub version: Seahub-9.0.10_1</li>
+  <li>Seafile version: Seafile-9.0.10</li>
+</ol>
+
+<h2 id="1-fusefs-kernel-installation">1. Fusefs Kernel Installation</h2>
+
+<p>Before we install Seafile, the fusefs kernel must be installed first, because if the fusefs kernel is not installed the Seafile server will not run perfectly. To activate the fusefs kernel, type the following command in the /boot/loader.conf file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /boot/loader.conf
+fusefs_load="YES"
+fuse_load="YES"
+</code></pre></div></div>
+
+<p>Then so that the kernel can be loaded automatically, type the following script in the /etc/rc.conf file. Use the “ee” editor or the “nano” editor to enter the following script.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /etc/rc.conf
+kld_list="fuse"
+kld_list="fusefs"
+kld_list="/boot/kernel/fusefs.ko"
+</code></pre></div></div>
+
+<h2 id="2-seafile-and-seahub-installation">2. Seafile and Seahub installation</h2>
+
+<p>To start installing Seafile, you should use the ports system in FreeBSD. Update the ports first before installing Seafile.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # portupgrade -af
+root@ns1:~ # portmaster -af
+</code></pre></div></div>
+
+<p>After you have finished updating the ports, type the following command to start the Seafile installation.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # cd /usr/ports/net-mgmt/seafile-server
+root@ns1:/usr/ports/net-mgmt/seafile-server # make install clean
+====&gt; Compressing man pages (compress-man)
+===&gt; Staging rc.d startup script(s)
+===&gt;  Installing for seafile-server-9.0.10
+===&gt;  Checking if seafile-server is already installed
+===&gt;   Registering installation for seafile-server-9.0.10
+Installing seafile-server-9.0.10...
+===&gt; Creating groups.
+Using existing group 'seafile'.
+===&gt; Creating users
+Using existing user 'seafile'.
+net-mgmt/seafile-server is a dependency of Seafile. To install the
+full application, www/seahub must be installed.
+</code></pre></div></div>
+
+<p>Once complete, continue with the Seahub installation.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:/usr/ports/net-mgmt/seafile-server # cd /usr/ports/www/seahub
+root@ns1:/usr/ports/www/seahub # make install clean
+===&gt;   Registering installation for seahub-9.0.10
+Installing seahub-9.0.10...
+===&gt; Creating groups.
+Using existing group 'seafile'.
+===&gt; Creating users
+Using existing user 'seafile'.
+To generate a new config,
+cd /usr/local/www/haiwen/seafile-server
+Then choose sqlite or mysql, mysql needs to be setup with root.
+sqlite: ./setup-seafile.sh
+mysql: ./setup-seafile-mysql.sh
+Further instructions will be provided after the setup script is finished.
+
+
+If a new config is created, run this to setup admin.
+
+/usr/local/www/haiwen/seafile-server/reset-admin.sh
+
+
+Don't forget to run update scripts after every minor and major update located in
+	/usr/local/www/haiwen/seafile-server/upgrade
+
+Patch updates (5.1.x) don't require these scripts, however do required a restarted.
+</code></pre></div></div>
+
+<p>When installing Seafile and Seahub, the fusefs-libs library is usually not installed completely. Type the following command to install the fusefs-libs library.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # find /usr/local/lib -name '*.la' | xargs grep -l 'libiconv\.la' | xargs pkg which
+</code></pre></div></div>
+
+<p>Then update portmaster to see the version of fusefs-lib used.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # portmaster -L | grep fusefs-lib
+===&gt;&gt;&gt; fusefs-libs-2.9.9_2
+</code></pre></div></div>
+
+<p>Try looking at the version of fusefs-lib, from the example script above the version of fusefs-lib is fusefs-libs-2.9.9_2. After the fusefs-libs version type the following command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # portmaster -o sysutils/fusefs-libs fusefs-libs-2.9.9_2
+</code></pre></div></div>
+
+<h2 id="3-seafile-and-seahub-configuration">3. Seafile and Seahub configuration</h2>
+<p>The first step that must be done to configure Seafile is to activate the SQL database, type the following command to activate SQLite3.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # cd /usr/local/www/haiwen/seafile-server
+root@ns1:/usr/local/www/haiwen/seafile-server # ./setup-seafile.sh
+-----------------------------------------------------------------
+This script will guide you to config and setup your seafile server.
+
+Make sure you have read seafile server manual at 
+
+	https://download.seafile.com/published/seafile-manual/home.md
+
+Note: This script will guide your to setup seafile server using sqlite3,
+which may have problems if your disk is on a NFS/CIFS/USB.
+In these cases, we suggest you setup seafile server using MySQL.
+
+Press [ENTER] to continue
+-----------------------------------------------------------------
+
+Checking packages needed by seafile ...
+
+Checking python on this machine ...
+Find python: python3.9
+
+  Checking python module: python-sqlite3 ... Done.
+
+Checking for sqlite3 ...Done.
+
+Checking Done.
+
+What would you like to use as the name of this seafile server?
+Your seafile users will be able to see the name in their seafile client.
+You can use a-z, A-Z, 0-9, _ and -, and the length should be 3 ~ 15
+[server name]: unixexplore
+
+What is the ip or domain of this server?
+For example, www.mycompany.com, or, 192.168.1.101
+
+[This server's ip or domain]: 192.168.5.2
+
+What tcp port do you want to use for seafile fileserver?
+8082 is the recommended port.
+[default: 8082 ] 8082
+
+This is your config information:
+
+server name:        unixexplore
+server ip/domain:   192.168.5.2
+seafile data dir:   /usr/local/www/haiwen/seafile-data
+fileserver port:    8082
+
+If you are OK with the configuration, press [ENTER] to continue.
+
+Generating ccnet configuration in /usr/local/www/haiwen/ccnet...
+
+Generating seafile configuration in /usr/local/www/haiwen/seafile-data ...
+
+-----------------------------------------------------------------
+Seahub is the web interface for seafile server.
+Now let's setup seahub configuration. Press [ENTER] to continue
+-----------------------------------------------------------------
+
+Creating database now, it may take one minute, please wait... 
+
+/usr/local/www/haiwen/seafile-server
+
+Done.
+
+creating seafile-server-latest symbolic link ... done
+
+-----------------------------------------------------------------
+Your seafile server configuration has been completed successfully.
+-----------------------------------------------------------------
+
+run seafile server:     sysrc seafile_enable=YES
+                        service seafile { start | stop | restart }
+run seahub  server:     sysrc seahub_enable=YES
+                        service seahub { start | stop | restart }
+run reset-admin:        ./reset-admin.sh
+
+-----------------------------------------------------------------
+If the server is behind a firewall, remember to open these tcp ports:
+-----------------------------------------------------------------
+
+port of seafile fileserver:   8082
+port of seahub:               8000
+
+When problems occur, refer to
+
+      https://download.seafile.com/published/seafile-manual/home.md
+
+for more information.
+</code></pre></div></div>
+
+<p>After that restart Seafile and Seahub.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # service seafile restart
+Stopping seafile.
+Starting seafile server, please wait ...
+** Message: 21:29:16.716: seafile-controller.c(678): No seafevents.
+
+Seafile server started
+
+root@ns1:~ # service seahub restart
+Seahub is not running
+LC_ALL is not set in ENV, set to en_US.UTF-8
+Starting seahub at port 8000 ...
+
+Seahub is started
+</code></pre></div></div>
+
+<p>Create a Seafile user and password.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # cd /usr/local/www/haiwen/seafile-server
+root@ns1:/usr/local/www/haiwen/seafile-server # ./reset-admin.sh
+E-mail address: datainchi@gmail.com
+Password: ketikkan passwor
+Password (again): ketikkan password (harus sama dengan atas)
+Superuser created successfully.
+</code></pre></div></div>
+
+<p>Next, type the following command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:/usr/local/www/haiwen/seafile-server # pgrep -f seafile-controller
+3217
+root@ns1:/usr/local/www/haiwen/seafile-server # pgrep -f seahub
+3233
+3235
+3236
+3237
+3238
+3239
+</code></pre></div></div>
+
+<p>After all the installation is complete, now you can set up a private cloud server from the Seafile server. You can directly use the server to synchronize files, add users and groups, and share files between them or with the public without relying on external services.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-17T12:10:00+03:00">2025-01-17</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#sysadmin" class="page__taxonomy-item" rel="tag">SysAdmin</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#en" class="page__taxonomy-item" rel="tag">en</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/en/freebsd/2025/01/16/build-java-maven-on-freebsd.en/" class="pagination--pager" title="Build a Java App with Maven On FreeBSD
+">Previous</a><a href="https://penaadventure.com/en/freebsd/2025/01/18/build-instructions-obs-studio-freebsd/" class="pagination--pager" title="Build Instructions OBS Studio For GhostBSD Desktop FreeBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Настройка FreeBSD Lighttpd CGI BIN для программ Perl  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Настройка FreeBSD Lighttpd CGI BIN для программ Perl"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/"><meta property="og:description" content="Первые программы CGI были написаны на языке C и их нужно было компилировать в исполняемые двоичные файлы."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Настройка FreeBSD Lighttpd CGI BIN для программ Perl">
+  <meta name="twitter:description" content="Первые программы CGI были написаны на языке C и их нужно было компилировать в исполняемые двоичные файлы.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-11-28T19:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#ru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#11" itemprop="item"><span itemprop="name">11</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#28" itemprop="item"><span itemprop="name">28</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Настройка FreeBSD Lighttpd CGI BIN для программ Perl</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2024-11-28 19:00:00 +0300",
+"datePublished": "2024-11-28 19:00:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Настройка FreeBSD Lighttpd CGI BIN для программ Perl",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "Первые программы CGI были написаны на языке C и их нужно было компилировать в исполняемые двоичные файлы."
+},
+
+"datePublished": "2024-11-28 19:00:00 +0300",
+"dateModified": "2024-11-28 19:00:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/",
+"name": "Настройка FreeBSD Lighttpd CGI BIN для программ Perl"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/",
+"name": "WebServer"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/",
+  "name": "Настройка FreeBSD Lighttpd CGI BIN для программ Perl",
+  "headline": "Настройка FreeBSD Lighttpd CGI BIN для программ Perl",
+  "keywords": "WebServer",
+  "description": "Первые программы CGI были написаны на языке C и их нужно было компилировать в исполняемые двоичные файлы.",
+  "articleBody": "Приложения CGI могут читать и писать на любом компьютерном языке, который является производным от STDIN и выводится в STDOUT, независимо от того, интерпретируется ли программа оболочкой Unix и скомпилирована ли она на C или C++, или на их комбинации, например, Perl. Первые программы CGI были написаны на языке C и их нужно было компилировать в исполняемые двоичные файлы. Поэтому каталог, в котором выполняется скомпилированная CGI-программа, называется cgi-bin, а каталог исходного файла — cgi-src. Большинство современных серверов поставляются с предварительно настроенными каталогами для CGI-программ.\n\nВзаимодействие между браузерами и веб-серверами регулируется протоколом передачи гипертекста (HTTP), который в настоящее время является официальным стандартом Интернета. HTTP использует простую модель запроса и ответа. Например, клиент устанавливает TCP-соединение с сервером и отправляет запрос, сервер отправляет ответ, и соединение закрывается. Эти запросы и ответы имеют форму сообщений, написанных в виде серии простых строк текста.\n\nСообщения HTTP-запроса и ответа состоят из двух частей. Первый — заголовок, содержащий описательную информацию о запросе или ответе. Различные типы заголовков и их возможное содержимое полностью определяются протоколом HTTP. За заголовком следует пустая строка, затем тело сообщения. Тело сообщения — это фактическое содержимое сообщения, например HTML-страница или GIF-изображение.\n\n1. О интерфейсе общего шлюза (CGI)\n\nCommon Gateway Interface или сокращенно CGI — это стандарт для подключения различных прикладных программ к веб-страницам. CGI похож на компьютерную программу, которая действует как посредник между стандартами HTML, создающими веб-дисплеи, и другими программами, такими как базы данных. Результаты, полученные в процессе поиска, отправляются обратно на веб-страницу для отображения в формате HTML.\n\nПервоначально CGI представлял собой подход, используемый для приложений программирования на стороне сервера. Обычно используются программы CGI на языках C++ и Perl. CGI — это часть веб-сервера, которая может взаимодействовать с другими программами на сервере. С помощью CGI веб-серверы могут вызывать программы, созданные на различных языках программирования (Common). Взаимодействие между пользователями и различными приложениями, например, базами данных, может быть организовано с помощью CGI (Gateway). Эту возможность CGI можно использовать для веб-сервера IIS.\n\nПротокол HTTP позволяет клиентам и серверам понимать друг друга, передавая всю информацию между ними с помощью заголовков, где каждый заголовок представляет собой пару ключ-значение. При отправке формы программа CGI ищет заголовки, содержащие входную информацию, обрабатывает полученные данные, например, запрашивает ключевые слова, указанные через форму, в базе данных и по готовности возвращает ответ на форму. Клиент отправит специальный заголовок, сообщающий клиенту, какой тип информации ему следует ожидать, а затем саму информацию. Сервер может отправлять дополнительные заголовки, но это необязательно. Смотрите изображение ниже.\n\nCGI часто используется как механизм получения информации от пользователей посредством заполнения форм, доступа к базам данных или создания динамических страниц. Хотя в принципе механизм CGI не имеет уязвимостей в безопасности, программы или скрипты, созданные как CGI, могут иметь уязвимости в безопасности или быть непреднамеренными. Потенциальные уязвимости безопасности, которые могут возникнуть при использовании CGI, включают в себя:\n\n\n  Злоумышленник может установить CGI-скрипт, который может отправлять файл паролей посетителям, запустившим CGI.\n  Программы CGI вызываются несколько раз, в результате чего сервер оказывается перегруженным, поскольку ему приходится запускать несколько программ CGI, которые потребляют память и циклы ЦП веб-сервера.\n\n\n2. Установка языка Perl\nПоскольку мы будем включать мод CGI BIN, вам сначала потребуется установить язык Perl. Сервер FreeBSD имеет собственную систему упаковки двоичных файлов. Это облегчит вам установку и управление программным обеспечением. С помощью этой системы пакетов вы также можете управлять установкой модулей Perl.\n\nВведите следующую команду для установки Perl5.\n\nroot@ns5:~ # pkg install perl5.38-5.38.2_1\n\n\nПриведенная выше команда установит Perl5 на ваш сервер FreeBSD, а двоичный путь к Perl будет /usr/local/bin/Perl.\n\nПоскольку в репозиториях пакетов FreeBSD имеется множество версий Perl, необходимо указать версию Perl в файле /etc/make.conf.\n\nroot@ns5:~ # ee /etc/make.conf\n\nDEFAULT_VERSIONS+=  perl5=5.30\n\n\n3. Включить CGI-мод на Lighttpd\nПринципы CGI и способы написания CGI-приложений не являются предметом данного обсуждения. Однако понимание конфигурации CGI помогает понять код mod_cgi, который мы реализуем для настройки lighttpd для запуска процессов CGI.\n\nПрежде чем продолжить обсуждение этой статьи, чтобы упростить настройку CGI-мода на Lighttpd, вам следует прочитать нашу предыдущую статью.\n\nПеред включением мода CGI сначала установим несколько PHP-приложений, которые требуются Lighttpd для включения мода CGI. Введите эту команду, чтобы установить зависимости мода CGI.\n\nroot@ns5:~ # pkg install php82 mod_php82 php82-mysqli php82-xmlwriter\nroot@ns5:~ # pkg install php82-gd php82-phar php82-ctype php82-filter php82-iconv php82-curl php82-mysqli php82-pdo php82-tokenizer php82-mbstring php82-session php82-simplexml php82-xml php82-zlib php82-zip php82-dom php82-pdo_mysql php82-ctype\n\n\nХорошо, теперь перейдем к включению мода CGI. Откройте файл «/usr/local/etc/lighttpd/modules.conf» и поместите в него mod_cgi.\n\nserver.modules = (\n#  \"mod_rewrite\",\n  \"mod_access\",\n#  \"mod_auth\",\n#  \"mod_authn_file\",\n#  \"mod_redirect\",\n#  \"mod_setenv\",\n\"mod_alias\",\n\"mod_cgi\",\n\"mod_fastcgi\"\n)\n\n\nТеперь, когда модуль CGI активен, мы запустим его. Откройте файл «/usr/local/etc/lighttpd/conf.d/cgi.conf» и удалите в нем все скрипты, а затем замените их скриптами, приведенными ниже.\n\n$HTTP[\"url\"] =~ \"/cgi-bin/\" {\ncgi.assign                 = ( \".pl\"  =&gt; \"/usr/local/bin/perl\",\n                               \".cgi\" =&gt; \"/usr/local/bin/perl\",\n                               \".rb\"  =&gt; \"/usr/bin/ruby\",\n                               \".erb\" =&gt; \"/usr/bin/eruby\",\n                               \".py\"  =&gt; \"/usr/local/bin/python\" )\n}\n\n\nДокументы, заканчивающиеся на «.pl», «.cgi» и «.py», будут считаться программами CGI. Переводчики для этой программы будут добавлены в ближайшее время. Следующий шаг — перезапуск Lighttpd.\n\nroot@ns5:~ # service lighttpd restart\n\n\n4. Запуск Lighttpd mod_cgi\nПосле завершения настройки проверьте, может ли указанная выше конфигурация работать на веб-сервере Lighttpd. Вы создаете папку «/usr/local/www/data/cgi-bin», затем создаете файл «arrays.pl».\n\nroot@ns5:~ # mkdir -p /usr/local/www/data/cgi-bin\nroot@ns5:~ # cd /usr/local/www/data/cgi-bin\nroot@ns5:/usr/local/www/data/cgi-bin # touch arrays.pl\nroot@ns5:/usr/local/www/data/cgi-bin # chown -R www:www /usr/local/www/data/cgi-bin\n\n\nВ файл «/usr/local/www/data/cgi-bin/arrays.pl» вставляем следующий скрипт.\n\n#!/usr/bin/perl\nuse strict;\nuse warnings;\n\n# initializing arrays\nmy @places = ('Bangalore', 'Chennai', 'Coimbatore');\nmy @prime_numbers = (2, 3, 5, 7);\nmy @books;\n$books[0] = 'Harry Potter';\n$books[1] = 'Sherlock Holmes';\n$books[2] = 'To Kill a Mocking Bird';\nmy @mixed_arr = ('Hello', 1, 'q', @places, $books[0]);\n\n# ----- printing entire array -----\nprint \"\\@places: @places\\n\";\nprint \"\\@prime_numbers: @prime_numbers\\n\";\nprint \"\\@mixed_arr: @mixed_arr\\n\";\n# use join to connect array items with preferred characters\nprint \"My favorite books: \".join(', ', @books).\"\\n\\n\";\n\n# ----- printing individual item -----\nprint \"First item in \\@places: $places[0]\\n\";\nprint \"Last  item in \\@places: $places[-1]\\n\";\nprint \"Third last item in \\@mixed_arr: $mixed_arr[-3]\\n\";\n\n# ----- printing array slice -----\nprint \"2nd and 3rd item in \\@prime_numbers: @prime_numbers[1..2]\\n\\n\";\n\n# ----- array size -----\nprint \"Index of last item in \\@places: $#places\\n\";\nmy $arr_size = @places;\nprint \"Number of items in \\@places:    $arr_size\\n\\n\";\n\n# ----- manipulating array -----\n# Add an item, same as $places[$#places + 1]\n$places[3] = \"Salem\";\nprint \"Manually add item: @places\\n\";\n\n# Delete first item and shift left\nshift(@places);\nprint \"shift:             @places\\n\";\n# Delete last item\npop(@places);\nprint \"pop:               @places\\n\";\n\n# Add an item at end of array\npush(@places, \"Mysore\");\nprint \"push:              @places\\n\";\n# Add an item at beginning of array\nunshift(@places, \"Hyderabad\");\nprint \"unshift:           @places\\n\";\n\n# change array size by assigning value to $#places\n# Change no. of items to 2\n$#places = 1;\nprint \"\\$#places = 1       @places\\n\";\n# Change no. of items to 0\n$#places = -1;\nprint \"\\$#places = -1      @places\\n\";\n\n\nОткройте веб-браузер Google Chrome или Yandex, введите «http://192.168.5.2/cgi-bin/arrays.pl».\n\nПродолжим тестирование файла .cgi. По-прежнему в папке «/usr/local/www/data/cgi-bin» создайте файл «cgiperl.cgi».\n\nroot@ns5:/usr/local/www/data/cgi-bin # touch cgiperl.cgi\nroot@ns5:/usr/local/www/data/cgi-bin # chown -R www:www cgiperl.cgi\n\n\nВведите следующий скрипт в файл «/usr/local/www/data/cgi-bin/cgiperl.cgi».\n\n#!/usr/local/bin/perl\n\nprint \"Content-type: text/html\\n\\n\";\nprint &lt;&lt;htmlcode;\n&lt;html&gt;\n&lt;head&gt;\n&lt;title&gt;CGI Perl Example&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n&lt;h1&gt;CGI Perl Example&lt;/h1&gt;\n&lt;h3&gt;&lt;p&gt;Congratulations on successfully configuring the Perl mod on Apache24!&lt;/p&gt;&lt;h3&gt;\n&lt;/body&gt;\n\n\nСнова открываем Google Chrome, вводим «http://192.168.5.2/cgi-bin/cgiperl.cgi». Пожалуйста, посмотрите результаты.\n\nНастройка CGI-скриптов на веб-сервере Lighttpd — относительно простой процесс, который можно выполнить, следуя руководству, содержащемуся в этой статье. Включение поддержки CGI, создание CGI-скриптов, настройка Lighttpd для распознавания скриптов и тестирование скриптов являются важными этапами настройки CGI-скриптов в Lighttpd. С помощью этих шагов вы сможете создавать динамичные и интерактивные веб-страницы, которые можно использовать для предоставления информации или услуг посетителям вашего сайта.\n\n",
+  "datePublished": "2024-11-28 19:00:00 +0300",
+  "dateModified": "2024-11-28 19:00:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Настройка FreeBSD Lighttpd CGI BIN для программ Perl"><meta itemprop="description" content="Первые программы CGI были написаны на языке C и их нужно было компилировать в исполняемые двоичные файлы."><meta itemprop="datePublished" content="2024-11-28"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-11-28T19:00:00+03:00">2024-11-28</time> </p><h1 class="page__title" itemprop="headline">Настройка FreeBSD Lighttpd CGI BIN для программ Perl
+</h1></header><section class="page__content" itemprop="text">
+        <p>Приложения CGI могут читать и писать на любом компьютерном языке, который является производным от STDIN и выводится в STDOUT, независимо от того, интерпретируется ли программа оболочкой Unix и скомпилирована ли она на C или C++, или на их комбинации, например, Perl. Первые программы CGI были написаны на языке C и их нужно было компилировать в исполняемые двоичные файлы. Поэтому каталог, в котором выполняется скомпилированная CGI-программа, называется cgi-bin, а каталог исходного файла — cgi-src. Большинство современных серверов поставляются с предварительно настроенными каталогами для CGI-программ.</p>
+
+<p>Взаимодействие между браузерами и веб-серверами регулируется протоколом передачи гипертекста (HTTP), который в настоящее время является официальным стандартом Интернета. HTTP использует простую модель запроса и ответа. Например, клиент устанавливает TCP-соединение с сервером и отправляет запрос, сервер отправляет ответ, и соединение закрывается. Эти запросы и ответы имеют форму сообщений, написанных в виде серии простых строк текста.</p>
+
+<p>Сообщения HTTP-запроса и ответа состоят из двух частей. Первый — заголовок, содержащий описательную информацию о запросе или ответе. Различные типы заголовков и их возможное содержимое полностью определяются протоколом HTTP. За заголовком следует пустая строка, затем тело сообщения. Тело сообщения — это фактическое содержимое сообщения, например HTML-страница или GIF-изображение.</p>
+
+<h2 id="1-о-интерфейсе-общего-шлюза-cgi">1. О интерфейсе общего шлюза (CGI)</h2>
+
+<p>Common Gateway Interface или сокращенно CGI — это стандарт для подключения различных прикладных программ к веб-страницам. CGI похож на компьютерную программу, которая действует как посредник между стандартами HTML, создающими веб-дисплеи, и другими программами, такими как базы данных. Результаты, полученные в процессе поиска, отправляются обратно на веб-страницу для отображения в формате HTML.</p>
+
+<p>Первоначально CGI представлял собой подход, используемый для приложений программирования на стороне сервера. Обычно используются программы CGI на языках C++ и Perl. CGI — это часть веб-сервера, которая может взаимодействовать с другими программами на сервере. С помощью CGI веб-серверы могут вызывать программы, созданные на различных языках программирования (Common). Взаимодействие между пользователями и различными приложениями, например, базами данных, может быть организовано с помощью CGI (Gateway). Эту возможность CGI можно использовать для веб-сервера IIS.</p>
+
+<p>Протокол HTTP позволяет клиентам и серверам понимать друг друга, передавая всю информацию между ними с помощью заголовков, где каждый заголовок представляет собой пару ключ-значение. При отправке формы программа CGI ищет заголовки, содержащие входную информацию, обрабатывает полученные данные, например, запрашивает ключевые слова, указанные через форму, в базе данных и по готовности возвращает ответ на форму. Клиент отправит специальный заголовок, сообщающий клиенту, какой тип информации ему следует ожидать, а затем саму информацию. Сервер может отправлять дополнительные заголовки, но это необязательно. Смотрите изображение ниже.</p>
+
+<p>CGI часто используется как механизм получения информации от пользователей посредством заполнения форм, доступа к базам данных или создания динамических страниц. Хотя в принципе механизм CGI не имеет уязвимостей в безопасности, программы или скрипты, созданные как CGI, могут иметь уязвимости в безопасности или быть непреднамеренными. Потенциальные уязвимости безопасности, которые могут возникнуть при использовании CGI, включают в себя:</p>
+
+<ul>
+  <li>Злоумышленник может установить CGI-скрипт, который может отправлять файл паролей посетителям, запустившим CGI.</li>
+  <li>Программы CGI вызываются несколько раз, в результате чего сервер оказывается перегруженным, поскольку ему приходится запускать несколько программ CGI, которые потребляют память и циклы ЦП веб-сервера.</li>
+</ul>
+
+<h2 id="2-установка-языка-perl">2. Установка языка Perl</h2>
+<p>Поскольку мы будем включать мод CGI BIN, вам сначала потребуется установить язык Perl. Сервер FreeBSD имеет собственную систему упаковки двоичных файлов. Это облегчит вам установку и управление программным обеспечением. С помощью этой системы пакетов вы также можете управлять установкой модулей Perl.</p>
+
+<p>Введите следующую команду для установки Perl5.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # pkg install perl5.38-5.38.2_1
+</code></pre></div></div>
+
+<p>Приведенная выше команда установит Perl5 на ваш сервер FreeBSD, а двоичный путь к Perl будет /usr/local/bin/Perl.</p>
+
+<p>Поскольку в репозиториях пакетов FreeBSD имеется множество версий Perl, необходимо указать версию Perl в файле /etc/make.conf.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # ee /etc/make.conf
+
+DEFAULT_VERSIONS+=  perl5=5.30
+</code></pre></div></div>
+
+<h2 id="3-включить-cgi-мод-на-lighttpd">3. Включить CGI-мод на Lighttpd</h2>
+<p>Принципы CGI и способы написания CGI-приложений не являются предметом данного обсуждения. Однако понимание конфигурации CGI помогает понять код mod_cgi, который мы реализуем для настройки lighttpd для запуска процессов CGI.</p>
+
+<p>Прежде чем продолжить обсуждение этой статьи, чтобы упростить настройку CGI-мода на Lighttpd, вам следует прочитать нашу предыдущую статью.</p>
+
+<p>Перед включением мода CGI сначала установим несколько PHP-приложений, которые требуются Lighttpd для включения мода CGI. Введите эту команду, чтобы установить зависимости мода CGI.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # pkg install php82 mod_php82 php82-mysqli php82-xmlwriter
+root@ns5:~ # pkg install php82-gd php82-phar php82-ctype php82-filter php82-iconv php82-curl php82-mysqli php82-pdo php82-tokenizer php82-mbstring php82-session php82-simplexml php82-xml php82-zlib php82-zip php82-dom php82-pdo_mysql php82-ctype
+</code></pre></div></div>
+
+<p>Хорошо, теперь перейдем к включению мода CGI. Откройте файл «/usr/local/etc/lighttpd/modules.conf» и поместите в него mod_cgi.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server.modules = (
+#  "mod_rewrite",
+  "mod_access",
+#  "mod_auth",
+#  "mod_authn_file",
+#  "mod_redirect",
+#  "mod_setenv",
+"mod_alias",
+"mod_cgi",
+"mod_fastcgi"
+)
+</code></pre></div></div>
+
+<p>Теперь, когда модуль CGI активен, мы запустим его. Откройте файл «/usr/local/etc/lighttpd/conf.d/cgi.conf» и удалите в нем все скрипты, а затем замените их скриптами, приведенными ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$HTTP["url"] =~ "/cgi-bin/" {
+cgi.assign                 = ( ".pl"  =&gt; "/usr/local/bin/perl",
+                               ".cgi" =&gt; "/usr/local/bin/perl",
+                               ".rb"  =&gt; "/usr/bin/ruby",
+                               ".erb" =&gt; "/usr/bin/eruby",
+                               ".py"  =&gt; "/usr/local/bin/python" )
+}
+</code></pre></div></div>
+
+<p>Документы, заканчивающиеся на «.pl», «.cgi» и «.py», будут считаться программами CGI. Переводчики для этой программы будут добавлены в ближайшее время. Следующий шаг — перезапуск Lighttpd.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # service lighttpd restart
+</code></pre></div></div>
+
+<h2 id="4-запуск-lighttpd-mod_cgi">4. Запуск Lighttpd mod_cgi</h2>
+<p>После завершения настройки проверьте, может ли указанная выше конфигурация работать на веб-сервере Lighttpd. Вы создаете папку «/usr/local/www/data/cgi-bin», затем создаете файл «arrays.pl».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:~ # mkdir -p /usr/local/www/data/cgi-bin
+root@ns5:~ # cd /usr/local/www/data/cgi-bin
+root@ns5:/usr/local/www/data/cgi-bin # touch arrays.pl
+root@ns5:/usr/local/www/data/cgi-bin # chown -R www:www /usr/local/www/data/cgi-bin
+</code></pre></div></div>
+
+<p>В файл «/usr/local/www/data/cgi-bin/arrays.pl» вставляем следующий скрипт.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/usr/bin/perl
+use strict;
+use warnings;
+
+# initializing arrays
+my @places = ('Bangalore', 'Chennai', 'Coimbatore');
+my @prime_numbers = (2, 3, 5, 7);
+my @books;
+$books[0] = 'Harry Potter';
+$books[1] = 'Sherlock Holmes';
+$books[2] = 'To Kill a Mocking Bird';
+my @mixed_arr = ('Hello', 1, 'q', @places, $books[0]);
+
+# ----- printing entire array -----
+print "\@places: @places\n";
+print "\@prime_numbers: @prime_numbers\n";
+print "\@mixed_arr: @mixed_arr\n";
+# use join to connect array items with preferred characters
+print "My favorite books: ".join(', ', @books)."\n\n";
+
+# ----- printing individual item -----
+print "First item in \@places: $places[0]\n";
+print "Last  item in \@places: $places[-1]\n";
+print "Third last item in \@mixed_arr: $mixed_arr[-3]\n";
+
+# ----- printing array slice -----
+print "2nd and 3rd item in \@prime_numbers: @prime_numbers[1..2]\n\n";
+
+# ----- array size -----
+print "Index of last item in \@places: $#places\n";
+my $arr_size = @places;
+print "Number of items in \@places:    $arr_size\n\n";
+
+# ----- manipulating array -----
+# Add an item, same as $places[$#places + 1]
+$places[3] = "Salem";
+print "Manually add item: @places\n";
+
+# Delete first item and shift left
+shift(@places);
+print "shift:             @places\n";
+# Delete last item
+pop(@places);
+print "pop:               @places\n";
+
+# Add an item at end of array
+push(@places, "Mysore");
+print "push:              @places\n";
+# Add an item at beginning of array
+unshift(@places, "Hyderabad");
+print "unshift:           @places\n";
+
+# change array size by assigning value to $#places
+# Change no. of items to 2
+$#places = 1;
+print "\$#places = 1       @places\n";
+# Change no. of items to 0
+$#places = -1;
+print "\$#places = -1      @places\n";
+</code></pre></div></div>
+
+<p>Откройте веб-браузер Google Chrome или Yandex, введите «http://192.168.5.2/cgi-bin/arrays.pl».</p>
+
+<p>Продолжим тестирование файла .cgi. По-прежнему в папке «/usr/local/www/data/cgi-bin» создайте файл «cgiperl.cgi».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns5:/usr/local/www/data/cgi-bin # touch cgiperl.cgi
+root@ns5:/usr/local/www/data/cgi-bin # chown -R www:www cgiperl.cgi
+</code></pre></div></div>
+
+<p>Введите следующий скрипт в файл «/usr/local/www/data/cgi-bin/cgiperl.cgi».</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/usr/local/bin/perl
+
+print "Content-type: text/html\n\n";
+print &lt;&lt;htmlcode;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;CGI Perl Example&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;CGI Perl Example&lt;/h1&gt;
+&lt;h3&gt;&lt;p&gt;Congratulations on successfully configuring the Perl mod on Apache24!&lt;/p&gt;&lt;h3&gt;
+&lt;/body&gt;
+</code></pre></div></div>
+
+<p>Снова открываем Google Chrome, вводим «http://192.168.5.2/cgi-bin/cgiperl.cgi». Пожалуйста, посмотрите результаты.</p>
+
+<p>Настройка CGI-скриптов на веб-сервере Lighttpd — относительно простой процесс, который можно выполнить, следуя руководству, содержащемуся в этой статье. Включение поддержки CGI, создание CGI-скриптов, настройка Lighttpd для распознавания скриптов и тестирование скриптов являются важными этапами настройки CGI-скриптов в Lighttpd. С помощью этих шагов вы сможете создавать динамичные и интерактивные веб-страницы, которые можно использовать для предоставления информации или услуг посетителям вашего сайта.</p>
+
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-11-28T19:00:00+03:00">2024-11-28</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#webserver" class="page__taxonomy-item" rel="tag">WebServer</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/" class="pagination--pager" title="Балансировщик нагрузки Relayd с httpd на OpenBSD
+">Previous</a><a href="https://penaadventure.com/ru/openbsd/2024/12/01/install-isc-dns-bind-on-openbsd/" class="pagination--pager" title="Установка DNS-сервера ISC Bind с использованием OpenBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

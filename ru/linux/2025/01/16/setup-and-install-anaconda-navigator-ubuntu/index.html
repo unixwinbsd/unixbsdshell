@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Как установить и использовать Anaconda Navigator  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Как установить и использовать Anaconda Navigator"><link rel="canonical" href="https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/">
+  <meta property="og:url" content="https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/"><meta property="og:description" content="Anaconda — дистрибутив языков программирования Python и R, включающий в себя набор популярных библиотек."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Как установить и использовать Anaconda Navigator">
+  <meta name="twitter:description" content="Anaconda — дистрибутив языков программирования Python и R, включающий в себя набор популярных библиотек.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-16T05:02:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#ru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#linux" itemprop="item"><span itemprop="name">Linux</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#16" itemprop="item"><span itemprop="name">16</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Как установить и использовать Anaconda Navigator</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-01-16 05:02:00 +0300",
+"datePublished": "2025-01-16 05:02:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Как установить и использовать Anaconda Navigator",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "Anaconda — дистрибутив языков программирования Python и R, включающий в себя набор популярных библиотек."
+},
+
+"datePublished": "2025-01-16 05:02:00 +0300",
+"dateModified": "2025-01-16 05:02:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/",
+"name": "Как установить и использовать Anaconda Navigator"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/",
+"name": "UnixShell"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/",
+  "name": "Как установить и использовать Anaconda Navigator",
+  "headline": "Как установить и использовать Anaconda Navigator",
+  "keywords": "UnixShell",
+  "description": "Anaconda — дистрибутив языков программирования Python и R, включающий в себя набор популярных библиотек.",
+  "articleBody": "Anaconda — дистрибутив языков программирования Python и R, включающий в себя набор популярных библиотек. Основная цель — предоставить последовательный набор тематических модулей, представляющих наибольший интерес для широкого круга пользователей, с разрешением возникающих зависимостей и конфликтов, которых невозможно избежать с помощью одной установки. По состоянию на 2019 год он содержит более 1,5 тысяч модулей.\n\nГлавной особенностью этого дистрибутива является собственный менеджер разрешения зависимостей conda с графическим интерфейсом Anaconda Navigator, который позволяет отказаться от стандартного менеджера пакетов (например, pip для Python). Дистрибутив загружается один раз, а вся последующая настройка, включая установку дополнительных модулей, может производиться офлайн. Кроме того, он обеспечивает возможность поддержки нескольких изолированных сред с отдельным разрешением зависимостей версий в каждой среде.\n\nПочему я выбрал Анаконду? Это простое создание изолированных инструментов, интеграция с IDE PyCharm и, как уже упоминалось выше, возможность установки библиотек без доступа к сети. Дистрибутив Anaconda поставляется с инструментом командной строки conda и графическим пользовательским интерфейсом рабочего стола под названием Anaconda Navigator.\n\nПри использовании нового навигатора люди всегда задаются вопросом, как он будет работать с имеющимся у них пакетом, а также должен ли он быть совместим с операционной системой, которой вы управляете. Если вы хотите узнать больше об установке, вам необходимо иметь базовые знания о навигаторе и этапах его установки.\nОсновные характеристики Anaconda Navigator\nСуществует множество пакетов, которые можно запустить в Anaconda Navigator. Это зависит от конкретной версии некоторых пакетов. Специалисты по знаниям и специалисты по данным используют несколько версий различных пакетов и сред для разделения этих различных версий. Имеется программа командной строки Anaconda, а также менеджер пакетов и сред.\n\nЭто облегчает работу специалистов по обработке данных, поскольку гарантирует, что каждая версия каждого пакета имеет все необходимые зависимости и работает правильно. Это простой способ работы, работающий по принципу «укажи и щелкни». Для этого вам не нужно вводить команды Conda в терминале. Все действия можно выполнять в панели управления Anaconda Navigator: искать пакеты, устанавливать их, запускать и обновлять. Продвинутые пользователи Conda также могут создавать собственные приложения-навигаторы.\n\nРепозиторий Anaconda, известный как облако Anaconda, помогает устанавливать пакеты с открытым исходным кодом один за другим. Также можно создавать собственные пакеты и делиться ими с другими, загружая их в Anaconda Cloud. Уникальные особенности Anaconda включают в себя открытый исходный код процесса установки, простоту использования, высокую производительность за счет использования языков Python и R и многое другое.\n\nAnaconda Navigator содержит самые полезные и популярные приложения, такие как JupyterLab, Jupyter Notebook и Rstudio. Специалисты по обработке данных считают их наиболее важными приложениями. Когда все три доступны на одной платформе, люди перестают искать другие приложения. Три раздела на главной странице очень важны: окружающая среда, обучение и сообщество.\nКак установить Anaconda Navigator\nПочти для каждой операционной системы, характерной чертой которой является Anaconda, является отсутствие репозиториев Anaconda по умолчанию. Для установки необходимо сначала скачать Anaconda. Обязательным условием для установки и использования Anaconda Navigator является предварительная установка Anaconda.\n\nВ этой статье блогера мы предполагаем, что вы установили Anaconda на свой сервер Ubuntu. Итак, приступим непосредственно к созданию виртуальной среды для Anaconda Navigator. Выполните следующие действия для установки Anaconda Navigator.\n\nroot@hostname1:~# cd /usr/local/etc\nroot@hostname1:/usr/local/etc# conda create --name navigatorvirtual\n\n\nПосле создания папки виртуальной среды для Anaconda Navigator можно приступить к активации виртуальной среды.\n\nroot@hostname1:/usr/local/etc# conda activate navigatorvirtual\n(navigatorvirtual) root@hostname1:/usr/local/etc#\n\n\nС помощью указанной выше команды вы активировали виртуальную рабочую среду для Anaconda Navigator. Следующим шагом будет установка некоторых зависимостей, необходимых для Anaconda Navigator.\n\n(navigatorvirtual) root@hostname1:/usr/local/etc# conda install minimal minimalegl offscreen vnc webgl xcb eglfs PyQt5\n\n\nПосле того, как все установлено, приступайте к установке Anaconda Navigator.\n\n(navigatorvirtual) root@hostname1:/usr/local/etc# conda install anaconda::anaconda-navigator\n\n\nПри установке Anaconda Navigator, Anaconda автоматически создает 2 канала, а именно: defaults и anaconda. Следующая команда, которую вам нужно выполнить, — активировать Anaconda Navigator.\n\n(navigatorvirtual) root@hostname1:/usr/local/etc# source ~/anaconda3/bin/activate root\n(base) root@hostname1:/usr/local/etc#\n\n\nТеперь приступим к установке anaconda-client, выполнив следующую команду.\n\n(base) root@hostname1:~# conda create --name anaconda-client\n(base) root@hostname1:~# conda activate anaconda-client\n(anaconda-client) root@hostname1:~# conda install anaconda-client\n\n\nЧтобы проверить, запущен ли anaconda-client, выполните следующую команду.\n\n(base) root@hostname1:/usr/local/etc# anaconda login\nUsing Anaconda API: https://api.anaconda.org\nUsername: markshevcenko123\niwanse1212's Password: xxxxxxxxxx\nlogin successful\n(base) root@hostname1:/usr/local/etc# anaconda whoami\nUsing Anaconda API: https://api.anaconda.org\nUsername: iwanse1212\nMember since: Fri Oct  4 09:10:37 2024\n  +company: Inchimediatama Nusantara\n  +description: UNIX BSD EXPLORE\n  +location: Indonesia\n  +name: markshevcenko\n  +url:\n  +user_type: user\n(base) root@hostname1:/usr/local/etc#\n\n\nЧтобы запустить клиент Anaconda, вам необходимо сначала войти в систему, используя имя пользователя и пароль, которые вы используете для входа в свою учетную запись Anaconda.\n\nПосле этого мы продолжим с помощью следующей команды, чтобы определить используемые каналы и обновить версию conda.\n\n(anaconda-client) root@hostname1:~# conda update -n base -c anaconda conda\n(anaconda-client) root@hostname1:~# conda install conda=24.9.1\n(anaconda-client) root@hostname1:~# conda install anaconda::anaconda-navigator\n\n\nПоследний шаг — запуск Anaconda Navigator.\n\n(anaconda-client) root@hostname1:~# anaconda-navigator\n\n\nПрофессиональным пользователям Python совершенно неясно, какую консоль Python им следует использовать. Перед созданием Anaconda Navigator программисты писали скрипты Python в терминале и оболочке. Однако в настоящее время в Linux наиболее часто используемыми интерпретаторами Python являются Anaconda Navigator и JupyterLab. В этой статье мы рассмотрим, как установить Anaconda Navigator.\n\nГоворят, что в будущем Python станет лидером среди языков программирования. Если вы программист на Python или хотите войти в мир языков программирования с помощью Python, я надеюсь, что этот пост поможет вам выбрать лучший интерпретатор Python.\n",
+  "datePublished": "2025-01-16 05:02:00 +0300",
+  "dateModified": "2025-01-16 05:02:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Как установить и использовать Anaconda Navigator"><meta itemprop="description" content="Anaconda — дистрибутив языков программирования Python и R, включающий в себя набор популярных библиотек."><meta itemprop="datePublished" content="2025-01-16"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-16T05:02:00+03:00">2025-01-16</time> </p><h1 class="page__title" itemprop="headline">Как установить и использовать Anaconda Navigator
+</h1></header><section class="page__content" itemprop="text">
+        <p>Anaconda — дистрибутив языков программирования Python и R, включающий в себя набор популярных библиотек. Основная цель — предоставить последовательный набор тематических модулей, представляющих наибольший интерес для широкого круга пользователей, с разрешением возникающих зависимостей и конфликтов, которых невозможно избежать с помощью одной установки. По состоянию на 2019 год он содержит более 1,5 тысяч модулей.</p>
+
+<p>Главной особенностью этого дистрибутива является собственный менеджер разрешения зависимостей conda с графическим интерфейсом Anaconda Navigator, который позволяет отказаться от стандартного менеджера пакетов (например, pip для Python). Дистрибутив загружается один раз, а вся последующая настройка, включая установку дополнительных модулей, может производиться офлайн. Кроме того, он обеспечивает возможность поддержки нескольких изолированных сред с отдельным разрешением зависимостей версий в каждой среде.</p>
+
+<p>Почему я выбрал Анаконду? Это простое создание изолированных инструментов, интеграция с IDE PyCharm и, как уже упоминалось выше, возможность установки библиотек без доступа к сети. Дистрибутив Anaconda поставляется с инструментом командной строки conda и графическим пользовательским интерфейсом рабочего стола под названием Anaconda Navigator.</p>
+
+<p>При использовании нового навигатора люди всегда задаются вопросом, как он будет работать с имеющимся у них пакетом, а также должен ли он быть совместим с операционной системой, которой вы управляете. Если вы хотите узнать больше об установке, вам необходимо иметь базовые знания о навигаторе и этапах его установки.<br /><br /></p>
+<h2 id="основные-характеристики-anaconda-navigator">Основные характеристики Anaconda Navigator</h2>
+<p>Существует множество пакетов, которые можно запустить в Anaconda Navigator. Это зависит от конкретной версии некоторых пакетов. Специалисты по знаниям и специалисты по данным используют несколько версий различных пакетов и сред для разделения этих различных версий. Имеется программа командной строки Anaconda, а также менеджер пакетов и сред.</p>
+
+<p>Это облегчает работу специалистов по обработке данных, поскольку гарантирует, что каждая версия каждого пакета имеет все необходимые зависимости и работает правильно. Это простой способ работы, работающий по принципу «укажи и щелкни». Для этого вам не нужно вводить команды Conda в терминале. Все действия можно выполнять в панели управления Anaconda Navigator: искать пакеты, устанавливать их, запускать и обновлять. Продвинутые пользователи Conda также могут создавать собственные приложения-навигаторы.</p>
+
+<p>Репозиторий Anaconda, известный как облако Anaconda, помогает устанавливать пакеты с открытым исходным кодом один за другим. Также можно создавать собственные пакеты и делиться ими с другими, загружая их в Anaconda Cloud. Уникальные особенности Anaconda включают в себя открытый исходный код процесса установки, простоту использования, высокую производительность за счет использования языков Python и R и многое другое.</p>
+
+<p>Anaconda Navigator содержит самые полезные и популярные приложения, такие как JupyterLab, Jupyter Notebook и Rstudio. Специалисты по обработке данных считают их наиболее важными приложениями. Когда все три доступны на одной платформе, люди перестают искать другие приложения. Три раздела на главной странице очень важны: окружающая среда, обучение и сообщество.<br /><br /></p>
+<h2 id="как-установить-anaconda-navigator">Как установить Anaconda Navigator</h2>
+<p>Почти для каждой операционной системы, характерной чертой которой является Anaconda, является отсутствие репозиториев Anaconda по умолчанию. Для установки необходимо сначала скачать Anaconda. Обязательным условием для установки и использования Anaconda Navigator является предварительная установка Anaconda.</p>
+
+<p>В этой статье блогера мы предполагаем, что вы установили Anaconda на свой сервер <a href="https://ubuntu.com/">Ubuntu</a>. Итак, приступим непосредственно к созданию виртуальной среды для Anaconda Navigator. Выполните следующие действия для установки Anaconda Navigator.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@hostname1:~# cd /usr/local/etc
+root@hostname1:/usr/local/etc# conda create --name navigatorvirtual
+</code></pre></div></div>
+
+<p>После создания папки виртуальной среды для Anaconda Navigator можно приступить к активации виртуальной среды.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@hostname1:/usr/local/etc# conda activate navigatorvirtual
+(navigatorvirtual) root@hostname1:/usr/local/etc#
+</code></pre></div></div>
+
+<p>С помощью указанной выше команды вы активировали виртуальную рабочую среду для Anaconda Navigator. Следующим шагом будет установка некоторых зависимостей, необходимых для Anaconda Navigator.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(navigatorvirtual) root@hostname1:/usr/local/etc# conda install minimal minimalegl offscreen vnc webgl xcb eglfs PyQt5
+</code></pre></div></div>
+
+<p>После того, как все установлено, приступайте к установке Anaconda Navigator.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(navigatorvirtual) root@hostname1:/usr/local/etc# conda install anaconda::anaconda-navigator
+</code></pre></div></div>
+
+<p>При установке Anaconda Navigator, Anaconda автоматически создает 2 канала, а именно: defaults и anaconda. Следующая команда, которую вам нужно выполнить, — активировать Anaconda Navigator.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(navigatorvirtual) root@hostname1:/usr/local/etc# source ~/anaconda3/bin/activate root
+(base) root@hostname1:/usr/local/etc#
+</code></pre></div></div>
+
+<p>Теперь приступим к установке anaconda-client, выполнив следующую команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(base) root@hostname1:~# conda create --name anaconda-client
+(base) root@hostname1:~# conda activate anaconda-client
+(anaconda-client) root@hostname1:~# conda install anaconda-client
+</code></pre></div></div>
+
+<p>Чтобы проверить, запущен ли anaconda-client, выполните следующую команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(base) root@hostname1:/usr/local/etc# anaconda login
+Using Anaconda API: https://api.anaconda.org
+Username: markshevcenko123
+iwanse1212's Password: xxxxxxxxxx
+login successful
+(base) root@hostname1:/usr/local/etc# anaconda whoami
+Using Anaconda API: https://api.anaconda.org
+Username: iwanse1212
+Member since: Fri Oct  4 09:10:37 2024
+  +company: Inchimediatama Nusantara
+  +description: UNIX BSD EXPLORE
+  +location: Indonesia
+  +name: markshevcenko
+  +url:
+  +user_type: user
+(base) root@hostname1:/usr/local/etc#
+</code></pre></div></div>
+
+<p>Чтобы запустить клиент Anaconda, вам необходимо сначала войти в систему, используя имя пользователя и пароль, которые вы используете для входа в свою учетную запись Anaconda.</p>
+
+<p>После этого мы продолжим с помощью следующей команды, чтобы определить используемые каналы и обновить версию conda.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(anaconda-client) root@hostname1:~# conda update -n base -c anaconda conda
+(anaconda-client) root@hostname1:~# conda install conda=24.9.1
+(anaconda-client) root@hostname1:~# conda install anaconda::anaconda-navigator
+</code></pre></div></div>
+
+<p>Последний шаг — запуск Anaconda Navigator.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(anaconda-client) root@hostname1:~# anaconda-navigator
+</code></pre></div></div>
+
+<p>Профессиональным пользователям <a href="https://www.inchimediatama.org/2024/11/python-pip-pipx-menginstal-dan.html">Python</a> совершенно неясно, какую консоль Python им следует использовать. Перед созданием Anaconda Navigator программисты писали скрипты Python в терминале и оболочке. Однако в настоящее время в Linux наиболее часто используемыми интерпретаторами Python являются Anaconda Navigator и JupyterLab. В этой статье мы рассмотрим, как установить Anaconda Navigator.</p>
+
+<p>Говорят, что в будущем Python станет лидером среди языков программирования. Если вы программист на Python или хотите войти в мир языков программирования с помощью Python, я надеюсь, что этот пост поможет вам выбрать лучший интерпретатор Python.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-16T05:02:00+03:00">2025-01-16</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#unixshell" class="page__taxonomy-item" rel="tag">UnixShell</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#linux" class="page__taxonomy-item" rel="tag">Linux</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/openbsd/2025/01/15/setup-configuration-ldap-server-on-openbsd.ru/" class="pagination--pager" title="Простая настройка и конфигурирование сервера LDAP на OpenBSD
+">Previous</a><a href="https://penaadventure.com/en/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/" class="pagination--pager" title="How to Install phpMyAdmin on FreeBSD with Apache24
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

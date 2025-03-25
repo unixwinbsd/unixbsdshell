@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/freebsd/2025/01/21/setup-php-fpm-apache-freebsd/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Configuring PHP FPM and Apache24 on FreeBSD  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Configuring PHP FPM and Apache24 on FreeBSD"><link rel="canonical" href="https://penaadventure.com/en/freebsd/2025/01/21/setup-php-fpm-apache-freebsd/">
+  <meta property="og:url" content="https://penaadventure.com/en/freebsd/2025/01/21/setup-php-fpm-apache-freebsd/"><meta property="og:description" content="mpm_prefork A new process is created for each incoming connection that reaches the server. Each process is isolated from the others"><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Configuring PHP FPM and Apache24 on FreeBSD">
+  <meta name="twitter:description" content="mpm_prefork A new process is created for each incoming connection that reaches the server. Each process is isolated from the others">
+  <meta name="twitter:url" content="https://penaadventure.com/en/freebsd/2025/01/21/setup-php-fpm-apache-freebsd/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-21T17:01:10+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/freebsd/2025/01/21/setup-php-fpm-apache-freebsd/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--post">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div><article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Configuring PHP FPM and Apache24 on FreeBSD</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-01-21T17:01:10+03:00" itemprop="datePublished">Jan 21, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>The Apache web server has evolved over the years to serve various needs and tasks related to the HTTP/HTTPS protocol. Like other web servers, Apache must solve one important problem, namely how to serve various processes to serve HTTP/HTTPS protocol requests. This work includes opening sockets, handling requests, keeping connections open for a certain period of time, handling new events that occur over those connections, and returning content generated by programs written in a particular language (such as PHP, Perl or Python). These tasks are executed and controlled by the Multi-Processing Module (MPM).
+<br /><br /></p>
+<h2 id="1-pgp-fpm-apache">1. PGP-FPM Apache</h2>
+<p>On the Apache Web server there are 3 MPM:</p>
+
+<ol>
+  <li>mpm_prefork: A new process is created for each incoming connection that reaches the server. Each process is isolated from the others, so there is no shared memory between them, even if they make identical calls at some point in their execution. This method is a safe way to run applications that are linked to libraries that do not support multithreading, usually older applications or libraries.</li>
+  <li>mpm_worker: The parent process is responsible for starting a collection of child processes, some of which listen for new incoming connections, while others serve requested content. Each process is multi-threaded (each thread serves one connection), so one process can handle multiple requests at once. This method of handling connections promotes better resource usage while maintaining stability. This is a result of the pool of available processes, which often have free threads ready to serve new connections immediately.</li>
+  <li>mpm_event: While these processes depend on their workers, this MPM goes a step further by optimizing the way the parent process schedules tasks for child processes and the threads associated with them. By default, the connection remains open for 5 seconds and is closed if no new activity occurs. This process is the default value of the keep-alive directive, which keeps the stream associated with it. MPM events allow a process to manage threads so that some threads are free to process new incoming connections while others remain tied to direct connections. This process will allow the redistribution of assigned tasks to threads, thereby improving resource usage and performance.</li>
+</ol>
+
+<p>On FreeBSD systems by default Apache24 uses the MPM (Multi-Processing Module) prefork. In some cases these modules are very good and offer the most compatibility, MPM provides better performance on most systems. However, because PHP is not thread-safe, the regular mod_php method (PHP as an Apache module) is only compatible with preforks.</p>
+
+<p>As a solution PHP-FPM (FastCGI Process Manager) is an alternative that provides a CGI daemon that can be used by any version of Apache and offers its own performance benefits over regular mod_php (PHP as an Apache module).</p>
+
+<p>PHP-FPM is a FastCGI process manager for PHP. The FastCGI protocol is based on the Common Gateway Interface (CGI), a protocol created between applications and web servers such as Apache HTTP. This allows developers to write applications separately from the web server behavior. The program carries out its processes independently and transfers its products to the web server using this protocol. Each new connection that the application needs to handle will create a new process.</p>
+
+<p>By combining the Apache HTTP MPM module with PHP’s FastCGI, process Manager (PHP-FPM), websites can load faster and handle more concurrent connections using fewer resources.
+<br /><br /></p>
+<h2 id="2-system-requirements">2. System Requirements</h2>
+<blockquote>
+  <p>OS: FreeBSD 13.2.<br />
+Web Server: Apache24. <br />
+Modul: PHP82 dan mod_php</p>
+</blockquote>
+
+<p>Before you continue reading this article, it is recommended that you read the previous article which discusses the configuration and installation of apache24, PHP82 and the mod_php module.
+<br /><br /></p>
+<h2 id="3-apache24-php-fpm-configuration">3. Apache24 PHP-FPM Configuration</h2>
+<p>The main PHP-FPM configuration file is located in the /usr/local/etc/php-fpm.d/www.conf folder, edit the file as in the example below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /usr/local/etc/php-fpm.d/www.conf
+user = www
+group = www
+listen = 192.168.5.2:9000
+listen.owner = www
+listen.group = www
+listen.mode = 0660
+</code></pre></div></div>
+
+<p>Remove the “#” sign in the script above, listen = 192.168.5.2 is the FreeBSD Server IP Address. After the main PHP-PFM configuration file has been edited, continue by creating the file /usr/local/etc/apache24/Includes/php-fpm.conf and type the script below in that file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /usr/local/etc/apache24/Includes/php-fpm.conf
+&lt;IfModule proxy_fcgi_module&gt;
+   &lt;IfModule dir_module&gt;
+       DirectoryIndex index.php
+   &lt;/IfModule&gt;
+   &lt;FilesMatch "\.(php|phtml|inc)$"&gt;
+       SetHandler "proxy:fcgi://192.168.5.2:9000"
+   &lt;/FilesMatch&gt;
+&lt;/IfModule&gt;
+</code></pre></div></div>
+
+<p>The script above is to activate the PHP-FPM module. What you need to pay attention to when creating the script above is that the IP Address in SetHandler must be the same as the IP Address File /usr/local/etc/php-fpm.d/www.conf.</p>
+
+<p>The core of the PHP-FPM configuration lies in the /usr/local/etc/apache24/httpd.conf file. Edit several scripts in the file by removing the “#” sign in front of the script file /usr/local/etc/apache24/httpd.conf. Follow the example below to enable the PHP-FPM module on apache24.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /usr/local/etc/apache24/httpd.conf
+#LoadModule mpm_event_module libexec/apache24/mod_mpm_event.so
+LoadModule mpm_prefork_module libexec/apache24/mod_mpm_prefork.so
+#LoadModule mpm_worker_module libexec/apache24/mod_mpm_worker.so
+LoadModule authnz_fcgi_module libexec/apache24/mod_authnz_fcgi.so
+LoadModule proxy_module libexec/apache24/mod_proxy.so
+LoadModule proxy_http_module libexec/apache24/mod_proxy_http.so
+LoadModule proxy_fcgi_module libexec/apache24/mod_proxy_fcgi.so
+LoadModule proxy_scgi_module libexec/apache24/mod_proxy_scgi.so
+</code></pre></div></div>
+
+<p>According to the explanation above in this article, there are 3 MPM modules, you can choose one according to your needs. In this article, the mpm_event module is used. After that, continue by editing the /etc/make.conf file and enter the script below in the /etc/make.conf file.</p>
+
+<p>DELETE the script below in the /usr/local/etc/apache24/httpd.conf file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;FilesMatch "\.php$"&gt;
+    SetHandler application/x-httpd-php
+&lt;/FilesMatch&gt;
+&lt;FilesMatch "\.phps$"&gt;
+    SetHandler application/x-httpd-php-source
+&lt;/FilesMatch&gt;
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /etc/make.conf
+WITH_MPM=event
+</code></pre></div></div>
+<p><br /><br /></p>
+<h2 id="4-test-php-fpm-apache24">4. Test PHP-FPM Apache24</h2>
+<p>After all the configurations above are complete, it’s time for us to do the test. Create a test file called php.info and enter the script below in the file /usr/local/www/apache24/data/info.php.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /usr/local/www/apache24/data/info.php
+
+&lt;?php phpinfo(); ?&gt;
+</code></pre></div></div>
+
+<p>Give ownership rights to the file and also file permissions.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # chown -R www:www /usr/local/www/apache24/data/info.php
+root@ns1:~ # chmod +x /usr/local/www/apache24/data/info.php
+</code></pre></div></div>
+
+<p>The next step is to activate the PHP-FPM module so that it can run automatically. Edit the /etc/rc.conf file and enter the script below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # ee /etc/rc.conf
+php_fpm_enable="YES"
+</code></pre></div></div>
+
+<p>Before we do the test, restart or reboot the apache24 and PHP-FPM web server.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # service apache24 restart
+Performing sanity check on apache24 configuration:
+Syntax OK
+Stopping apache24.
+Waiting for PIDS: 2437.
+Performing sanity check on apache24 configuration:
+Syntax OK
+Starting apache24.
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns1:~ # service php-fpm restart
+Performing sanity check on php-fpm configuration:
+[20-Aug-2023 13:20:07] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+
+Stopping php_fpm.
+Waiting for PIDS: 2105.
+Performing sanity check on php-fpm configuration:
+[20-Aug-2023 13:20:07] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+
+Starting php_fpm.
+</code></pre></div></div>
+
+<p>The way to do the PHP-FPM test is to type the IP Address of the FreeBSD Server, because in this article the FreeBSD server uses IP <strong>192.168.5.2</strong>, type the IP Address in a Web Browser such as Yandex or Google Chrome.<br /><br /></p>
+<h2 id="5-apache24-php-fpm-with-unix-socket">5. Apache24 PHP-FPM With Unix Socket</h2>
+<p>The method above is to connect Apache to the PHP-FPM server using the TCP/IP protocol. In this section we will learn how to connect an Apache server to a PHP-FPM server using a UNIX socket.</p>
+
+<p>Open the file /usr/local/etc/php-fpm.d/www.conf, and change the script “listen = 192.168.5.2:9000” to “listen = /tmp/php-fpm.sock”.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>listen = 192.168.5.2:9000
+      change with
+listen = /tmp/php-fpm.sock
+</code></pre></div></div>
+
+<p>Then in the file /usr/local/etc/apache24/Includes/php-fpm.conf, type the script below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;IfModule proxy_fcgi_module&gt;
+   &lt;IfModule dir_module&gt;
+       DirectoryIndex index.php
+   &lt;/IfModule&gt;
+
+   &lt;FilesMatch "\.(php|phtml|inc)$"&gt;
+SetHandler proxy:unix:/tmp/php-fpm.sock|fcgi://localhost/
+   &lt;/FilesMatch&gt;
+&lt;/IfModule&gt;
+</code></pre></div></div>
+
+<p>Restart the apache server and PHP-FPM server</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns:~ # service apache24 restart
+Performing sanity check on apache24 configuration:
+Syntax OK
+Stopping apache24.
+Waiting for PIDS: 3258.
+Performing sanity check on apache24 configuration:
+Syntax OK
+Starting apache24.
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns:~ # service php-fpm restart
+Performing sanity check on php-fpm configuration:
+[21-Nov-2023 20:57:00] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+
+Stopping php_fpm.
+Waiting for PIDS: 3211.
+Performing sanity check on php-fpm configuration:
+[21-Nov-2023 20:57:01] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+
+Starting php_fpm.
+</code></pre></div></div>
+
+<p>Pay attention to line 5 where it says Server API FPM/FastCGI, that means the PHP-FPM module is RUNNING or running on the apache24 web server.</p>
+
+<p>PHP-FPM is an efficient method on how to minimize memory consumption and improve performance for websites with heavy traffic. This is significantly faster than traditional CGI-based methods in multi-user PHP environments. If your main goal is to host web applications and to achieve optimal performance and security, then PHP-FPM is the solution.</p>
+
+  </div><a class="u-url" href="/en/freebsd/2025/01/21/setup-php-fpm-apache-freebsd/" hidden></a>
+</article>
+<div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

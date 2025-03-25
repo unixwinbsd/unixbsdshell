@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/freebsd/2025/02/06/github-gh-cli-command-on-freebsd14/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Guide to Using Github GH CLI Commands on FreeBSD 14  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Guide to Using Github GH CLI Commands on FreeBSD 14"><link rel="canonical" href="https://penaadventure.com/en/freebsd/2025/02/06/github-gh-cli-command-on-freebsd14/">
+  <meta property="og:url" content="https://penaadventure.com/en/freebsd/2025/02/06/github-gh-cli-command-on-freebsd14/"><meta property="og:description" content="GH is a Github product that is a Github command line tool that brings pull requests, issues, and other GitHub concepts"><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Guide to Using Github GH CLI Commands on FreeBSD 14">
+  <meta name="twitter:description" content="GH is a Github product that is a Github command line tool that brings pull requests, issues, and other GitHub concepts">
+  <meta name="twitter:url" content="https://penaadventure.com/en/freebsd/2025/02/06/github-gh-cli-command-on-freebsd14/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-02-06T09:17:10+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/freebsd/2025/02/06/github-gh-cli-command-on-freebsd14/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#en" itemprop="item"><span itemprop="name">En</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#02" itemprop="item"><span itemprop="name">02</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#06" itemprop="item"><span itemprop="name">06</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Guide to Using Github GH CLI Commands on FreeBSD 14</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-02-06 09:17:10 +0300",
+"datePublished": "2025-02-06 09:17:10 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Guide to Using Github GH CLI Commands on FreeBSD 14",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "GH is a Github product that is a Github command line tool that brings pull requests, issues, and other GitHub concepts"
+},
+
+"datePublished": "2025-02-06 09:17:10 +0300",
+"dateModified": "2025-02-06 09:17:10 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/en/freebsd/2025/02/06/github-gh-cli-command-on-freebsd14/",
+"name": "Guide to Using Github GH CLI Commands on FreeBSD 14"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/en/freebsd/2025/02/06/github-gh-cli-command-on-freebsd14/",
+"name": "SysAdmin"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/en/freebsd/2025/02/06/github-gh-cli-command-on-freebsd14/",
+  "name": "Guide to Using Github GH CLI Commands on FreeBSD 14",
+  "headline": "Guide to Using Github GH CLI Commands on FreeBSD 14",
+  "keywords": "SysAdmin",
+  "description": "GH is a Github product that is a Github command line tool that brings pull requests, issues, and other GitHub concepts",
+  "articleBody": "GitHub is a code hosting provider, which can be used for version control and collaboration. With Github it can make it easier for you to work together in a team, or with other people on the same project. Additionally, GitHub can be a Git hosting repository providing tools for developers to submit better code using command line features, issues (threaded discussions), pull requests, code reviews, or using the selection of free and paid apps in the GitHub Marketplace.\n\nIf you’re already familiar with FreeBSD’s Git commands, it’s time to switch to the web browser’s CLI commands to perform various actions on your GitHub repository. With the new GitHub GH CLI tool, you can run many commands without leaving the command line interface.\n\nGH is a Github product that is a Github command line tool that brings pull requests, issues, and other GitHub concepts to the terminal next to where you work with git and your code. GH will reduce context switching, help you focus, and allow you to script and create your own workflows more easily, quickly and efficiently.\n\nThe guide in this article will explain the steps for installing GitHub GH CLI on a FreeBSD server. GitHub CLI (GH) is a command line GitHub feature tool. This tool brings pull requests, issues, and other GitHub concepts to the terminal next to where you work with git and your code.\n\n\n\n1. Install GH CLI\nAnyone can install the Github CLI, even if they are new to the FreeBSD system. Github provides easy installation of its own application, namely “GH”. Here’s how to install Github GH CLI on FreeBSD.\n\nroot@ns3:~ # cd /usr/ports/devel/gh root@ns3:/usr/ports/devel/gh # make config root@ns3:/usr/ports/devel/gh # make install clean\n\n\nAfter installing GitHub CLI, you should check the GH CLI version with the following command.\n\nroot@ns3:~ # gh --version\ngh version 2.39.1 (2024-01-30)\nhttps://github.com/cli/cli/releases/tag/v2.39.1\n\n\n2. Authenticate Github GH CLI\nGithub offers 2 Github GH CLI Authentication options, namely:\n\n\n  HTTPS, and\n  SSH\n\n\nIn this article we will discuss both, so that readers can choose one of the two authentication methods.\n\na. Authenticate HTTPS\nThe next step, authenticate your Github account. Run the command “gh auth login” to authenticate your GitHub account. It will ask you to select the account type, either a regular account or a corporate account. I will choose a normal account.\n\nroot@ns3:~ # gh auth login\n? What account do you want to log into? GitHub.com\n? What is your preferred protocol for Git operations? HTTPS\n? How would you like to authenticate GitHub CLI? Login with a web browser\n\n! First copy your one-time code: 81D1-CEE8\nPress Enter to open github.com in your browser...\n! Failed opening a web browser at https://github.com/login/device\n  exec: \"xdg-open\": executable file not found in $PATH - install xdg-utils from ports(8)\n  Please try entering the URL in your browser manually\n? Authentication complete.\n- gh config set -h github.com git_protocol https\n? Configured git protocol\n! Authentication credentials saved in plain text\n? Logged in as iwanse1977\nroot@ns3:~ #\n\n\nThen the authentication method display will appear. You must select your preferred authentication method. You can choose to authenticate using your browser or using a GitHub authentication token. In this article we will use the browser method.\n\nThen an authentication code will appear. You have to copy the code in a web browser, you have to log in to your Github account, and type the following URL  “https://github.com/login/device”. Look at the blue writing above and the image below.\n\n\n\nb. Authenticate SSH\nThe main requirement for SSH Authentication is that you must have an SSH public key, how to do it is easy, you can read our previous article about creating public keys for Github.\n\nSetup Github Via FreeBSD SSH To Upload Repository from Local Computer\n\nOnce you have the SSH public key, you can run the command “gh auth login” in the “What is your preferred protocol for GIT operation?” you select SSH.\n\nIf you choose the SSH authentication method, the following options will appear:\n\nHow would you like to authenticate GitHub CLI? [Use arrows to move, type to filter]\n\n\n  Login with a web browser\n\n  Paste an authentication token\n\n\nChoose one of the two options, for example you would choose “Paste an authentication token”. You must create a token on your Github account. The method:\n\n\n  \n    Click the settings menu\n  \n  \n    Click “Developer settings” at the bottom right of the “Public profile” menu.\n  \n  \n    Click the “Personal access token” menu\n  \n  \n    Click “Fine-grained tokens”\n  \n  \n    Click generate new token\n  \n  \n    After you have filled in all the columns, click “Generate token”\n  \n\n\n\n\nAfter you get the token as shown above, copy the token to your Putty terminal.\n\n3. How to Use GH CLI\nThe gh command structure is in the form of a tree, making it easier for users to remember. The GH command has two basic command levels. The first level consists of only six commands yaitu config, repo, issue, pr, gist, credits.\n\nBelow we will provide some examples of basic usage of Github GH CLI commands.\n\na. gh authorization logout*\n\nroot@ns3:~ # gh auth logout\n? Logged out of github.com account 'jhondoe123'\n\n\nb. updating gh authorization\n\nUpdate the currently active Authentication Credentials.\n\nroot@ns3:~ # gh auth refresh --scopes write:org,read:public_key\n! Using secure storage could break installed extensions\n! First copy your one-time code: C568-2A66\nPress Enter to open github.com in your browser...\n\n\nc. gh authorization status\n\nroot@ns3:~ # gh auth status\ngithub.com\n  ? Logged in to github.com as iwanse1977 (/root/.config/gh/hosts.yml)\n  ? Git operations for github.com configured to use ssh protocol.\n  ? Token: gho_************************************\n  ? Token scopes: gist, read:public_key, repo, write:org\n\n\nd. Cloning Repository\n\nroot@ns3:/tmp # gh repo clone https://github.com/unixwinbsd/Go-ReverseProxy-FreeBSD.git\n\n\ne. Create Repository\n\nroot@ns3:~ # gh repo create nodejs-webcrawler --public --source=/usr/local/etc/crawling/nodejs-webcrawler\n\n\nf. Delete Repository\nBefore you run the delete command, first run the following command.\n\nroot@ns3:~ # gh auth refresh -h github.com -s delete_repo\n! Using secure storage could break installed extensions\n! First copy your one-time code: A9C7-1BDD\nPress Enter to open github.com in your browser...\n\n\nPay attention to the blue writing, open “Google Chrome” type the following command  “https://github.com/login/device”. You enter the blue code in the Google Chrome display of your GitHub account.\n\nAfter that, continue the delete repository command.\n\nroot@ns3:~ # gh repo delete nodejs-webcrawler\n? Type  jhondoe123/nodejs-webcrawler  to confirm deletion:  jhondoe123/nodejs-webcrawler\n? Deleted repository jhondoe123/nodejs-webcrawler\n\n\nGithub GH CLI is a great utility created by Github developers. This utility is very useful for a system administrator who enjoys working in a shell terminal.\n",
+  "datePublished": "2025-02-06 09:17:10 +0300",
+  "dateModified": "2025-02-06 09:17:10 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Guide to Using Github GH CLI Commands on FreeBSD 14"><meta itemprop="description" content="GH is a Github product that is a Github command line tool that brings pull requests, issues, and other GitHub concepts"><meta itemprop="datePublished" content="2025-02-06"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-02-06T09:17:10+03:00">2025-02-06</time> </p><h1 class="page__title" itemprop="headline">Guide to Using Github GH CLI Commands on FreeBSD 14
+</h1></header><section class="page__content" itemprop="text">
+        <p>GitHub is a code hosting provider, which can be used for version control and collaboration. With Github it can make it easier for you to work together in a team, or with other people on the same project. Additionally, GitHub can be a Git hosting repository providing tools for developers to submit better code using command line features, issues (threaded discussions), pull requests, code reviews, or using the selection of free and paid apps in the GitHub Marketplace.</p>
+
+<p>If you’re already familiar with FreeBSD’s Git commands, it’s time to switch to the web browser’s CLI commands to perform various actions on your GitHub repository. With the new GitHub GH CLI tool, you can run many commands without leaving the command line interface.</p>
+
+<p>GH is a Github product that is a Github command line tool that brings pull requests, issues, and other GitHub concepts to the terminal next to where you work with git and your code. GH will reduce context switching, help you focus, and allow you to script and create your own workflows more easily, quickly and efficiently.</p>
+
+<p>The guide in this article will explain the steps for installing GitHub GH CLI on a FreeBSD server. GitHub CLI (GH) is a command line GitHub feature tool. This tool brings pull requests, issues, and other GitHub concepts to the terminal next to where you work with git and your code.</p>
+
+<p><img src="https://gitflic.ru/project/iwanse1212/unixwinbsd/blob/raw?file=Github%20GH%20CLI%20command.jpg" alt="Github GH CLI command" /></p>
+
+<h2 id="1-install-gh-cli">1. Install GH CLI</h2>
+<p>Anyone can install the Github CLI, even if they are new to the FreeBSD system. Github provides easy installation of its own application, namely “GH”. Here’s how to install Github GH CLI on FreeBSD.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/ports/devel/gh root@ns3:/usr/ports/devel/gh # make config root@ns3:/usr/ports/devel/gh # make install clean
+</code></pre></div></div>
+
+<p>After installing GitHub CLI, you should check the GH CLI version with the following command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # gh --version
+gh version 2.39.1 (2024-01-30)
+https://github.com/cli/cli/releases/tag/v2.39.1
+</code></pre></div></div>
+
+<h2 id="2-authenticate-github-gh-cli">2. Authenticate Github GH CLI</h2>
+<p>Github offers 2 Github GH CLI Authentication options, namely:</p>
+
+<ol>
+  <li>HTTPS, and</li>
+  <li>SSH</li>
+</ol>
+
+<p>In this article we will discuss both, so that readers can choose one of the two authentication methods.</p>
+
+<h3 id="a-authenticate-https">a. Authenticate HTTPS</h3>
+<p>The next step, authenticate your Github account. Run the command “gh auth login” to authenticate your GitHub account. It will ask you to select the account type, either a regular account or a corporate account. I will choose a normal account.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # gh auth login
+? What account do you want to log into? GitHub.com
+? What is your preferred protocol for Git operations? HTTPS
+? How would you like to authenticate GitHub CLI? Login with a web browser
+
+! First copy your one-time code: 81D1-CEE8
+Press Enter to open github.com in your browser...
+! Failed opening a web browser at https://github.com/login/device
+  exec: "xdg-open": executable file not found in $PATH - install xdg-utils from ports(8)
+  Please try entering the URL in your browser manually
+? Authentication complete.
+- gh config set -h github.com git_protocol https
+? Configured git protocol
+! Authentication credentials saved in plain text
+? Logged in as iwanse1977
+root@ns3:~ #
+</code></pre></div></div>
+
+<p>Then the authentication method display will appear. You must select your preferred authentication method. You can choose to authenticate using your browser or using a GitHub authentication token. In this article we will use the browser method.</p>
+
+<p>Then an authentication code will appear. You have to copy the code in a web browser, you have to log in to your Github account, and type the following URL  <strong>“https://github.com/login/device”</strong>. Look at the blue writing above and the image below.</p>
+
+<p><img src="https://gitflic.ru/project/iwanse1212/unixwinbsd/blob/raw?file=github%20Device%20Activation.jpg" alt="github Device Activation" /></p>
+
+<h3 id="b-authenticate-ssh">b. Authenticate SSH</h3>
+<p>The main requirement for SSH Authentication is that you must have an SSH public key, how to do it is easy, you can read our previous article about creating public keys for Github.</p>
+
+<p><strong><a href="https://penaadventure.com/en/freebsd/2025-01-10-github-via-freebsd-command-ssh-repository/">Setup Github Via FreeBSD SSH To Upload Repository from Local Computer</a></strong></p>
+
+<p>Once you have the SSH public key, you can run the command “gh auth login” in the “What is your preferred protocol for GIT operation?” you select SSH.</p>
+
+<p>If you choose the SSH authentication method, the following options will appear:</p>
+
+<p>How would you like to authenticate GitHub CLI? [Use arrows to move, type to filter]</p>
+
+<blockquote>
+  <p>Login with a web browser</p>
+
+  <p>Paste an authentication token</p>
+</blockquote>
+
+<p>Choose one of the two options, for example you would choose “Paste an authentication token”. You must create a token on your Github account. The method:</p>
+
+<ol>
+  <li>
+    <p>Click the settings menu</p>
+  </li>
+  <li>
+    <p>Click “Developer settings” at the bottom right of the “Public profile” menu.</p>
+  </li>
+  <li>
+    <p>Click the “Personal access token” menu</p>
+  </li>
+  <li>
+    <p>Click “Fine-grained tokens”</p>
+  </li>
+  <li>
+    <p>Click generate new token</p>
+  </li>
+  <li>
+    <p>After you have filled in all the columns, click “Generate token”</p>
+  </li>
+</ol>
+
+<p><img src="https://gitflic.ru/project/iwanse1212/unixwinbsd/blob/raw?file=Github%20GH%20CLI%20Generate%20token.jpg" alt="Github GH CLI Generate token" /></p>
+
+<p>After you get the token as shown above, copy the token to your Putty terminal.</p>
+
+<h2 id="3-how-to-use-gh-cli">3. How to Use GH CLI</h2>
+<p>The gh command structure is in the form of a tree, making it easier for users to remember. The GH command has two basic command levels. The first level consists of only six commands yaitu config, repo, issue, pr, gist, credits.</p>
+
+<p>Below we will provide some examples of basic usage of Github GH CLI commands.</p>
+
+<p><strong>a. gh authorization logout</strong>*</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # gh auth logout
+? Logged out of github.com account 'jhondoe123'
+</code></pre></div></div>
+
+<p><strong>b. updating gh authorization</strong></p>
+
+<p>Update the currently active Authentication Credentials.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # gh auth refresh --scopes write:org,read:public_key
+! Using secure storage could break installed extensions
+! First copy your one-time code: C568-2A66
+Press Enter to open github.com in your browser...
+</code></pre></div></div>
+
+<p><strong>c. gh authorization status</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # gh auth status
+github.com
+  ? Logged in to github.com as iwanse1977 (/root/.config/gh/hosts.yml)
+  ? Git operations for github.com configured to use ssh protocol.
+  ? Token: gho_************************************
+  ? Token scopes: gist, read:public_key, repo, write:org
+</code></pre></div></div>
+
+<p><strong>d. Cloning Repository</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/tmp # gh repo clone https://github.com/unixwinbsd/Go-ReverseProxy-FreeBSD.git
+</code></pre></div></div>
+
+<p><strong>e. Create Repository</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # gh repo create nodejs-webcrawler --public --source=/usr/local/etc/crawling/nodejs-webcrawler
+</code></pre></div></div>
+
+<p><strong>f. Delete Repository</strong>
+Before you run the delete command, first run the following command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # gh auth refresh -h github.com -s delete_repo
+! Using secure storage could break installed extensions
+! First copy your one-time code: A9C7-1BDD
+Press Enter to open github.com in your browser...
+</code></pre></div></div>
+
+<p>Pay attention to the blue writing, open “Google Chrome” type the following command  <strong>“https://github.com/login/device”</strong>. You enter the blue code in the Google Chrome display of your GitHub account.</p>
+
+<p>After that, continue the delete repository command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # gh repo delete nodejs-webcrawler
+? Type  jhondoe123/nodejs-webcrawler  to confirm deletion:  jhondoe123/nodejs-webcrawler
+? Deleted repository jhondoe123/nodejs-webcrawler
+</code></pre></div></div>
+
+<p>Github GH CLI is a great utility created by Github developers. This utility is very useful for a system administrator who enjoys working in a shell terminal.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-02-06T09:17:10+03:00">2025-02-06</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#sysadmin" class="page__taxonomy-item" rel="tag">SysAdmin</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#en" class="page__taxonomy-item" rel="tag">en</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/en/freebsd/2025/02/05/bind-dns-frontend-unbound-backend-freebsd/" class="pagination--pager" title="Configuring ISC Bind DNS As Frontend and Unbound Backend For Caching and Forwarding
+">Previous</a><a href="https://penaadventure.com/en/freebsd/2025/02/06/complete-guide-bind-dns-server-for-pfsense/" class="pagination--pager" title="Complete Guide to BIND DNS Server Settings for PFSense
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

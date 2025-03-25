@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/"/>
+
+  <meta charset="utf-8">
+  
+  <title>How to Install phpMyAdmin on FreeBSD with Apache24  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="How to Install phpMyAdmin on FreeBSD with Apache24"><link rel="canonical" href="https://penaadventure.com/en/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/">
+  <meta property="og:url" content="https://penaadventure.com/en/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/"><meta property="og:description" content="phpMyAdmin supports multiple database servers. It can also import data from various formats such as CSV and SQL."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="How to Install phpMyAdmin on FreeBSD with Apache24">
+  <meta name="twitter:description" content="phpMyAdmin supports multiple database servers. It can also import data from various formats such as CSV and SQL.">
+  <meta name="twitter:url" content="https://penaadventure.com/en/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-16T11:10:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#en" itemprop="item"><span itemprop="name">En</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#16" itemprop="item"><span itemprop="name">16</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">How to Install phpMyAdmin on FreeBSD with Apache24</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-01-16 11:10:00 +0300",
+"datePublished": "2025-01-16 11:10:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "How to Install phpMyAdmin on FreeBSD with Apache24",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "phpMyAdmin supports multiple database servers. It can also import data from various formats such as CSV and SQL."
+},
+
+"datePublished": "2025-01-16 11:10:00 +0300",
+"dateModified": "2025-01-16 11:10:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/en/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/",
+"name": "How to Install phpMyAdmin on FreeBSD with Apache24"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/en/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/",
+"name": "WebServer"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/en/freebsd/2025/01/16/install-phpmyadmin-on-freebsd-apache/",
+  "name": "How to Install phpMyAdmin on FreeBSD with Apache24",
+  "headline": "How to Install phpMyAdmin on FreeBSD with Apache24",
+  "keywords": "WebServer",
+  "description": "phpMyAdmin supports multiple database servers. It can also import data from various formats such as CSV and SQL.",
+  "articleBody": "This article presents a simple way on how to install phpMyAdmin on FreeBSD 13.2 Stable, phpMyAdmin is a free and open source application written in PHP to manage MySQL and MariaDB tasks such as creating, changing, deleting, dropping database tables, or running other database management commands and supports most of MySQL features.\n\nphpMyAdmin supports multiple database servers. This application can also import data from various formats such as CSV and SQL, and also export data to various other formats such as CSV, SQL, XML, PDF, ISO / IEC 26300 - OpenDocument Text and Spreadsheets, Word, Excel, LATEX and others. This application is free, open source, and written using PHP.\n\nThis article will not explain how to install Apache Web Server, about how to install Apache you can read the previous article on this blogspot. In this article we assume that our FreeBSD system has apache24 installed.\n\nTo start installing phpMyAdmin in this tutorial, the tip is to use the FreeBSD system ports. Installing phpMyAdmin with system ports shouldn’t be too difficult. You can simply follow the steps in this article.\n\nSystem Specifications\n\n  OS: FreeBSD13.2 Stable\n  IP LAN Server: 192.168.9.3\n  Apache: apache24 (In this article we will not discuss it, we will assume it is already installed)\n  MySQL: mysql80-server (In this article we will not discuss it, we will assume it is already installed)\nphp: php82\n  phpMyAdmin: phpMyAdmin5-php82\n\n\n1. phpMyAdmin installation\nBefore we get into the installation process, once again I remind you that this tutorial does not discuss the installation of apache24 and mysql80-server, you can read the previous article that discusses these two applications. Now let’s start installing phpMyAdmin, but first you must install php82 first.\n\nroot@router2:~ # cd /usr/ports/lang/php82\nroot@router2:/usr/ports/lang/php82 # make install clean\n\nAfter completing the installation of php82, then we continue by installing phpMyAdmin.\n\nroot@router2:~ # cd /usr/ports/databases/phpmyadmin5\nroot@router2:/usr/ports/databases/phpmyadmin5 # make install clean\n\nThe display below is the display when the phpMyAdmin installation is complete.\n\nInstalling phpMyAdmin5-php82-5.2.1_1...\n===&gt; Creating groups.\nUsing existing group 'www'.\nphpMyAdmin5-php82-5.2.1_1 has been installed into:\n\n    /usr/local/www/phpMyAdmin\n\nPlease edit config.inc.php to suit your needs.\n\nTo make phpMyAdmin available through your web site, I suggest\nthat you add something like the following to httpd.conf:\n\nAlias /phpmyadmin/ \"/usr/local/www/phpMyAdmin/\"\n\n&lt;Directory \"/usr/local/www/phpMyAdmin/\"&gt;\n        Options None\n        AllowOverride Limit\n\n        Require local\n        Require host .example.com\n&lt;/Directory&gt;\n\nSECURITY NOTE: phpMyAdmin is an administrative tool that has had several\nremote vulnerabilities discovered in the past, some allowing remote\nattackers to execute arbitrary code with the web server's user credential.\nAll known problems have been fixed, but the FreeBSD Security Team strongly\nadvises that any instance be protected with an additional protection layer,\ne.g. a different access control mechanism implemented by the web server\nas shown in the example.  Do consider enabling phpMyAdmin only when it\nis in use.\n===&gt;  Cleaning for php82-ctype-8.2.6\n===&gt;  Cleaning for php82-ctype-8.2.6\n===&gt;  Cleaning for php82-filter-8.2.6\n===&gt;  Cleaning for php82-filter-8.2.6\n===&gt;  Cleaning for php82-iconv-8.2.6\n===&gt;  Cleaning for php82-iconv-8.2.6\n===&gt;  Cleaning for php82-mysqli-8.2.6\n===&gt;  Cleaning for php82-mysqli-8.2.6\n===&gt;  Cleaning for php82-session-8.2.6\n===&gt;  Cleaning for php82-session-8.2.6\n===&gt;  Cleaning for php82-xml-8.2.6\n===&gt;  Cleaning for php82-xml-8.2.6\n===&gt;  Cleaning for php82-xmlwriter-8.2.6\n===&gt;  Cleaning for php82-xmlwriter-8.2.6\n===&gt;  Cleaning for php82-bz2-8.2.6\n===&gt;  Cleaning for php82-bz2-8.2.6\n===&gt;  Cleaning for php82-gd-8.2.6\n===&gt;  Cleaning for php82-gd-8.2.6\n===&gt;  Cleaning for php82-mbstring-8.2.6\n===&gt;  Cleaning for php82-mbstring-8.2.6\n===&gt;  Cleaning for oniguruma-6.9.8_1\n===&gt;  Cleaning for oniguruma-6.9.8_1\n===&gt;  Cleaning for php82-zip-8.2.6\n===&gt;  Cleaning for php82-zip-8.2.6\n===&gt;  Cleaning for libzip-1.9.2\n===&gt;  Cleaning for libzip-1.9.2\n===&gt;  Cleaning for php82-zlib-8.2.6\n===&gt;  Cleaning for php82-zlib-8.2.6\n===&gt;  Cleaning for phpMyAdmin5-php82-5.2.1_1\n===&gt;  Cleaning for phpMyAdmin5-php80-5.2.1_1\n===&gt;  Cleaning for php81-8.1.19\n===&gt;  Cleaning for php81-8.1.19\n===&gt;  Cleaning for php81-ctype-8.1.19\n===&gt;  Cleaning for php81-ctype-8.1.19\n===&gt;  Cleaning for php81-filter-8.1.19\n===&gt;  Cleaning for php81-filter-8.1.19\n===&gt;  Cleaning for php81-iconv-8.1.19\n===&gt;  Cleaning for php81-iconv-8.1.19\n===&gt;  Cleaning for php81-mysqli-8.1.19\n===&gt;  Cleaning for php81-mysqli-8.1.19\n===&gt;  Cleaning for php81-session-8.1.19\n===&gt;  Cleaning for php81-session-8.1.19\n===&gt;  Cleaning for php81-xml-8.1.19\n===&gt;  Cleaning for php81-xml-8.1.19\n===&gt;  Cleaning for php81-bz2-8.1.19\n===&gt;  Cleaning for php81-bz2-8.1.19\n===&gt;  Cleaning for php81-gd-8.1.19\n===&gt;  Cleaning for php81-gd-8.1.19\n===&gt;  Cleaning for php81-mbstring-8.1.19\n===&gt;  Cleaning for php81-mbstring-8.1.19\n===&gt;  Cleaning for oniguruma-6.9.8_1\n===&gt;  Cleaning for oniguruma-6.9.8_1\n===&gt;  Cleaning for php81-zip-8.1.19\n===&gt;  Cleaning for php81-zip-8.1.19\n===&gt;  Cleaning for libzip-1.9.2\n===&gt;  Cleaning for libzip-1.9.2\n===&gt;  Cleaning for php81-zlib-8.1.19\n===&gt;  Cleaning for php81-zlib-8.1.19\n===&gt;  Cleaning for phpMyAdmin5-php81-5.2.1_1\nroot@router2:/usr/ports/databases/phpmyadmin5 #\n\n\nThe script above will appear after the phpMyAdmin installation process is complete, what you should pay attention to is the red writing. Okay, let’s continue the configuration process, after you have finished installing phpMyAdmin, the next step is to copy the config.sample.inc.php file into the config.inc.php file. The file is located in the /usr/local/www/phpMyAdmin folder.\n\nroot@router2:~ # cd /usr/local/www/phpMyAdmin\nroot@router2:/usr/local/www/phpMyAdmin # cp config.sample.inc.php config.inc.php\n\n\n3. Edit httpd.conf File\nIn this third step we will edit the file /usr/local/etc/apache24/httpd.conf. Editing this file will provide the url to access phpMyAdmin. Insert the red script above into the httpd.conf file. Place the script below at the very bottom or at the very end of the httpd.conf script.\n\nAlias /phpmyadmin \"/usr/local/www/phpMyAdmin/\"\n&lt;Directory \"/usr/local/www/phpMyAdmin\"&gt;\n    AllowOverride None\n    Options None\n    Require all granted\n&lt;/Directory&gt;\n\n\n4. Apache24 mod php installation\nNow we continue by installing the php mod so that it can run on the apache24 web server.\n\nroot@router2:~ # cd /usr/ports/www/mod_php82\nroot@router2:/usr/ports/www/mod_php82 # make install clean\n\nroot@router2:~ # cd /usr/ports/databases/php82-mysqli\nroot@router2:/usr/ports/databases/php82-mysqli # make install clean\n\nAfter the two applications above are installed, we continue by editing the httpd.conf file, in the script below.\n\n&lt;IfModule dir_module&gt;\n    DirectoryIndex index.html\n&lt;/IfModule&gt;\n\nAdd the index.php script, so the script looks like the following.\n\n&lt;IfModule dir_module&gt;\n    DirectoryIndex index.php index.html\n&lt;/IfModule&gt;\n\nStill in the httpd.conf file, place the following script at the end or bottom of the httpd.conf file script.\n\nLoadModule php_module         libexec/apache24/libphp.so\n\n&lt;FilesMatch \"\\.php$\"&gt;\n    SetHandler application/x-httpd-php\n&lt;/FilesMatch&gt;\n&lt;FilesMatch \"\\.phps$\"&gt;\n    SetHandler application/x-httpd-php-source\n&lt;/FilesMatch&gt;\n\n\nNext, we create a php.ini file, by copying the php.ini-production file to php.ini. The file is located in the /usr/local/etc folder.\n\nroot@router2:~ # cp /usr/local/etc/php.ini-production /usr/local/etc/php.ini\n\nAfter that, in the /usr/local/etc/php.ini file, we add the following script.\n\nextension=mysqli.so\n\nCreate a new file named info.php and place it in the /usr/local/www/apache24/data folder. In the info.php file, insert the following script “&lt;?php phpinfo(); ?&gt;”\n\nroot@router2:~ # touch /usr/local/www/apache24/data/info.php\nroot@router2:~ # ee /usr/local/www/apache24/data/info.php\n&lt;?php phpinfo(); ?&gt;\n\n\nAfter that, do the test by typing the url: http://192.168.9.3/info.php, in the Google Chrome or Yandex address bar menu.\n\nWe also tested phpMyAdmin by typing the url: http://192.168.9.3/phpmyadmin/ in the Yandex or Google Chrome browser.\n\nUse the username and password from MySQL Server to login.\n",
+  "datePublished": "2025-01-16 11:10:00 +0300",
+  "dateModified": "2025-01-16 11:10:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="How to Install phpMyAdmin on FreeBSD with Apache24"><meta itemprop="description" content="phpMyAdmin supports multiple database servers. It can also import data from various formats such as CSV and SQL."><meta itemprop="datePublished" content="2025-01-16"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-16T11:10:00+03:00">2025-01-16</time> </p><h1 class="page__title" itemprop="headline">How to Install phpMyAdmin on FreeBSD with Apache24
+</h1></header><section class="page__content" itemprop="text">
+        <p>This article presents a simple way on how to install phpMyAdmin on FreeBSD 13.2 Stable, phpMyAdmin is a free and open source application written in PHP to manage MySQL and MariaDB tasks such as creating, changing, deleting, dropping database tables, or running other database management commands and supports most of MySQL features.</p>
+
+<p>phpMyAdmin supports multiple database servers. This application can also import data from various formats such as CSV and SQL, and also export data to various other formats such as CSV, SQL, XML, PDF, ISO / IEC 26300 - OpenDocument Text and Spreadsheets, Word, Excel, LATEX and others. This application is free, open source, and written using PHP.</p>
+
+<p>This article will not explain how to install Apache Web Server, about how to install Apache you can read the previous article on this blogspot. In this article we assume that our FreeBSD system has apache24 installed.</p>
+
+<p>To start installing phpMyAdmin in this tutorial, the tip is to use the FreeBSD system ports. Installing phpMyAdmin with system ports shouldn’t be too difficult. You can simply follow the steps in this article.</p>
+
+<h1 id="system-specifications">System Specifications</h1>
+<ul>
+  <li>OS: FreeBSD13.2 Stable</li>
+  <li>IP LAN Server: 192.168.9.3</li>
+  <li>Apache: apache24 (In this article we will not discuss it, we will assume it is already installed)</li>
+  <li>MySQL: mysql80-server (In this article we will not discuss it, we will assume it is already installed)
+php: php82</li>
+  <li>phpMyAdmin: phpMyAdmin5-php82</li>
+</ul>
+
+<h2 id="1-phpmyadmin-installation">1. phpMyAdmin installation</h2>
+<p>Before we get into the installation process, once again I remind you that this tutorial does not discuss the installation of apache24 and mysql80-server, you can read the previous article that discusses these two applications. Now let’s start installing phpMyAdmin, but first you must install php82 first.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@router2:~ # cd /usr/ports/lang/php82
+root@router2:/usr/ports/lang/php82 # make install clean
+</code></pre></div></div>
+<p>After completing the installation of php82, then we continue by installing phpMyAdmin.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@router2:~ # cd /usr/ports/databases/phpmyadmin5
+root@router2:/usr/ports/databases/phpmyadmin5 # make install clean
+</code></pre></div></div>
+<p>The display below is the display when the phpMyAdmin installation is complete.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Installing phpMyAdmin5-php82-5.2.1_1...
+===&gt; Creating groups.
+Using existing group 'www'.
+phpMyAdmin5-php82-5.2.1_1 has been installed into:
+
+    /usr/local/www/phpMyAdmin
+
+Please edit config.inc.php to suit your needs.
+
+To make phpMyAdmin available through your web site, I suggest
+that you add something like the following to httpd.conf:
+
+Alias /phpmyadmin/ "/usr/local/www/phpMyAdmin/"
+
+&lt;Directory "/usr/local/www/phpMyAdmin/"&gt;
+        Options None
+        AllowOverride Limit
+
+        Require local
+        Require host .example.com
+&lt;/Directory&gt;
+
+SECURITY NOTE: phpMyAdmin is an administrative tool that has had several
+remote vulnerabilities discovered in the past, some allowing remote
+attackers to execute arbitrary code with the web server's user credential.
+All known problems have been fixed, but the FreeBSD Security Team strongly
+advises that any instance be protected with an additional protection layer,
+e.g. a different access control mechanism implemented by the web server
+as shown in the example.  Do consider enabling phpMyAdmin only when it
+is in use.
+===&gt;  Cleaning for php82-ctype-8.2.6
+===&gt;  Cleaning for php82-ctype-8.2.6
+===&gt;  Cleaning for php82-filter-8.2.6
+===&gt;  Cleaning for php82-filter-8.2.6
+===&gt;  Cleaning for php82-iconv-8.2.6
+===&gt;  Cleaning for php82-iconv-8.2.6
+===&gt;  Cleaning for php82-mysqli-8.2.6
+===&gt;  Cleaning for php82-mysqli-8.2.6
+===&gt;  Cleaning for php82-session-8.2.6
+===&gt;  Cleaning for php82-session-8.2.6
+===&gt;  Cleaning for php82-xml-8.2.6
+===&gt;  Cleaning for php82-xml-8.2.6
+===&gt;  Cleaning for php82-xmlwriter-8.2.6
+===&gt;  Cleaning for php82-xmlwriter-8.2.6
+===&gt;  Cleaning for php82-bz2-8.2.6
+===&gt;  Cleaning for php82-bz2-8.2.6
+===&gt;  Cleaning for php82-gd-8.2.6
+===&gt;  Cleaning for php82-gd-8.2.6
+===&gt;  Cleaning for php82-mbstring-8.2.6
+===&gt;  Cleaning for php82-mbstring-8.2.6
+===&gt;  Cleaning for oniguruma-6.9.8_1
+===&gt;  Cleaning for oniguruma-6.9.8_1
+===&gt;  Cleaning for php82-zip-8.2.6
+===&gt;  Cleaning for php82-zip-8.2.6
+===&gt;  Cleaning for libzip-1.9.2
+===&gt;  Cleaning for libzip-1.9.2
+===&gt;  Cleaning for php82-zlib-8.2.6
+===&gt;  Cleaning for php82-zlib-8.2.6
+===&gt;  Cleaning for phpMyAdmin5-php82-5.2.1_1
+===&gt;  Cleaning for phpMyAdmin5-php80-5.2.1_1
+===&gt;  Cleaning for php81-8.1.19
+===&gt;  Cleaning for php81-8.1.19
+===&gt;  Cleaning for php81-ctype-8.1.19
+===&gt;  Cleaning for php81-ctype-8.1.19
+===&gt;  Cleaning for php81-filter-8.1.19
+===&gt;  Cleaning for php81-filter-8.1.19
+===&gt;  Cleaning for php81-iconv-8.1.19
+===&gt;  Cleaning for php81-iconv-8.1.19
+===&gt;  Cleaning for php81-mysqli-8.1.19
+===&gt;  Cleaning for php81-mysqli-8.1.19
+===&gt;  Cleaning for php81-session-8.1.19
+===&gt;  Cleaning for php81-session-8.1.19
+===&gt;  Cleaning for php81-xml-8.1.19
+===&gt;  Cleaning for php81-xml-8.1.19
+===&gt;  Cleaning for php81-bz2-8.1.19
+===&gt;  Cleaning for php81-bz2-8.1.19
+===&gt;  Cleaning for php81-gd-8.1.19
+===&gt;  Cleaning for php81-gd-8.1.19
+===&gt;  Cleaning for php81-mbstring-8.1.19
+===&gt;  Cleaning for php81-mbstring-8.1.19
+===&gt;  Cleaning for oniguruma-6.9.8_1
+===&gt;  Cleaning for oniguruma-6.9.8_1
+===&gt;  Cleaning for php81-zip-8.1.19
+===&gt;  Cleaning for php81-zip-8.1.19
+===&gt;  Cleaning for libzip-1.9.2
+===&gt;  Cleaning for libzip-1.9.2
+===&gt;  Cleaning for php81-zlib-8.1.19
+===&gt;  Cleaning for php81-zlib-8.1.19
+===&gt;  Cleaning for phpMyAdmin5-php81-5.2.1_1
+root@router2:/usr/ports/databases/phpmyadmin5 #
+</code></pre></div></div>
+
+<p>The script above will appear after the phpMyAdmin installation process is complete, what you should pay attention to is the red writing. Okay, let’s continue the configuration process, after you have finished installing phpMyAdmin, the next step is to copy the config.sample.inc.php file into the config.inc.php file. The file is located in the /usr/local/www/phpMyAdmin folder.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@router2:~ # cd /usr/local/www/phpMyAdmin
+root@router2:/usr/local/www/phpMyAdmin # cp config.sample.inc.php config.inc.php
+</code></pre></div></div>
+
+<h2 id="3-edit-httpdconf-file">3. Edit httpd.conf File</h2>
+<p>In this third step we will edit the file /usr/local/etc/apache24/httpd.conf. Editing this file will provide the url to access phpMyAdmin. Insert the red script above into the httpd.conf file. Place the script below at the very bottom or at the very end of the httpd.conf script.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Alias /phpmyadmin "/usr/local/www/phpMyAdmin/"
+&lt;Directory "/usr/local/www/phpMyAdmin"&gt;
+    AllowOverride None
+    Options None
+    Require all granted
+&lt;/Directory&gt;
+</code></pre></div></div>
+
+<h2 id="4-apache24-mod-php-installation">4. Apache24 mod php installation</h2>
+<p>Now we continue by installing the php mod so that it can run on the apache24 web server.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@router2:~ # cd /usr/ports/www/mod_php82
+root@router2:/usr/ports/www/mod_php82 # make install clean
+
+root@router2:~ # cd /usr/ports/databases/php82-mysqli
+root@router2:/usr/ports/databases/php82-mysqli # make install clean
+</code></pre></div></div>
+<p>After the two applications above are installed, we continue by editing the httpd.conf file, in the script below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;IfModule dir_module&gt;
+    DirectoryIndex index.html
+&lt;/IfModule&gt;
+</code></pre></div></div>
+<p>Add the index.php script, so the script looks like the following.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;IfModule dir_module&gt;
+    DirectoryIndex index.php index.html
+&lt;/IfModule&gt;
+</code></pre></div></div>
+<p>Still in the httpd.conf file, place the following script at the end or bottom of the httpd.conf file script.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LoadModule php_module         libexec/apache24/libphp.so
+
+&lt;FilesMatch "\.php$"&gt;
+    SetHandler application/x-httpd-php
+&lt;/FilesMatch&gt;
+&lt;FilesMatch "\.phps$"&gt;
+    SetHandler application/x-httpd-php-source
+&lt;/FilesMatch&gt;
+</code></pre></div></div>
+
+<p>Next, we create a php.ini file, by copying the php.ini-production file to php.ini. The file is located in the /usr/local/etc folder.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@router2:~ # cp /usr/local/etc/php.ini-production /usr/local/etc/php.ini
+</code></pre></div></div>
+<p>After that, in the /usr/local/etc/php.ini file, we add the following script.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>extension=mysqli.so
+</code></pre></div></div>
+<p>Create a new file named info.php and place it in the /usr/local/www/apache24/data folder. In the info.php file, insert the following script “&lt;?php phpinfo(); ?&gt;”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@router2:~ # touch /usr/local/www/apache24/data/info.php
+root@router2:~ # ee /usr/local/www/apache24/data/info.php
+&lt;?php phpinfo(); ?&gt;
+</code></pre></div></div>
+
+<p>After that, do the test by typing the url: http://192.168.9.3/info.php, in the Google Chrome or Yandex address bar menu.</p>
+
+<p>We also tested phpMyAdmin by typing the url: http://192.168.9.3/phpmyadmin/ in the Yandex or Google Chrome browser.</p>
+
+<p>Use the username and password from MySQL Server to login.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-16T11:10:00+03:00">2025-01-16</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#webserver" class="page__taxonomy-item" rel="tag">WebServer</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#en" class="page__taxonomy-item" rel="tag">en</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/linux/2025/01/16/setup-and-install-anaconda-navigator-ubuntu/" class="pagination--pager" title="Как установить и использовать Anaconda Navigator
+">Previous</a><a href="https://penaadventure.com/en/freebsd/2025/01/16/build-java-maven-on-freebsd.en/" class="pagination--pager" title="Build a Java App with Maven On FreeBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

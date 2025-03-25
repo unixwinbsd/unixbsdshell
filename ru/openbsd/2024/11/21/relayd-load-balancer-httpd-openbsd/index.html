@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Балансировщик нагрузки Relayd с httpd на OpenBSD  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Балансировщик нагрузки Relayd с httpd на OpenBSD"><link rel="canonical" href="https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/">
+  <meta property="og:url" content="https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/"><meta property="og:description" content="Relayd — это демон для динамической пересылки и маршрутизации входящих соединений к хостам назначения. Его основная цель — выступать в качестве балансировщика нагрузки, шлюза прикладного уровня или прозрачного прокси-сервера."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Балансировщик нагрузки Relayd с httpd на OpenBSD">
+  <meta name="twitter:description" content="Relayd — это демон для динамической пересылки и маршрутизации входящих соединений к хостам назначения. Его основная цель — выступать в качестве балансировщика нагрузки, шлюза прикладного уровня или прозрачного прокси-сервера.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-11-21T19:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#ru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#openbsd" itemprop="item"><span itemprop="name">Openbsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#11" itemprop="item"><span itemprop="name">11</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#21" itemprop="item"><span itemprop="name">21</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Балансировщик нагрузки Relayd с httpd на OpenBSD</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2024-11-21 19:00:00 +0300",
+"datePublished": "2024-11-21 19:00:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Балансировщик нагрузки Relayd с httpd на OpenBSD",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "Relayd — это демон для динамической пересылки и маршрутизации входящих соединений к хостам назначения. Его основная цель — выступать в качестве балансировщика нагрузки, шлюза прикладного уровня или прозрачного прокси-сервера."
+},
+
+"datePublished": "2024-11-21 19:00:00 +0300",
+"dateModified": "2024-11-21 19:00:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/",
+"name": "Балансировщик нагрузки Relayd с httpd на OpenBSD"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/",
+"name": "WebServer"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/ru/openbsd/2024/11/21/relayd-load-balancer-httpd-openbsd/",
+  "name": "Балансировщик нагрузки Relayd с httpd на OpenBSD",
+  "headline": "Балансировщик нагрузки Relayd с httpd на OpenBSD",
+  "keywords": "WebServer",
+  "description": "Relayd — это демон для динамической пересылки и маршрутизации входящих соединений к хостам назначения. Его основная цель — выступать в качестве балансировщика нагрузки, шлюза прикладного уровня или прозрачного прокси-сервера.",
+  "articleBody": "Балансировщик нагрузки или система — это устройство, которое может перенаправлять входящий трафик на один или несколько реальных серверов. По своему назначению он похож на простое пересылающее реле. Коммерческие решения, такие как Cisco Local Director, предоставляют расширенные функции и набор алгоритмов, которые позволяют выбрать подходящий сервер, включая опрос доступности кандидатов или доступности агентов/клиентов. Из-за особенностей реализации их часто называют машинами обратного NAT или обратными прокси-серверами.\n\nRelayd — это демон для динамической пересылки и маршрутизации входящих соединений к хостам назначения. Его основная цель — выступать в качестве балансировщика нагрузки, шлюза прикладного уровня или прозрачного прокси-сервера. Демон может контролировать доступность группы хостов, которая определяется путем проверки определенных служб, которые являются общими для этой группы хостов. После подтверждения доступности настраиваются службы пересылки уровня 3 и/или уровня 7 посредством повторной передачи.\n\nЭтот репозиторий включает в себя копию исходного дерева потокового кода, которая время от времени обновляется, а также экспериментальные ветви, которыми следует поделиться с другими. Это не переносимая версия и предназначена только для OpenBSD! Этот репозиторий может содержать в значительной степени экспериментальные изменения; не используйте его в производстве. Основные разработки происходят в дереве CVS OpenBSD.\n\nДля обеспечения доступности веб-сайтов в OpenBSD предусмотрено несколько функциональных решений, которые отлично работают вместе; relayd и httpd.\n\n1. Что такое ретрансляция\n\nRelayd — это балансировщик нагрузки с открытым исходным кодом, способный обрабатывать протоколы уровней 3, 4 и 7. Relayd, ранее известный как hoststated, — это новейшее приложение для балансировки нагрузки, разработанное группой OpenBSD. Relayd можно настроить как прямой, обратный или ретранслятор типа TCP-порта или перенаправления, а также использовать в качестве ускорителя SSL. Relayd — это быстрый, безопасный и стабильный интерфейс для веб-сервера или веб-кластера.\n\nHttpd — веб-сервер, официально поддерживаемый и разрабатываемый OpenBSD. Около 20 лет назад OpenBSD впервые импортировала модифицированный сервер Apache httpd в свою базовую версию. Позже, по мере роста популярности nginx, после его выпуска он в конечном итоге стал веб-сервером, хотя nginx также был исправлен для соответствия более строгим правилам безопасности OpenBSD. Затем, в 2015 году, OpenBSD выпустила собственный httpd, основанный на Relayd, в качестве веб-сервера по умолчанию.\n\nRelayd и httpd могут работать вместе, обеспечивая простое, но высокодоступное решение для веб-хостинга и многого другого. В этой статье будет показано, как развернуть две виртуальные машины OpenBSD httpd, работающие за виртуальной машиной OpenBSD, используя реле в качестве балансировщика нагрузки. Два сервера httpd должны быть доступны только через балансировку нагрузки, а конфигурация должна быть способна обрабатывать ситуации, когда один из двух серверов httpd может оказаться недоступным во время исправления или перезапуска. Конфигурация также должна иметь рейтинг A на ssllabs.com.\n\nНиже приведены основные функции relayd:\n\n  Демон общего назначения доступен в OpenBSD начиная с версии 4.3*:\n    \n      балансировщик нагрузки.\n      шлюз прикладного уровня.\n      прозрачный прокси.\n    \n  \n  Возможность мониторинга групп хостов на предмет высокой доступности.\n  Функционирует как:\n    \n      Перенаправление уровня 3 через связь с pf.\n      Ретрансляция уровня 7 с фильтрацией на уровне приложений.\n    \n  \n\n\n2. Настройте relayd.conf\n\nПервый шаг, который вам необходимо сделать, — это настроить файл relayd.conf. Ниже приведен пример скрипта relayd.conf.\n\nЧтобы в любой момент отобразить набор заблокированных адресов в таблице SSHguard, введите следующую команду.\n\next_addr = “1.1.1.1”\nweb_srvr = “10.1.1.10”\nlog state changes\nlog connection\nhttp protocol httpFilter {\n #return error\n http headerlen 4096\n match request header set “X-Forwarded-For” value “$REMOTE_ADDR”\n match request header set “X-Forwarded-SPort” value “$REMOTE_PORT”\n match request header set “X-Forwarded-DPort” value “$SERVER_PORT”\n match response header remove “Server” value “*”\n match header log “Host”\n match header log “X-Forwarded-For”\n match header log “User-Agent”\n match header log “X-Req-Status”\n match url log\n match request tag “BAD_METHOD”\n match request method GET tag “OK_METH”\n match request method HEAD tag “OK_METH”\n block request quick tagged “BAD_METHOD”\n match request header “Host” value “domain.com” tag “OK_REQ”\n match request header “Host” value “www.domain.com\" tag “OK_REQ”\n match request header “Host” value “another.domain.com” tag “OK_REQ”\n block request quick tagged “OK_METH” tag “BAD_HH”\n block request quick path “*.php” tag NO_PHP\n block request quick path “*.cgi” tag NO_CGI\n block request quick path “*.js” tag NO_JS\n block request quick path “*.asp” tag NO_ASP\n block tag “BAD_REQ”\n pass request tagged “OK_REQ”\n}\nhttp protocol httpsFilter {\n #return error\n http headerlen 4096\n tls ciphers “ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256”\n tls edh\n match request header set “X-Forwarded-For” value “$REMOTE_ADDR”\n match request header set “X-Forwarded-SPort” value “$REMOTE_PORT”\n match request header set “X-Forwarded-DPort” value “$SERVER_PORT”\n match response header remove “Server” value “*”\n match header log “Host”\n match header log “X-Forwarded-For”\n match header log “User-Agent”\n match header log “X-Req-Status”\n match url log\n match response header set “Strict-Transport-Security” value “max-age=63072000; includeSubdomains; preload”\n match request tag “BAD_METHOD”\n match request method GET tag “OK_METH”\n match request method HEAD tag “OK_METH”\n block request quick tagged “BAD_METHOD”\n match request header “Host” value “domain.com” tag “OK_REQ”\n match request header “Host” value “www.domain.com\" tag “OK_REQ”\n match request header “Host” value “another.domain.com” tag “OK_REQ”\n block request quick tagged “OK_METH” tag “BAD_HH”\n block request quick path “*.php” tag NO_PHP\n block request quick path “*.cgi” tag NO_CGI\n block request quick path “*.js” tag NO_JS\n block request quick path “*.asp” tag NO_ASP\n block tag “BAD_REQ”\n pass request tagged “OK_REQ”\n}\nrelay www {\n listen on $ext_addr port 80\n protocol httpFilter\n forward to $web_srvr port 80\n}\nrelay wwwssl {\n listen on $ext_addr port 443 tls\n protocol httpsFilter\n forward to $web_srvr port 80\n}\n\n\nВ качестве IP-адреса мы рекомендуем использовать localhost, чтобы relayd прослушивал порт 127.0.0.1, и использовать правило rdr-to в pf. Внутренний веб-сервер использует адреса RFC1918.\n\next_addr = \"127.0.0.1\"\nweb_srvr = \"10.1.1.10\"\n\n\nПолезно для записи дополнительной информации и идентификации тех, кто тестирует конфигурации TLS.\n\nlog state changes\nlog connection\n\n\nВот пример конфигурации файла httpd.\n\nserver \"example.com\" {\n    alias \"chat.example.com\"\n    listen on * port 80\n    location \"/.well-known/acme-challenge/*\" {\n            root \"/acme\"\n            request strip 2\n    }\n    location * {\n            block return 301 \"https://$HTTP_HOST$REQUEST_URI\"\n    }\n}\n\nserver \"example.com\" {\n    listen on * port 8080\n    location * {\n            root \"/htdocs/www/public/\"\n    }\n}\n\n\nВ этом заключительном разделе мы кратко рассмотрим настройку балансировщика нагрузки для приема http- и https-соединений и пересылки запросов на внутренний http-сервер. Вы должны иметь возможность безопасно исправить и перезагрузить один из серверов httpd, не теряя при этом доступа клиентов ни к одному из сайтов. Однако еще одно замечание: было бы разумно заблокировать pf на балансировщике нагрузки, если вы сочтете это целесообразным, поскольку он также действует как брандмауэр для ваших двух серверов httpd.\n",
+  "datePublished": "2024-11-21 19:00:00 +0300",
+  "dateModified": "2024-11-21 19:00:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Балансировщик нагрузки Relayd с httpd на OpenBSD"><meta itemprop="description" content="Relayd — это демон для динамической пересылки и маршрутизации входящих соединений к хостам назначения. Его основная цель — выступать в качестве балансировщика нагрузки, шлюза прикладного уровня или прозрачного прокси-сервера."><meta itemprop="datePublished" content="2024-11-21"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-11-21T19:00:00+03:00">2024-11-21</time> </p><h1 class="page__title" itemprop="headline">Балансировщик нагрузки Relayd с httpd на OpenBSD
+</h1></header><section class="page__content" itemprop="text">
+        <p>Балансировщик нагрузки или система — это устройство, которое может перенаправлять входящий трафик на один или несколько реальных серверов. По своему назначению он похож на простое пересылающее реле. Коммерческие решения, такие как Cisco Local Director, предоставляют расширенные функции и набор алгоритмов, которые позволяют выбрать подходящий сервер, включая опрос доступности кандидатов или доступности агентов/клиентов. Из-за особенностей реализации их часто называют машинами обратного NAT или обратными прокси-серверами.</p>
+
+<p>Relayd — это демон для динамической пересылки и маршрутизации входящих соединений к хостам назначения. Его основная цель — выступать в качестве балансировщика нагрузки, шлюза прикладного уровня или прозрачного прокси-сервера. Демон может контролировать доступность группы хостов, которая определяется путем проверки определенных служб, которые являются общими для этой группы хостов. После подтверждения доступности настраиваются службы пересылки уровня 3 и/или уровня 7 посредством повторной передачи.</p>
+
+<p>Этот репозиторий включает в себя копию исходного дерева потокового кода, которая время от времени обновляется, а также экспериментальные ветви, которыми следует поделиться с другими. Это не переносимая версия и предназначена только для OpenBSD! Этот репозиторий может содержать в значительной степени экспериментальные изменения; не используйте его в производстве. Основные разработки происходят в дереве CVS OpenBSD.</p>
+
+<p>Для обеспечения доступности веб-сайтов в OpenBSD предусмотрено несколько функциональных решений, которые отлично работают вместе; relayd и httpd.</p>
+
+<h2 id="1-что-такое-ретрансляция">1. Что такое ретрансляция</h2>
+
+<p>Relayd — это балансировщик нагрузки с открытым исходным кодом, способный обрабатывать протоколы уровней 3, 4 и 7. Relayd, ранее известный как hoststated, — это новейшее приложение для балансировки нагрузки, разработанное группой OpenBSD. Relayd можно настроить как прямой, обратный или ретранслятор типа TCP-порта или перенаправления, а также использовать в качестве ускорителя SSL. Relayd — это быстрый, безопасный и стабильный интерфейс для веб-сервера или веб-кластера.</p>
+
+<p>Httpd — веб-сервер, официально поддерживаемый и разрабатываемый OpenBSD. Около 20 лет назад OpenBSD впервые импортировала модифицированный сервер Apache httpd в свою базовую версию. Позже, по мере роста популярности nginx, после его выпуска он в конечном итоге стал веб-сервером, хотя nginx также был исправлен для соответствия более строгим правилам безопасности OpenBSD. Затем, в 2015 году, OpenBSD выпустила собственный httpd, основанный на Relayd, в качестве веб-сервера по умолчанию.</p>
+
+<p>Relayd и httpd могут работать вместе, обеспечивая простое, но высокодоступное решение для веб-хостинга и многого другого. В этой статье будет показано, как развернуть две виртуальные машины OpenBSD httpd, работающие за виртуальной машиной OpenBSD, используя реле в качестве балансировщика нагрузки. Два сервера httpd должны быть доступны только через балансировку нагрузки, а конфигурация должна быть способна обрабатывать ситуации, когда один из двух серверов httpd может оказаться недоступным во время исправления или перезапуска. Конфигурация также должна иметь рейтинг A на ssllabs.com.</p>
+
+<p>Ниже приведены основные функции relayd:</p>
+<ol>
+  <li>Демон общего назначения доступен в OpenBSD начиная с версии 4.3*:
+    <ul>
+      <li>балансировщик нагрузки.</li>
+      <li>шлюз прикладного уровня.</li>
+      <li>прозрачный прокси.</li>
+    </ul>
+  </li>
+  <li>Возможность мониторинга групп хостов на предмет высокой доступности.</li>
+  <li>Функционирует как:
+    <ul>
+      <li>Перенаправление уровня 3 через связь с pf.</li>
+      <li>Ретрансляция уровня 7 с фильтрацией на уровне приложений.</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="2-настройте-relaydconf">2. Настройте relayd.conf</h2>
+
+<p>Первый шаг, который вам необходимо сделать, — это настроить файл relayd.conf. Ниже приведен пример скрипта relayd.conf.</p>
+
+<p>Чтобы в любой момент отобразить набор заблокированных адресов в таблице SSHguard, введите следующую команду.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ext_addr = “1.1.1.1”
+web_srvr = “10.1.1.10”
+log state changes
+log connection
+http protocol httpFilter {
+ #return error
+ http headerlen 4096
+ match request header set “X-Forwarded-For” value “$REMOTE_ADDR”
+ match request header set “X-Forwarded-SPort” value “$REMOTE_PORT”
+ match request header set “X-Forwarded-DPort” value “$SERVER_PORT”
+ match response header remove “Server” value “*”
+ match header log “Host”
+ match header log “X-Forwarded-For”
+ match header log “User-Agent”
+ match header log “X-Req-Status”
+ match url log
+ match request tag “BAD_METHOD”
+ match request method GET tag “OK_METH”
+ match request method HEAD tag “OK_METH”
+ block request quick tagged “BAD_METHOD”
+ match request header “Host” value “domain.com” tag “OK_REQ”
+ match request header “Host” value “www.domain.com" tag “OK_REQ”
+ match request header “Host” value “another.domain.com” tag “OK_REQ”
+ block request quick tagged “OK_METH” tag “BAD_HH”
+ block request quick path “*.php” tag NO_PHP
+ block request quick path “*.cgi” tag NO_CGI
+ block request quick path “*.js” tag NO_JS
+ block request quick path “*.asp” tag NO_ASP
+ block tag “BAD_REQ”
+ pass request tagged “OK_REQ”
+}
+http protocol httpsFilter {
+ #return error
+ http headerlen 4096
+ tls ciphers “ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256”
+ tls edh
+ match request header set “X-Forwarded-For” value “$REMOTE_ADDR”
+ match request header set “X-Forwarded-SPort” value “$REMOTE_PORT”
+ match request header set “X-Forwarded-DPort” value “$SERVER_PORT”
+ match response header remove “Server” value “*”
+ match header log “Host”
+ match header log “X-Forwarded-For”
+ match header log “User-Agent”
+ match header log “X-Req-Status”
+ match url log
+ match response header set “Strict-Transport-Security” value “max-age=63072000; includeSubdomains; preload”
+ match request tag “BAD_METHOD”
+ match request method GET tag “OK_METH”
+ match request method HEAD tag “OK_METH”
+ block request quick tagged “BAD_METHOD”
+ match request header “Host” value “domain.com” tag “OK_REQ”
+ match request header “Host” value “www.domain.com" tag “OK_REQ”
+ match request header “Host” value “another.domain.com” tag “OK_REQ”
+ block request quick tagged “OK_METH” tag “BAD_HH”
+ block request quick path “*.php” tag NO_PHP
+ block request quick path “*.cgi” tag NO_CGI
+ block request quick path “*.js” tag NO_JS
+ block request quick path “*.asp” tag NO_ASP
+ block tag “BAD_REQ”
+ pass request tagged “OK_REQ”
+}
+relay www {
+ listen on $ext_addr port 80
+ protocol httpFilter
+ forward to $web_srvr port 80
+}
+relay wwwssl {
+ listen on $ext_addr port 443 tls
+ protocol httpsFilter
+ forward to $web_srvr port 80
+}
+</code></pre></div></div>
+
+<p>В качестве IP-адреса мы рекомендуем использовать localhost, чтобы relayd прослушивал порт 127.0.0.1, и использовать правило rdr-to в pf. Внутренний веб-сервер использует адреса RFC1918.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ext_addr = "127.0.0.1"
+web_srvr = "10.1.1.10"
+</code></pre></div></div>
+
+<p>Полезно для записи дополнительной информации и идентификации тех, кто тестирует конфигурации TLS.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>log state changes
+log connection
+</code></pre></div></div>
+
+<p>Вот пример конфигурации файла httpd.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server "example.com" {
+    alias "chat.example.com"
+    listen on * port 80
+    location "/.well-known/acme-challenge/*" {
+            root "/acme"
+            request strip 2
+    }
+    location * {
+            block return 301 "https://$HTTP_HOST$REQUEST_URI"
+    }
+}
+
+server "example.com" {
+    listen on * port 8080
+    location * {
+            root "/htdocs/www/public/"
+    }
+}
+</code></pre></div></div>
+
+<p>В этом заключительном разделе мы кратко рассмотрим настройку балансировщика нагрузки для приема http- и https-соединений и пересылки запросов на внутренний http-сервер. Вы должны иметь возможность безопасно исправить и перезагрузить один из серверов httpd, не теряя при этом доступа клиентов ни к одному из сайтов. Однако еще одно замечание: было бы разумно заблокировать pf на балансировщике нагрузки, если вы сочтете это целесообразным, поскольку он также действует как брандмауэр для ваших двух серверов httpd.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-11-21T19:00:00+03:00">2024-11-21</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#webserver" class="page__taxonomy-item" rel="tag">WebServer</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#openbsd" class="page__taxonomy-item" rel="tag">OpenBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2024/09/27/freebsd-lighttpd-mod-openssl/" class="pagination--pager" title="Установка и настройка FreeBSD Lighttpd Plus Mod OpenSSL
+">Previous</a><a href="https://penaadventure.com/ru/freebsd/2024/11/28/setup-freebsd-lighttpd-cgi-bin-perl/" class="pagination--pager" title="Настройка FreeBSD Lighttpd CGI BIN для программ Perl
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

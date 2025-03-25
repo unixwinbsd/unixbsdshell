@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/freebsd/2025/02/10/unix-bsd-system-boot-initialization/"/>
+
+  <meta charset="utf-8">
+  
+  <title>UNIX BSD boot system and initialization  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="UNIX BSD boot system and initialization"><link rel="canonical" href="https://penaadventure.com/en/freebsd/2025/02/10/unix-bsd-system-boot-initialization/">
+  <meta property="og:url" content="https://penaadventure.com/en/freebsd/2025/02/10/unix-bsd-system-boot-initialization/"><meta property="og:description" content="The system startup process is divided into two stages, which are only indirectly connected with each other"><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="UNIX BSD boot system and initialization">
+  <meta name="twitter:description" content="The system startup process is divided into two stages, which are only indirectly connected with each other">
+  <meta name="twitter:url" content="https://penaadventure.com/en/freebsd/2025/02/10/unix-bsd-system-boot-initialization/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-02-10T14:21:10+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/freebsd/2025/02/10/unix-bsd-system-boot-initialization/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#en" itemprop="item"><span itemprop="name">En</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#02" itemprop="item"><span itemprop="name">02</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#10" itemprop="item"><span itemprop="name">10</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">UNIX BSD boot system and initialization</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-02-10 14:21:10 +0300",
+"datePublished": "2025-02-10 14:21:10 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UNIX BSD boot system and initialization",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "The system startup process is divided into two stages, which are only indirectly connected with each other"
+},
+
+"datePublished": "2025-02-10 14:21:10 +0300",
+"dateModified": "2025-02-10 14:21:10 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/en/freebsd/2025/02/10/unix-bsd-system-boot-initialization/",
+"name": "UNIX BSD boot system and initialization"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/en/freebsd/2025/02/10/unix-bsd-system-boot-initialization/",
+"name": "UnixShell"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/en/freebsd/2025/02/10/unix-bsd-system-boot-initialization/",
+  "name": "UNIX BSD boot system and initialization",
+  "headline": "UNIX BSD boot system and initialization",
+  "keywords": "UnixShell",
+  "description": "The system startup process is divided into two stages, which are only indirectly connected with each other",
+  "articleBody": "In this article, the boot and initialization process of a BSD system will be discussed sequentially - from the machine being turned on to the command line prompt. Similar to how this was done for Linux in Greg O’Keefe’s famous manuscript, From PowerUp To Bash - the idea of ??which this work is based on.\n\nThis discussion is based on the DragonFlyBSD example, but almost everything described is also applicable to FreeBSD, and probably other BSD systems as well.\n1. What is  system startup\nThe system startup process is divided into two stages, which are only indirectly connected with each other - its loading and initialization itself.\n\nBy loading the operating system, we mean launching a special program called the system kernel image (or kernel) for execution. The kernel image is almost an ordinary executable binary file. And the specificity of its launch is only that if any other program is launched under the control of a particular OS, which reads from the file system that is considered native by this OS, then the kernel must be launched as if by itself, without any operating system (since the kernel is the operating system), and from a medium unknown to the system (since the kernel itself has not yet been loaded). It is no coincidence that in the English-language literature there is a generally accepted metaphor for the boot process called bootstrapping, which can be allegorically translated as “pulling yourself up by the bootstraps.” And although in real life not everyone succeeds in this, in the world of POSIX systems this procedure is performed regularly - and, as a rule, successfully.\n\nThe system kernel image contains everything necessary for pure bootstrapping. However, this can only be done in this way from media without a file system. Therefore, as far as I know, direct kernel startup is used only when booting from a diskette. During normal OS startup from a hard drive, some external forces also participate in this - a special program called the bootloader. It loads the system kernel, is responsible for determining the hardware, loads object modules (loadable kernel modules) and mounts the root file system (in “read-only” mode). In the meantime, the kernel starts system processes (i.e., not associated with executable files) that manage virtual memory, buffers, memory pages, etc., up to the swapper, and after their completion - the first “normal” (i.e., associated with executable files on the disk) init process (/sbin/init).\n\nAfter that, the initialization system comes into play. Its role is to ensure, through the appropriate startup scripts (also known as initialization scripts), mounting the file system (and remounting root in “read/write” mode), launching the main system services, or daemons, calling the command to get a terminal (getty process) and user authorization (login). The end of the system startup is marked by an invitation to authorization.\n\nVisually, the boot and initialization stages differ in one or another visual appearance of the displayed messages. In DragonFlyBSD, for example, boot progress messages are displayed in radical white characters, which are replaced by muted white characters at the initialization stage.\n\nLoading and initialization are the first things a user sees in any OS. However, users of POSIX-compliant systems get this pleasure much less often than “windowsills”. The normal operating mode of a home Unix machine is to turn it on in the morning and turn it off in the evening. (However, everyone has their own ideas about “morning” and “evening”). And a working Unix machine should not be turned off at all - until it is completely physically damaged. And the need to restart the system while working in Linux or BSD arises extremely rarely. Actually, only after rebuilding and reinstalling a new kernel (or moving the root partition - but this is already an exceptional case) - in all other cases of system reconfiguration, you can do without it.\n\nSo what do users care about about how the system boots and how long it takes? However, sometimes some actions are required to configure these two stages of the process. Because when the system boots, not only the boot screen and possibly a menu with boot options are displayed, but also the kernel modules corresponding to the available hardware are loaded, the file system is mounted, the initialization script is started, the virtual terminal is opened, and so on. Of course, of all these actions, only the actual loading of the kernel is absolutely necessary; everything else can be done later. However, wouldn’t it be better to configure the system so that as soon as the boot procedure is finished, you get a completely ready-to-use system, rather than having to bring it to this state manually later?\n\nMoreover, understanding the loading and initialization processes will not be superfluous when it comes to interrupting these processes manually. And the need for such intervention - unfortunately - arises from time to time in emergency situations…\n\nSo, let’s go through the main stages of starting and initializing DragonFly and see what needs to be configured in it, as well as where and how (and most importantly, why) you can interfere with it.\n2. Regarding booting and bootloader\nIt is a good idea to start studying system startup from the first stage, i.e. the actual loading. As already mentioned, these stages are controlled by a special program, which in Russian is called bootloader. Although in English two terms are used, namely loader and boot manager (which, as we will see over time, are slightly different things, but now this is not important).\n\nIn fact, each bootloader includes two or even three relatively independent parts, even if they are distributed as a single package, such as Lilo or GRUB. To verify this, let’s imagine how a machine boots at the “hardware” level, so to speak (i.e. an Intel-compatible personal computer, on other architectures everything is a little different).\n\nFirst of all, after turning on the power, the program flashed into the computer’s ROM (BIOS) is launched. It checks the hardware, after which it finds the drive installed in the BIOS settings as the first boot device (to be more specific, the hard drive), inside it - the first physical block containing the so-called master boot record (MBR - Master Boot Record).\n\nThe content of the MBR is, first of all, the disk partition table - four identical partitions, one of which we once installed DragonFly on. And secondly, some code that takes control of the BIOS after its operation is complete. In a standard MBR, which is written to a “freshly installed” hard drive or recovered after the DOS FDISK /mbr command, this code can only find the first physical partition on the disk (the primary partition) and transfer control to its boot sector. Which is enough to boot an operating system like DOS or Windows 9X/ME from the first (or only) partition. But in other cases it is clearly not enough - for example, if several operating systems are installed on one disk, which, of course, cannot be contained in one partition.\n\nTherefore, each bootloader must include a program written in the MBR. Since the volume of the latter is only 512 KB (physical disk block size), part of which is already occupied by the partition table, it is not possible to include very rich functions in this program. Typically, it is able to identify all the primary partitions used, lists them and allows the user to select a partition to boot from, after which it transfers control to the boot sector of the selected partition.\n\nLike the MBR, the boot sector of a partition (Boot Record, no longer Master!) contains information about its layout (Disk Label), depending on the scheme used in a given operating system and the control code that replaces the programs written in the MBR. And this code is the second component of the bootloader. True, its capabilities cannot be rich either - after all, the size of the partition’s boot sector is the same 512 KB. And because of this, it is assigned a single function: to transfer control to programs located outside the boot sector. Which, in fact, must recognize the root partition of the operating system and the file system it carries, after which, directly or indirectly, it loads its kernel.\n\nIt is easy to guess that the first two components of the bootloader, in essence, have nothing to do with any operating system and are not part of the file system at all. But with the third there are several options. It can be part of a hierarchy of bootable operating system files, like Lilo, or represent something like an independent mini-OS, like GRUB (it is no coincidence that it is strongly recommended to install it on its own disk partition, not mounted by default at the root of a booted operating system). And what about the boot device of our hero, DragonFlyBSD?.\n3. Booting stages\nIn this operating system, programs common to all operating systems of the BSD family are used to boot the system. This program has its own name, and, interestingly, this name is BSD Loader (although, as will be explained later, this is somewhat arbitrary). I must admit that for several years of communication with FreeBSD and occasional acquaintance with its brothers (OpenBSD and even NetBSD), I somehow never had a reason to find out the structure of their bootloaders. Well, it loads native systems perfectly and wonderfully (for example, FreeBSD). It also loads other BSD systems, even better. The fact that it can load Linux without any effort is great. And the fact that it is also able to load Windows - it’s just a free application……\n\nHow would I remain in blissful ignorance if, in some way, in connection with installing FreeBSD on a Toshiba laptop, I didn’t have to dig a little with the BSD Loader option. And then it turns out that this is a program with great interactive capabilities, and in addition it has the possibility of being configured. Of course, it cannot be compared with GRUB, but if you are not experimenting with several operating systems on several hard drives, the loading function is more than enough. Which I will try to show below using the example of the DragonFlyBSD operating system. However, almost everything said applies to all other BSD systems (and to FreeBSD, and without reservation “almost”).\n\nThe main feature of the DragonFly bootloader (although almost everything said applies to all other BSD systems, and to FreeBSD, without the “almost” clause), which differentiates it from Lilo and, to a lesser extent, from GRUB, is that it does not disguise its multiple components, including four (almost) independent programs.\n\nThe first part of the bootloader (which is called boot0) is a program written during system installation in the boot sector of the disk from which the machine is booted according to the BIOS settings. Usually this is the Master on the first IDE channel (we will not talk about SCSI disks here), but there may be variations (for example, if there is a hardware ATA RAID or an additional ATA controller). The program is responsible for the first stage of the boot phase, which reads the partition table of the primary disk, displays their list (if there is more than one partition), waits a while for the user to choose (by default, the partition selected in the previous session will be bootable) and after that (or after a fixed waiting period) transfers control to the code written in the boot sector of the selected (or default) partition. The partition is selected by pressing the F1 - F4 keys. If there are two disks, pressing the F5 key will transfer control to the boot sector of the second disk, and then events will flow depending on what is written on it: the second physical disk boot0it itself is not able to read the partition.\n\nThe list of partitions to select includes their names according to the file system type identifier, for example:\n\n\n  F1 : DOS\n\n  F2 : Linux\n\n  F3 : BSD\n\n  F5 : Drive 1\n\n\nUntil now, BSD Loader could not recognize logical partitions within Extended DOS or boot any operating system from them. However, the situation seems to have changed now - this can be concluded from reports about the possibility of installing DragonFlyBSD on an extended partition (the only BSD system capable of this, as far as I know). But is it possible to imagine installing a system without the possibility of booting it with standard tools?\n\nIn principle, the presence of the first part of the BSD bootloader is not mandatory - it can easily be replaced by the Linux bootloader (the same Lilo, which transfers control to the boot sector of the BSD segment “along the chain”) or multisystem GRUB, which is able to work directly with system files and loads the kernels of several operating systems.\n\nThe second part (boot1) is located in the boot sector of the primary partition containing the BSD system (BSD segment). That is, boot0 and boot1 are located not only outside the file system, but also, in fact, outside the BSD segment itself. The third part (boot2) is already inside the segment, but is not included in any logical part.\n\nThe second and third parts of the bootloader are essentially one program, separated only by the size limitation of the partition’s boot sector (512 bytes). So, the job of boot1 is simply to recognize the BSD segment, find it in boot2 and transfer control to it. And the latter is obliged, after waiting a while, to recognize the root file system, find it and run the executable binary file: /boot/loader, which forms the fourth section of the bootloader; strictly speaking, the term BSD loader refers only to this program.\n\nSo, it can be seen that the first three parts of the BSD bootloader (boot0, boot1 and boot2) are outside the file system of the installed BSD operating system. We can only access it by launching the loader - a regular executable file that is placed in the special /boot directory of the root file system.\n\nIt is true that in the /boot directory (this is the “default” location of the loader), along with the executable files, you can also see files with the names boot0, boot1 and boot2. However, these files are simply copies of related code located (and executed) outside the BSD file system. The goal is to restore bootability after an emergency situation.\n\nThe task of the loader is to quickly load the kernel and a set of default modules, after which it displays a menu with the project logo, recognizable by the dragonfly (replacing the devil with a pitchfork from FreeBSD). The menu contains the following items:\n\n\n  Boot DragonFly [default]  : normal kernel boot with all the necessary modules (who and where to install them there will be more later) mounting the file system and executing the specified startup script.\n  Boot DragonFly with ACPI disabled  : the same thing, only with the acpi disabled module, which may sometimes be needed on some laptops.\n  Boot DragonFly in Safe Mode  : boot in safe mode, that is, without connecting modules.\n  Boot DragonFly in single user mode  : boot in single user mode, in which only the root file system is mounted (and only for reading), and the initialization stage is ignored.\n  Boot DragonFly with verbose logging  : normal boot, but with verbose messages.\n  Escape to loader prompt  : exit to the bootloader command line.\n  Reboot  : well, we know this like the back of our hand, only better.\n\n\nIf you don’t make any selection, the default options will start loading in ten seconds. To avoid this (and give yourself more time to think), just press the space bar - the countdown will stop and not load until you make a clear choice.\n\nAfter the selection or expiration of the statute of limitations, a rather long hardware detection process begins, during which numerous kernel messages, different from normal messages, are displayed on the screen in bright white “color” symbols. These messages are very interesting, but they are not easy to see. However, this is not scary - you can later view it with the dmesg command. After this, the root file system is mounted and the boot process is started from it (using the usual executable file /sbin/init), and the startup script is processed. To signal this, the bright white color of the kernel messages changes to the usual gray - the boot stage we are interested in today has ended.\n\n4. Interactive control of the boot process\nThe question arises: can the user influence the boot process? The answer will be yes. During the operation of the boot system, the user has the freedom to choose three times: choosing the boot partition at the initial boot0 stage, choosing interactive control at the boot2 stage, and choosing the boot mode immediately after starting the loader. And in all these cases, the user can intervene in the process manually. Why? This is another question, and I hope the answer will be clear in the following presentation.\n\nWith the choice of the boot partition, everything is clear: it allows you to boot one of the operating systems, if several of them are installed on a particular machine. But at the boot2 stage of work, it is possible to stop its execution, or rather, prevent its launch by the loader. To do this, in the pause between choosing to boot from the BSD partition and the appearance of a message about loading the kernel and modules (this pause is indicated by the appearance of a flashing symbol on the screen _), you need to press any key. In response there will be a message like the following:\n\n&gt;&gt; BSD/i386 BOOT\n Default: 0:ad(0,a)/boot/loader\n boot:\n\n\nAnd in the message, you can specify boot options other than the default ones. For example, you can boot directly from the system kernel image file. This might make sense after rebuilding the kernel, if the new one turns out to be incorrectly configured enough to boot (but, unfortunately, enough to compile).\n\nTo do this, you need to create a path to the old kernel in the image and likeness of the default version. That is, determine:\n\n\n  the disk number in the machine in accordance with the BIOS ( 0— the first of the available ones, 1— the second, and so on, regardless of the connection order);\n  its interface - in the example adit symbolizes an ATA disk (for a SCSI disk it would be da, for a floppy disk - fd);\n  number on the IDE channel (0 - master, 1 - slave);\n  partition in the sense used by BSD Label, that is, the part of a slice reserved for the BSD root file system ( a;The name of the old kernel image file is /kernel.old.\n\n\nIf there are several primary partitions of different types on the disk, then the non-BSD type partition will be skipped, and the letter a (obviously, the kernel image can only be on the root file system) will refer to the first subsection of the segment with identifier 165 (even if it is the fourth on the disk).\n\nIf you are not sure of the exact name of the file (and there may be several; before installing each new untested kernel, it is recommended to make a copy of the old one, which is known to work), you can enter a question mark on the command line, the answers to which will be a list of root directories (but not deeper: boot2 will not be able to see the contents of subdirectories, even within the same file system, at this stage).\n\nHowever, the same procedure - loading the old kernel - can (and should, because (it is much simpler) to be done through the loader, taking into account the interactive capabilities we are discussing now.\n\nThe menu loaderoffers a sufficient selection of modes for standard situations, but clearly does not cover all the non-standard ones (that’s what they are for). In particular, the option to load the old kernel is not provided in the menu. Fortunately, the penultimate menu item solves this problem (and many others).\n\nSo, by selecting the sixth menu item — Escape to loader prompt — we find ourselves in the command interpreter environment loader. It has a shell-like interface — commands with their options and arguments are entered after the prompt, which looks like\n\nOK\n\nIn terms of the convenience of interactive work, GRUB is certainly not one of them: it has no auto-completion, no command history, editing possibilities are limited to the Backspaceloader key. But it does a good job of its main function - entering and executing built-in commands.\n\nIn addition, there are quite a few such commands - a complete list of them can be obtained by entering a question mark on the command line. Help is also available,  the help command will give a short hint help\n\nThe loader built-in commands can be divided into three parts according to their purpose:\n\n\n  to obtain information.\n  to configure the bootloader.\n  actually to manage the loading process.\n\n\nFrom the first group of commands, we highlight the following: ls, lsdev, lsmod, show, more. The first is intended to view the root file system and its subdirectories, although only those that are not located in separate subsections. However, since all the files needed for loading are located in subdirectories of the root itself (in /boot, /dev, /modules), this limitation is not significant. The ls -l variant of the command displays a list of files (and directories) indicating their sizes; without this option, directories are simply marked with letters.\n\nThe lsdev command lists the disk devices present on the machine, its primary partitions and subpartitions (the latter only for partitions marked according to BSD label rules). The -v option provides output details.\n\nThe lsmod command provides a display of the loaded modules of the loader before the menu (or command line) appears. As in the previous case, there is a verbose option - -v.\n\nThe show command performs the same function, but with respect to loader variables. Without arguments, this command prints the values of all specified variables. If a variable name is specified as an argument, only its value is displayed. Multiple arguments, separated by semicolons, are allowed.\n\nWell, this command performs more of the same function as its name suggests among Unix utilities. This command allows viewing the contents of a text file, i.e., being in the loader’s command interpreter, we can familiarize ourselves with the settings that are important for loading (and others).\n\nConfiguration commands allow you to define or clear bootloader variables, load or remove kernel modules. As already mentioned, the kernel itself with a set of predefined modules and variables is loaded before the loader and command interpreter menu. So, using the appropriate commands, this predefined set can be slightly adjusted (or changed completely). This may be necessary if the default kernel configuration is not loaded for some reason (a common case is a conflict between the laptop’s power-saving system and the ACPI system module), for debugging purposes, or just to satisfy curiosity.\n\nFirst, let’s look at the module management commands. This is a pair of load commands for unloading and removing modules. The first one is used with the argument, which can be searched (using ls) in the /modules directory if necessary; the name in the argument is given without the *.ko suffix. An unload command with similar arguments will remove the specified module, without arguments; it will remove all modules completely, allowing you to start configuring from scratch.\n",
+  "datePublished": "2025-02-10 14:21:10 +0300",
+  "dateModified": "2025-02-10 14:21:10 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="UNIX BSD boot system and initialization"><meta itemprop="description" content="The system startup process is divided into two stages, which are only indirectly connected with each other"><meta itemprop="datePublished" content="2025-02-10"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-02-10T14:21:10+03:00">2025-02-10</time> </p><h1 class="page__title" itemprop="headline">UNIX BSD boot system and initialization
+</h1></header><section class="page__content" itemprop="text">
+        <p>In this article, the boot and initialization process of a BSD system will be discussed sequentially - from the machine being turned on to the command line prompt. Similar to how this was done for Linux in Greg O’Keefe’s famous manuscript, From PowerUp To Bash - the idea of ??which this work is based on.</p>
+
+<p>This discussion is based on the DragonFlyBSD example, but almost everything described is also applicable to FreeBSD, and probably other BSD systems as well.<br /><br /></p>
+<h2 id="1-what-is--system-startup">1. What is  system startup</h2>
+<p>The system startup process is divided into two stages, which are only indirectly connected with each other - its loading and initialization itself.</p>
+
+<p>By loading the operating system, we mean launching a special program called the system kernel image (or kernel) for execution. The kernel image is almost an ordinary executable binary file. And the specificity of its launch is only that if any other program is launched under the control of a particular OS, which reads from the file system that is considered native by this OS, then the kernel must be launched as if by itself, without any operating system (since the kernel is the operating system), and from a medium unknown to the system (since the kernel itself has not yet been loaded). It is no coincidence that in the English-language literature there is a generally accepted metaphor for the boot process called bootstrapping, which can be allegorically translated as “pulling yourself up by the bootstraps.” And although in real life not everyone succeeds in this, in the world of POSIX systems this procedure is performed regularly - and, as a rule, successfully.</p>
+
+<p>The system kernel image contains everything necessary for pure bootstrapping. However, this can only be done in this way from media without a file system. Therefore, as far as I know, direct kernel startup is used only when booting from a diskette. During normal OS startup from a hard drive, some external forces also participate in this - a special program called the bootloader. It loads the system kernel, is responsible for determining the hardware, loads object modules (loadable kernel modules) and mounts the root file system (in “read-only” mode). In the meantime, the kernel starts system processes (i.e., not associated with executable files) that manage virtual memory, buffers, memory pages, etc., up to the swapper, and after their completion - the first “normal” (i.e., associated with executable files on the disk) init process (/sbin/init).</p>
+
+<p>After that, the initialization system comes into play. Its role is to ensure, through the appropriate startup scripts (also known as initialization scripts), mounting the file system (and remounting root in “read/write” mode), launching the main system services, or daemons, calling the command to get a terminal (getty process) and user authorization (login). The end of the system startup is marked by an invitation to authorization.</p>
+
+<p>Visually, the boot and initialization stages differ in one or another visual appearance of the displayed messages. In DragonFlyBSD, for example, boot progress messages are displayed in radical white characters, which are replaced by muted white characters at the initialization stage.</p>
+
+<p>Loading and initialization are the first things a user sees in any OS. However, users of POSIX-compliant systems get this pleasure much less often than “windowsills”. The normal operating mode of a home Unix machine is to turn it on in the morning and turn it off in the evening. (However, everyone has their own ideas about “morning” and “evening”). And a working Unix machine should not be turned off at all - until it is completely physically damaged. And the need to restart the system while working in Linux or BSD arises extremely rarely. Actually, only after rebuilding and reinstalling a new kernel (or moving the root partition - but this is already an exceptional case) - in all other cases of system reconfiguration, you can do without it.</p>
+
+<p>So what do users care about about how the system boots and how long it takes? However, sometimes some actions are required to configure these two stages of the process. Because when the system boots, not only the boot screen and possibly a menu with boot options are displayed, but also the kernel modules corresponding to the available hardware are loaded, the file system is mounted, the initialization script is started, the virtual terminal is opened, and so on. Of course, of all these actions, only the actual loading of the kernel is absolutely necessary; everything else can be done later. However, wouldn’t it be better to configure the system so that as soon as the boot procedure is finished, you get a completely ready-to-use system, rather than having to bring it to this state manually later?</p>
+
+<p>Moreover, understanding the loading and initialization processes will not be superfluous when it comes to interrupting these processes manually. And the need for such intervention - unfortunately - arises from time to time in emergency situations…</p>
+
+<p>So, let’s go through the main stages of starting and initializing DragonFly and see what needs to be configured in it, as well as where and how (and most importantly, why) you can interfere with it.<br /><br /></p>
+<h2 id="2-regarding-booting-and-bootloader">2. Regarding booting and bootloader</h2>
+<p>It is a good idea to start studying system startup from the first stage, i.e. the actual loading. As already mentioned, these stages are controlled by a special program, which in Russian is called bootloader. Although in English two terms are used, namely loader and boot manager (which, as we will see over time, are slightly different things, but now this is not important).</p>
+
+<p>In fact, each bootloader includes two or even three relatively independent parts, even if they are distributed as a single package, such as Lilo or GRUB. To verify this, let’s imagine how a machine boots at the “hardware” level, so to speak (i.e. an Intel-compatible personal computer, on other architectures everything is a little different).</p>
+
+<p>First of all, after turning on the power, the program flashed into the computer’s ROM (BIOS) is launched. It checks the hardware, after which it finds the drive installed in the BIOS settings as the first boot device (to be more specific, the hard drive), inside it - the first physical block containing the so-called master boot record (MBR - Master Boot Record).</p>
+
+<p>The content of the MBR is, first of all, the disk partition table - four identical partitions, one of which we once installed DragonFly on. And secondly, some code that takes control of the BIOS after its operation is complete. In a standard MBR, which is written to a “freshly installed” hard drive or recovered after the DOS FDISK /mbr command, this code can only find the first physical partition on the disk (the primary partition) and transfer control to its boot sector. Which is enough to boot an operating system like DOS or Windows 9X/ME from the first (or only) partition. But in other cases it is clearly not enough - for example, if several operating systems are installed on one disk, which, of course, cannot be contained in one partition.</p>
+
+<p>Therefore, each bootloader must include a program written in the MBR. Since the volume of the latter is only 512 KB (physical disk block size), part of which is already occupied by the partition table, it is not possible to include very rich functions in this program. Typically, it is able to identify all the primary partitions used, lists them and allows the user to select a partition to boot from, after which it transfers control to the boot sector of the selected partition.</p>
+
+<p>Like the MBR, the boot sector of a partition (Boot Record, no longer Master!) contains information about its layout (Disk Label), depending on the scheme used in a given operating system and the control code that replaces the programs written in the MBR. And this code is the second component of the bootloader. True, its capabilities cannot be rich either - after all, the size of the partition’s boot sector is the same 512 KB. And because of this, it is assigned a single function: to transfer control to programs located outside the boot sector. Which, in fact, must recognize the root partition of the operating system and the file system it carries, after which, directly or indirectly, it loads its kernel.</p>
+
+<p>It is easy to guess that the first two components of the bootloader, in essence, have nothing to do with any operating system and are not part of the file system at all. But with the third there are several options. It can be part of a hierarchy of bootable operating system files, like Lilo, or represent something like an independent mini-OS, like GRUB (it is no coincidence that it is strongly recommended to install it on its own disk partition, not mounted by default at the root of a booted operating system). And what about the boot device of our hero, DragonFlyBSD?.<br /><br /></p>
+<h2 id="3-booting-stages">3. Booting stages</h2>
+<p>In this operating system, programs common to all operating systems of the BSD family are used to boot the system. This program has its own name, and, interestingly, this name is BSD Loader (although, as will be explained later, this is somewhat arbitrary). I must admit that for several years of communication with FreeBSD and occasional acquaintance with its brothers (OpenBSD and even NetBSD), I somehow never had a reason to find out the structure of their bootloaders. Well, it loads native systems perfectly and wonderfully (for example, FreeBSD). It also loads other BSD systems, even better. The fact that it can load Linux without any effort is great. And the fact that it is also able to load Windows - it’s just a free application……</p>
+
+<p>How would I remain in blissful ignorance if, in some way, in connection with installing FreeBSD on a Toshiba laptop, I didn’t have to dig a little with the BSD Loader option. And then it turns out that this is a program with great interactive capabilities, and in addition it has the possibility of being configured. Of course, it cannot be compared with GRUB, but if you are not experimenting with several operating systems on several hard drives, the loading function is more than enough. Which I will try to show below using the example of the DragonFlyBSD operating system. However, almost everything said applies to all other BSD systems (and to FreeBSD, and without reservation “almost”).</p>
+
+<p>The main feature of the DragonFly bootloader (although almost everything said applies to all other BSD systems, and to FreeBSD, without the “almost” clause), which differentiates it from Lilo and, to a lesser extent, from GRUB, is that it does not disguise its multiple components, including four (almost) independent programs.</p>
+
+<p>The first part of the bootloader (which is called boot0) is a program written during system installation in the boot sector of the disk from which the machine is booted according to the BIOS settings. Usually this is the Master on the first IDE channel (we will not talk about SCSI disks here), but there may be variations (for example, if there is a hardware ATA RAID or an additional ATA controller). The program is responsible for the first stage of the boot phase, which reads the partition table of the primary disk, displays their list (if there is more than one partition), waits a while for the user to choose (by default, the partition selected in the previous session will be bootable) and after that (or after a fixed waiting period) transfers control to the code written in the boot sector of the selected (or default) partition. The partition is selected by pressing the F1 - F4 keys. If there are two disks, pressing the F5 key will transfer control to the boot sector of the second disk, and then events will flow depending on what is written on it: the second physical disk boot0it itself is not able to read the partition.</p>
+
+<p>The list of partitions to select includes their names according to the file system type identifier, for example:</p>
+
+<blockquote>
+  <p>F1 : DOS</p>
+
+  <p>F2 : Linux</p>
+
+  <p>F3 : BSD</p>
+
+  <p>F5 : Drive 1</p>
+</blockquote>
+
+<p>Until now, BSD Loader could not recognize logical partitions within Extended DOS or boot any operating system from them. However, the situation seems to have changed now - this can be concluded from reports about the possibility of installing DragonFlyBSD on an extended partition (the only BSD system capable of this, as far as I know). But is it possible to imagine installing a system without the possibility of booting it with standard tools?</p>
+
+<p>In principle, the presence of the first part of the BSD bootloader is not mandatory - it can easily be replaced by the Linux bootloader (the same Lilo, which transfers control to the boot sector of the BSD segment “along the chain”) or multisystem GRUB, which is able to work directly with system files and loads the kernels of several operating systems.</p>
+
+<p>The second part (boot1) is located in the boot sector of the primary partition containing the BSD system (BSD segment). That is, boot0 and boot1 are located not only outside the file system, but also, in fact, outside the BSD segment itself. The third part (boot2) is already inside the segment, but is not included in any logical part.</p>
+
+<p>The second and third parts of the bootloader are essentially one program, separated only by the size limitation of the partition’s boot sector (512 bytes). So, the job of boot1 is simply to recognize the BSD segment, find it in boot2 and transfer control to it. And the latter is obliged, after waiting a while, to recognize the root file system, find it and run the executable binary file: /boot/loader, which forms the fourth section of the bootloader; strictly speaking, the term BSD loader refers only to this program.</p>
+
+<p>So, it can be seen that the first three parts of the BSD bootloader (boot0, boot1 and boot2) are outside the file system of the installed BSD operating system. We can only access it by launching the loader - a regular executable file that is placed in the special /boot directory of the root file system.</p>
+
+<p>It is true that in the /boot directory (this is the “default” location of the loader), along with the executable files, you can also see files with the names boot0, boot1 and boot2. However, these files are simply copies of related code located (and executed) outside the BSD file system. The goal is to restore bootability after an emergency situation.</p>
+
+<p>The task of the loader is to quickly load the kernel and a set of default modules, after which it displays a menu with the project logo, recognizable by the dragonfly (replacing the devil with a pitchfork from FreeBSD). The menu contains the following items:</p>
+
+<ul>
+  <li><strong>Boot DragonFly [default]</strong>  : normal kernel boot with all the necessary modules (who and where to install them there will be more later) mounting the file system and executing the specified startup script.</li>
+  <li><strong>Boot DragonFly with ACPI disabled</strong>  : the same thing, only with the acpi disabled module, which may sometimes be needed on some laptops.</li>
+  <li><strong>Boot DragonFly in Safe Mode</strong>  : boot in safe mode, that is, without connecting modules.</li>
+  <li><strong>Boot DragonFly in single user mode</strong>  : boot in single user mode, in which only the root file system is mounted (and only for reading), and the initialization stage is ignored.</li>
+  <li><strong>Boot DragonFly with verbose logging</strong>  : normal boot, but with verbose messages.</li>
+  <li><strong>Escape to loader prompt</strong>  : exit to the bootloader command line.</li>
+  <li><strong>Reboot</strong>  : well, we know this like the back of our hand, only better.</li>
+</ul>
+
+<p>If you don’t make any selection, the default options will start loading in ten seconds. To avoid this (and give yourself more time to think), just press the space bar - the countdown will stop and not load until you make a clear choice.</p>
+
+<p>After the selection or expiration of the statute of limitations, a rather long hardware detection process begins, during which numerous kernel messages, different from normal messages, are displayed on the screen in bright white “color” symbols. These messages are very interesting, but they are not easy to see. However, this is not scary - you can later view it with the dmesg command. After this, the root file system is mounted and the boot process is started from it (using the usual executable file /sbin/init), and the startup script is processed. To signal this, the bright white color of the kernel messages changes to the usual gray - the boot stage we are interested in today has ended.</p>
+
+<h2 id="4-interactive-control-of-the-boot-process">4. Interactive control of the boot process</h2>
+<p>The question arises: can the user influence the boot process? The answer will be yes. During the operation of the boot system, the user has the freedom to choose three times: choosing the boot partition at the initial boot0 stage, choosing interactive control at the boot2 stage, and choosing the boot mode immediately after starting the loader. And in all these cases, the user can intervene in the process manually. Why? This is another question, and I hope the answer will be clear in the following presentation.</p>
+
+<p>With the choice of the boot partition, everything is clear: it allows you to boot one of the operating systems, if several of them are installed on a particular machine. But at the boot2 stage of work, it is possible to stop its execution, or rather, prevent its launch by the loader. To do this, in the pause between choosing to boot from the BSD partition and the appearance of a message about loading the kernel and modules (this pause is indicated by the appearance of a flashing symbol on the screen _), you need to press any key. In response there will be a message like the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt; BSD/i386 BOOT
+ Default: 0:ad(0,a)/boot/loader
+ boot:
+</code></pre></div></div>
+
+<p>And in the message, you can specify boot options other than the default ones. For example, you can boot directly from the system kernel image file. This might make sense after rebuilding the kernel, if the new one turns out to be incorrectly configured enough to boot (but, unfortunately, enough to compile).</p>
+
+<p>To do this, you need to create a path to the old kernel in the image and likeness of the default version. That is, determine:</p>
+
+<ul>
+  <li>the disk number in the machine in accordance with the BIOS ( 0— the first of the available ones, 1— the second, and so on, regardless of the connection order);</li>
+  <li>its interface - in the example adit symbolizes an ATA disk (for a SCSI disk it would be da, for a floppy disk - fd);</li>
+  <li>number on the IDE channel (0 - master, 1 - slave);</li>
+  <li>partition in the sense used by BSD Label, that is, the part of a slice reserved for the BSD root file system ( a;The name of the old kernel image file is /kernel.old.</li>
+</ul>
+
+<p>If there are several primary partitions of different types on the disk, then the non-BSD type partition will be skipped, and the letter a (obviously, the kernel image can only be on the root file system) will refer to the first subsection of the segment with identifier 165 (even if it is the fourth on the disk).</p>
+
+<p>If you are not sure of the exact name of the file (and there may be several; before installing each new untested kernel, it is recommended to make a copy of the old one, which is known to work), you can enter a question mark on the command line, the answers to which will be a list of root directories (but not deeper: boot2 will not be able to see the contents of subdirectories, even within the same file system, at this stage).</p>
+
+<p>However, the same procedure - loading the old kernel - can (and should, because (it is much simpler) to be done through the loader, taking into account the interactive capabilities we are discussing now.</p>
+
+<p>The menu loaderoffers a sufficient selection of modes for standard situations, but clearly does not cover all the non-standard ones (that’s what they are for). In particular, the option to load the old kernel is not provided in the menu. Fortunately, the penultimate menu item solves this problem (and many others).</p>
+
+<p>So, by selecting the sixth menu item — Escape to loader prompt — we find ourselves in the command interpreter environment loader. It has a shell-like interface — commands with their options and arguments are entered after the prompt, which looks like</p>
+
+<p><strong>OK</strong></p>
+
+<p>In terms of the convenience of interactive work, GRUB is certainly not one of them: it has no auto-completion, no command history, editing possibilities are limited to the Backspaceloader key. But it does a good job of its main function - entering and executing built-in commands.</p>
+
+<p>In addition, there are quite a few such commands - a complete list of them can be obtained by entering a question mark on the command line. Help is also available,  the help command will give a short hint help</p>
+
+<p>The loader built-in commands can be divided into three parts according to their purpose:</p>
+
+<ul>
+  <li>to obtain information.</li>
+  <li>to configure the bootloader.</li>
+  <li>actually to manage the loading process.</li>
+</ul>
+
+<p>From the first group of commands, we highlight the following: ls, lsdev, lsmod, show, more. The first is intended to view the root file system and its subdirectories, although only those that are not located in separate subsections. However, since all the files needed for loading are located in subdirectories of the root itself (in /boot, /dev, /modules), this limitation is not significant. The ls -l variant of the command displays a list of files (and directories) indicating their sizes; without this option, directories are simply marked with letters.</p>
+
+<p>The lsdev command lists the disk devices present on the machine, its primary partitions and subpartitions (the latter only for partitions marked according to BSD label rules). The -v option provides output details.</p>
+
+<p>The lsmod command provides a display of the loaded modules of the loader before the menu (or command line) appears. As in the previous case, there is a verbose option - -v.</p>
+
+<p>The show command performs the same function, but with respect to loader variables. Without arguments, this command prints the values of all specified variables. If a variable name is specified as an argument, only its value is displayed. Multiple arguments, separated by semicolons, are allowed.</p>
+
+<p>Well, this command performs more of the same function as its name suggests among Unix utilities. This command allows viewing the contents of a text file, i.e., being in the loader’s command interpreter, we can familiarize ourselves with the settings that are important for loading (and others).</p>
+
+<p>Configuration commands allow you to define or clear bootloader variables, load or remove kernel modules. As already mentioned, the kernel itself with a set of predefined modules and variables is loaded before the loader and command interpreter menu. So, using the appropriate commands, this predefined set can be slightly adjusted (or changed completely). This may be necessary if the default kernel configuration is not loaded for some reason (a common case is a conflict between the laptop’s power-saving system and the ACPI system module), for debugging purposes, or just to satisfy curiosity.</p>
+
+<p>First, let’s look at the module management commands. This is a pair of load commands for unloading and removing modules. The first one is used with the argument, which can be searched (using ls) in the /modules directory if necessary; the name in the argument is given without the *.ko suffix. An unload command with similar arguments will remove the specified module, without arguments; it will remove all modules completely, allowing you to start configuring from scratch.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-02-10T14:21:10+03:00">2025-02-10</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#unixshell" class="page__taxonomy-item" rel="tag">UnixShell</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#en" class="page__taxonomy-item" rel="tag">en</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/en/freebsd/2025/02/09/public-dns-server-freebsd-doh-dot/" class="pagination--pager" title="Best free Public DNS Server with DOH and DOT encryption
+">Previous</a><a href="https://penaadventure.com/ru/openbsd/2025/02/11/install-htop-command-on-freebsd/" class="pagination--pager" title="How to Install HTOP Command on FreeBSD
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>

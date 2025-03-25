@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/"/>
+
+  <meta charset="utf-8">
+  
+  <title>Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache"><link rel="canonical" href="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/">
+  <meta property="og:url" content="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/"><meta property="og:description" content="Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами."><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache">
+  <meta name="twitter:description" content="Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами.">
+  <meta name="twitter:url" content="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2024-02-15T19:00:00+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#ru" itemprop="item"><span itemprop="name">Ru</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2024" itemprop="item"><span itemprop="name">2024</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#02" itemprop="item"><span itemprop="name">02</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#15" itemprop="item"><span itemprop="name">15</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2024-02-15 19:00:00 +0300",
+"datePublished": "2024-02-15 19:00:00 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами."
+},
+
+"datePublished": "2024-02-15 19:00:00 +0300",
+"dateModified": "2024-02-15 19:00:00 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/",
+"name": "Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/",
+"name": "SysAdmin"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/ru/freebsd/2024/02/15/freebsd-magento-adobe-commerce-php-apache/",
+  "name": "Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache",
+  "headline": "Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache",
+  "keywords": "SysAdmin",
+  "description": "Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами.",
+  "articleBody": "Magento — это приложение CMS Framework, предназначенное для запуска крупномасштабных и сложных проектов электронной коммерции. Основная цель — помочь владельцам интернет-магазинов с сотнями и тысячами товаров. Простота управления тысячами продуктов делает его очень популярным среди крупных предпринимателей.\n\nMagento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами. Функции Magento предоставляют инструменты для создания и управления интернет-магазинами и платформами для онлайн-торговли. Magento обеспечивает более плавную навигацию, лучшую конверсию и улучшенный пользовательский опыт.\n\nMagento обеспечивает гибкую настройку, масштабируемость и расширяемость для различных типов онлайн-бизнеса. Платформа Magento CMS также поддерживает множество функций, включая управление продуктами, заказы, платежи, доставку и маркетинговые инструменты для улучшения качества обслуживания клиентов. Это позволяет компаниям создавать и управлять эффективными интернет-магазинами с различными функциями и возможностями, которые могут помочь владельцам магазинов развивать свой бизнес.\n\nMagento, также известная как Adobe Commerce, — это решение для электронной коммерции, предназначенное для крупных интернет-торговцев, разработанное с учетом того, что разработчикам необходимо самостоятельно разрабатывать интернет-магазины. Magento обеспечивает простое управление товарными запасами и продажами для лучшего управления вашим интернет-магазином. Этот интернет-магазин также предоставляет конструктор страниц, поэтому вы можете легко создавать и оформлять веб-страницы в соответствии со своими пожеланиями.\n\nВ этой статье мы изучим процесс установки и настройки Adobe Magento, чтобы вы могли отображать платформу Magento на экране Google Chrome.\n\nТехнические характеристики системы\n\n\n  OS: FreeBSD 13.3\n  Hostname: ns3\n  IP FreeBSD: 192.168.5.2\n  Database server: MySQL8\n  Web server: Apache24\n  PHP: PHP82, PHP Composer\n  PHP FPM\n  Elasticsearch: elasticsearch8\n  Dependencies: php82-opcache php82-session php82-pecl-APCu php82-bcmath php82-bz2 php82-ctype php82-curl php82-dom php82-exif php82-fileinfo php82-filter php82-gd php82-gmp php82-iconv php82-intl php82-ldap php82-mbstring php82-pecl-msgpack php82-mysqli php82-pcntl php82-pdo php82-phar php82-posix php82-simplexml php82-sodium php82-sysvsem php82-tokenizer php82-xml php82-xmlwriter php82-zip php82-zlib php82-pecl-memcache php82-pecl-memcached php82-pdo_mysql php82-xmlreader php82-xsl php82-soap\n\n\nУстановить зависимости\nAdobe Magento имеет множество PHP-зависимостей. При первой настройке Magento необходимо установить зависимости. Потому что если вы не установите зависимости, не ожидайте, что сможете нормально запустить Magento. Все зависимости написаны на PHP, что очень полезно для Magento, поскольку позволяет подключать веб-сайт к базам данных и веб-серверам, таким как Apache.\n\nЧтобы упростить задачу, вы можете установить зависимости Magento с помощью пакета FreeBSD PKG. Вот как установить зависимости Magento с помощью PKG.\n\nroot@ns3:/usr/local/www # pkg install php82-opcache php82-session php82-pecl-APCu php82-bcmath php82-bz2 php82-ctype php82-curl php82-dom php82-exif php82-fileinfo php82-filter php82-gd php82-gmp php82-iconv php82-intl php82-ldap php82-mbstring php82-pecl-msgpack php82-mysqli php82-pcntl php82-pdo php82-phar php82-posix php82-simplexml php82-sodium php82-sysvsem php82-tokenizer php82-xml php82-xmlwriter php82-zip php82-zlib php82-pecl-memcache php82-pecl-memcached php82-pdo_mysql php82-xmlreader php82-xsl php82-soap\n\n\nСоздать базу данных для Adobe Magento\nВ этой статье мы предполагаем, что все перечисленные выше системные спецификации установлены на сервере FreeBSD. Поэтому мы не будем обсуждать вышеуказанные приложения. Давайте перейдем непосредственно к основной теме статьи.\n\nСоздание базы данных является важной частью настройки Magento. Все ваши данные, такие как название продукта и данные о клиентах, будут храниться в базе данных. В этой статье мы будем использовать сервер MySQL для создания базы данных Magento.\n\nПриведенные ниже команды помогут вам создать базу данных Maento с сервером MySQL.\n\nroot@ns3:~ # mysql -u root -p\nroot@localhost [(none)]&gt; CREATE DATABASE magento CHARACTER SET utf8;\nroot@localhost [(none)]&gt; CREATE USER 'usermagento'@'localhost' IDENTIFIED BY 'router12345';\nroot@localhost [(none)]&gt; GRANT ALL PRIVILEGES ON magento.* TO 'usermagento'@'localhost';\nroot@localhost [(none)]&gt; FLUSH PRIVILEGES;\nroot@localhost [(none)]&gt; exit;\nroot@ns3:~ #\n\n\nСоздание открытых и закрытых ключей Adobe Magento\nПеред началом процесса установки Magento необходимо создать открытый и закрытый ключ Magento. Этот ключ используется для аутентификации доступа к репозиторию repo.magento.com. Потому что каждый раз при доступе к repo.magento.com требуются как открытый, так и закрытый ключи. Этот ключ используется для заполнения:\nUsername = public key\nPassword = private key\n\nПолучить или сгенерировать ключ можно, зайдя на сайт торговой площадки Magento.\n\n  Первый вход на https://marketplace.magento.com/\n  Если у вас нет учетной записи Magento, создайте новую учетную запись по адресу https://account.magento.com/applications/customer/login/\n  Если у вас уже есть учетная запись Magento, войдите в систему, используя свои учетные данные Magento.\n  После успешного входа откройте меню «Мой профиль».\n  Нажмите «Ключ доступа».\n  Выберите меню «Magento2».\n  Чтобы создать новый ключ, нажмите меню «Создать новый ключ доступа».\n\n\nКак установить Adobe Magento\nВ системах FreeBSD репозиторий Magento недоступен в PKG или портах. При установке Magento и модулей Magento активно используются модули Composer. Поэтому перед установкой Magento необходимо сначала установить Composer. Еще одной важной деталью при использовании Composer является то, что переменная memory_limit (PHP) должна быть установлена ​​на 4 ГБ. При достижении предела в 2 ГБ Composer может вызвать сбой PHP с фатальной ошибкой в ​​процессе установки.\n\nПервым шагом будет создание рабочего каталога для Magento, мы поместим этот каталог в блок сервера Apache, а именно /usr/local/www.\n\nroot@ns3:~ # mkdir -p /usr/local/www/magento\n\n\nПосле этого создайте проект Magento с помощью Composer.\n\nroot@ns3:~ # cd /usr/local/www\nroot@ns3:/usr/local/www # composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition magento\n\n\nПри запуске указанной выше команды Composer запросит имя пользователя и пароль. Используйте пароль и пользователя, созданные вами выше. После этого установите Magento с помощью команды ниже.\n\nroot@ns3:/usr/local/www # cd magento\nroot@ns3:/usr/local/www/magento # composer install --ignore-platform-req=ext-sockets\n\n\nТакже установите сокеты для PHP.\n\nroot@ns3:/usr/local/www/magento # pkg install php82-sockets\n\n\nТакже выполните команду ниже, чтобы продолжить установку Magento.\n\nroot@ns3:/usr/local/www/magento/bin # ./magento setup:install --base-url=http://192.168.5.2/magento --db-host=localhost --db-name=magento --db-user=usermagento --db-password=router12345 --admin-firstname=john --admin-lastname=doe --admin-email=datainchi@gmail.com --admin-user=admin --admin-password=admin123 --language=en_US --currency=USD --timezone=America/New_York --use-rewrites=1 --search-engine=elasticsearch8 --elasticsearch-host=http://192.168.5.2 --elasticsearch-port=9200\n\n\nВ процессе установки Magento на FreeBSD следует обратить внимание на приложение Elasticsearch. Перед установкой Magento вам необходимо установить это приложение.\n\nПосле этого откройте файл elasticsearch.yml и отредактируйте скрипт, как в примере ниже.\n\nroot@ns3:~ # ee /usr/local/etc/elasticsearch/elasticsearch.yml\ncluster.name: magento\nnode.name: node-1\npath.data: /var/db/elasticsearch\npath.logs: /var/run/elasticsearch\nbootstrap.memory_lock: true\nnetwork.host: 192.168.5.2\nhttp.port: 9200\ndiscovery.seed_hosts: [\"127.0.0.1\", \"[::1]\"]\ndiscovery.type: single-node\nxpack.ml.enabled: false\nxpack.security.enabled: false\nxpack.security.enrollment.enabled: false\n\n\nНачиная с версии Magento 2.2, для управления файлами журналов был добавлен файл crontab. В FreeBSD вы можете управлять файлами crontab в /etc/crontab. Выполните команду ниже, чтобы установить файл crontab.\n\nroot@ns3:~ # cd /usr/local/www/magento/bin\nroot@ns3:/usr/local/www/magento/bin # ./magento cron:install --force\nCrontab has been generated and saved\n\n\nЗатем в файл /etc/crontab добавьте скрипт, указанный ниже.\n\nroot@ns3:/usr/local/www/magento/bin # ee /etc/crontab\n* * * * * /usr/local/bin/php /usr/local/www/magento/bin/magento cron:run 2&gt;&amp;1 | grep -v \"Ran jobs by schedule\" &gt;&gt; /usr/local/www/magento/var/log/magento.cron.log\n\n\nДалее выполните команды ниже, чтобы обновить базу данных, развернуть файлы статического представления и отключить двухфакторную аутентификацию.\n\nroot@ns3:/usr/local/www/magento/bin # ./magento indexer:reindex &amp;&amp; ./magento se:up &amp;&amp; ./magento se:s:d -f &amp;&amp; ./magento c:f &amp;&amp; ./magento module:disable Magento_TwoFactorAuth\n\n\nЗатем вы добавляете права доступа и владельца к файлам и папкам Magento.\n\nroot@ns3:~ # chown -R www:www /usr/local/www/magento/\nroot@ns3:~ # chmod -R 775 /usr/local/www/magento\n\n\nСоздать Apache Vhost\nВ качестве интерфейса Magento мы будем использовать Apache24 как веб-сервер. С помощью Apache Magento можно отображать и настраивать через Google Chrome. Чтобы подключить Magento к Apache, вам необходимо включить файл виртуального хоста Apache. В файле httpd.conf включите файл vhost, удалив знак «#», см. пример ниже.\n\nroot@ns3:~ # cd /usr/local/etc/apache24\nroot@ns3:/usr/local/etc/apache24 # ee httpd.conf\n#Include etc/apache24/extra/httpd-vhosts.conf\nInclude etc/apache24/extra/httpd-vhosts.conf\n\n\nПосле этого удалите все скрипты /usr/local/etc/apache24/extra/vhost.conf и замените их скриптами, приведенными ниже (настройте под свою серверную систему FreeBSD).\n\nroot@ns3:/usr/local/etc/apache24 # cd extra\nroot@ns3:/usr/local/etc/apache24/extra # ee httpd-vhosts.conf\n&lt;VirtualHost *:80&gt;\n    ServerAdmin datainchi@gmail.com\n    DocumentRoot \"/usr/local/www/magento/pub\"\n    ServerName datainchi.com\n    ServerAlias www.datainchi.com\nSetEnv MAGE_RUN_CODE \"base\"\n    SetEnv MAGE_RUN_TYPE \"website\"\n\n  &lt;Directory /usr/local/www/magento/pub&gt;\n       Options Indexes FollowSymLinks MultiViews\n       AllowOverride All\n       Require all granted\n  &lt;/Directory&gt;\n\n    ErrorLog \"/var/log/dummy-host.example.com-error_log\"\n    CustomLog \"/var/log/dummy-host.example.com-access_log\" common\n&lt;/VirtualHost&gt;\n\n\nСледующий шаг — перезапуск Apache24.\n\nroot@ns3:~ # service apache24 restart\n\n\nПоследний шаг — проверка, для чего откройте Google Chrome и введите «http://192.168.5.2/magento/setup/» или «http://192.168.5.2/magento/pub/». Просмотрите результаты в Google Chrome. Если ваши настройки верны, появится меню конфигурации Magento.\n\nЕсли вы хотите использовать Magento для открытия интернет-магазина, полное и понятное руководство по установке и настройке облегчит этот процесс. В этом руководстве показано, как вручную настроить Magento на сервере FreeBSD. Однако существующий скрипт можно использовать на серверах Linux, таких как Ubuntu. Мы представляем все содержание этой статьи в полном объеме и можем помочь тем из вас, кто хочет создать интернет-магазин на Magento.\n\n",
+  "datePublished": "2024-02-15 19:00:00 +0300",
+  "dateModified": "2024-02-15 19:00:00 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache"><meta itemprop="description" content="Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами."><meta itemprop="datePublished" content="2024-02-15"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-02-15T19:00:00+03:00">2024-02-15</time> </p><h1 class="page__title" itemprop="headline">Настройка FreeBSD Magento Adobe Commerce с PHP Composer и Apache
+</h1></header><section class="page__content" itemprop="text">
+        <p>Magento — это приложение CMS Framework, предназначенное для запуска крупномасштабных и сложных проектов электронной коммерции. Основная цель — помочь владельцам интернет-магазинов с сотнями и тысячами товаров. Простота управления тысячами продуктов делает его очень популярным среди крупных предпринимателей.</p>
+
+<p>Magento, написанная на PHP и разработанная Adobe, представляет собой платформу электронной коммерции с открытым исходным кодом для управления интернет-магазинами. Функции Magento предоставляют инструменты для создания и управления интернет-магазинами и платформами для онлайн-торговли. Magento обеспечивает более плавную навигацию, лучшую конверсию и улучшенный пользовательский опыт.</p>
+
+<p>Magento обеспечивает гибкую настройку, масштабируемость и расширяемость для различных типов онлайн-бизнеса. Платформа Magento CMS также поддерживает множество функций, включая управление продуктами, заказы, платежи, доставку и маркетинговые инструменты для улучшения качества обслуживания клиентов. Это позволяет компаниям создавать и управлять эффективными интернет-магазинами с различными функциями и возможностями, которые могут помочь владельцам магазинов развивать свой бизнес.</p>
+
+<p>Magento, также известная как Adobe Commerce, — это решение для электронной коммерции, предназначенное для крупных интернет-торговцев, разработанное с учетом того, что разработчикам необходимо самостоятельно разрабатывать интернет-магазины. Magento обеспечивает простое управление товарными запасами и продажами для лучшего управления вашим интернет-магазином. Этот интернет-магазин также предоставляет конструктор страниц, поэтому вы можете легко создавать и оформлять веб-страницы в соответствии со своими пожеланиями.</p>
+
+<p>В этой статье мы изучим процесс установки и настройки Adobe Magento, чтобы вы могли отображать платформу Magento на экране Google Chrome.</p>
+
+<h1 id="технические-характеристики-системы">Технические характеристики системы</h1>
+
+<ul>
+  <li>OS: FreeBSD 13.3</li>
+  <li>Hostname: ns3</li>
+  <li>IP FreeBSD: 192.168.5.2</li>
+  <li>Database server: MySQL8</li>
+  <li>Web server: Apache24</li>
+  <li>PHP: PHP82, PHP Composer</li>
+  <li>PHP FPM</li>
+  <li>Elasticsearch: elasticsearch8</li>
+  <li>Dependencies: php82-opcache php82-session php82-pecl-APCu php82-bcmath php82-bz2 php82-ctype php82-curl php82-dom php82-exif php82-fileinfo php82-filter php82-gd php82-gmp php82-iconv php82-intl php82-ldap php82-mbstring php82-pecl-msgpack php82-mysqli php82-pcntl php82-pdo php82-phar php82-posix php82-simplexml php82-sodium php82-sysvsem php82-tokenizer php82-xml php82-xmlwriter php82-zip php82-zlib php82-pecl-memcache php82-pecl-memcached php82-pdo_mysql php82-xmlreader php82-xsl php82-soap</li>
+</ul>
+
+<h2 id="установить-зависимости">Установить зависимости</h2>
+<p>Adobe Magento имеет множество PHP-зависимостей. При первой настройке Magento необходимо установить зависимости. Потому что если вы не установите зависимости, не ожидайте, что сможете нормально запустить Magento. Все зависимости написаны на PHP, что очень полезно для Magento, поскольку позволяет подключать веб-сайт к базам данных и веб-серверам, таким как Apache.</p>
+
+<p>Чтобы упростить задачу, вы можете установить зависимости Magento с помощью пакета FreeBSD PKG. Вот как установить зависимости Magento с помощью PKG.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www # pkg install php82-opcache php82-session php82-pecl-APCu php82-bcmath php82-bz2 php82-ctype php82-curl php82-dom php82-exif php82-fileinfo php82-filter php82-gd php82-gmp php82-iconv php82-intl php82-ldap php82-mbstring php82-pecl-msgpack php82-mysqli php82-pcntl php82-pdo php82-phar php82-posix php82-simplexml php82-sodium php82-sysvsem php82-tokenizer php82-xml php82-xmlwriter php82-zip php82-zlib php82-pecl-memcache php82-pecl-memcached php82-pdo_mysql php82-xmlreader php82-xsl php82-soap
+</code></pre></div></div>
+
+<h2 id="создать-базу-данных-для-adobe-magento">Создать базу данных для Adobe Magento</h2>
+<p>В этой статье мы предполагаем, что все перечисленные выше системные спецификации установлены на сервере FreeBSD. Поэтому мы не будем обсуждать вышеуказанные приложения. Давайте перейдем непосредственно к основной теме статьи.</p>
+
+<p>Создание базы данных является важной частью настройки Magento. Все ваши данные, такие как название продукта и данные о клиентах, будут храниться в базе данных. В этой статье мы будем использовать сервер MySQL для создания базы данных Magento.</p>
+
+<p>Приведенные ниже команды помогут вам создать базу данных Maento с сервером MySQL.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # mysql -u root -p
+root@localhost [(none)]&gt; CREATE DATABASE magento CHARACTER SET utf8;
+root@localhost [(none)]&gt; CREATE USER 'usermagento'@'localhost' IDENTIFIED BY 'router12345';
+root@localhost [(none)]&gt; GRANT ALL PRIVILEGES ON magento.* TO 'usermagento'@'localhost';
+root@localhost [(none)]&gt; FLUSH PRIVILEGES;
+root@localhost [(none)]&gt; exit;
+root@ns3:~ #
+</code></pre></div></div>
+
+<h2 id="создание-открытых-и-закрытых-ключей-adobe-magento">Создание открытых и закрытых ключей Adobe Magento</h2>
+<p>Перед началом процесса установки Magento необходимо создать открытый и закрытый ключ Magento. Этот ключ используется для аутентификации доступа к репозиторию repo.magento.com. Потому что каждый раз при доступе к repo.magento.com требуются как открытый, так и закрытый ключи. Этот ключ используется для заполнения:
+Username = public key
+Password = private key</p>
+
+<p>Получить или сгенерировать ключ можно, зайдя на сайт торговой площадки Magento.</p>
+<ul>
+  <li>Первый вход на https://marketplace.magento.com/</li>
+  <li>Если у вас нет учетной записи Magento, создайте новую учетную запись по адресу https://account.magento.com/applications/customer/login/</li>
+  <li>Если у вас уже есть учетная запись Magento, войдите в систему, используя свои учетные данные Magento.</li>
+  <li>После успешного входа откройте меню «Мой профиль».</li>
+  <li>Нажмите «Ключ доступа».</li>
+  <li>Выберите меню «Magento2».</li>
+  <li>Чтобы создать новый ключ, нажмите меню «Создать новый ключ доступа».</li>
+</ul>
+
+<h2 id="как-установить-adobe-magento">Как установить Adobe Magento</h2>
+<p>В системах FreeBSD репозиторий Magento недоступен в PKG или портах. При установке Magento и модулей Magento активно используются модули Composer. Поэтому перед установкой Magento необходимо сначала установить Composer. Еще одной важной деталью при использовании Composer является то, что переменная memory_limit (PHP) должна быть установлена ​​на 4 ГБ. При достижении предела в 2 ГБ Composer может вызвать сбой PHP с фатальной ошибкой в ​​процессе установки.</p>
+
+<p>Первым шагом будет создание рабочего каталога для Magento, мы поместим этот каталог в блок сервера Apache, а именно /usr/local/www.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # mkdir -p /usr/local/www/magento
+</code></pre></div></div>
+
+<p>После этого создайте проект Magento с помощью Composer.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/www
+root@ns3:/usr/local/www # composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition magento
+</code></pre></div></div>
+
+<p>При запуске указанной выше команды Composer запросит имя пользователя и пароль. Используйте пароль и пользователя, созданные вами выше. После этого установите Magento с помощью команды ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www # cd magento
+root@ns3:/usr/local/www/magento # composer install --ignore-platform-req=ext-sockets
+</code></pre></div></div>
+
+<p>Также установите сокеты для PHP.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www/magento # pkg install php82-sockets
+</code></pre></div></div>
+
+<p>Также выполните команду ниже, чтобы продолжить установку Magento.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www/magento/bin # ./magento setup:install --base-url=http://192.168.5.2/magento --db-host=localhost --db-name=magento --db-user=usermagento --db-password=router12345 --admin-firstname=john --admin-lastname=doe --admin-email=datainchi@gmail.com --admin-user=admin --admin-password=admin123 --language=en_US --currency=USD --timezone=America/New_York --use-rewrites=1 --search-engine=elasticsearch8 --elasticsearch-host=http://192.168.5.2 --elasticsearch-port=9200
+</code></pre></div></div>
+
+<p>В процессе установки Magento на FreeBSD следует обратить внимание на приложение Elasticsearch. Перед <a href="https://www.inchimediatama.org/2025/02/freebsd-elasticsearch-cara-mengaktifkan.html">установкой Magento</a> вам необходимо установить это приложение.</p>
+
+<p>После этого откройте файл elasticsearch.yml и отредактируйте скрипт, как в примере ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # ee /usr/local/etc/elasticsearch/elasticsearch.yml
+cluster.name: magento
+node.name: node-1
+path.data: /var/db/elasticsearch
+path.logs: /var/run/elasticsearch
+bootstrap.memory_lock: true
+network.host: 192.168.5.2
+http.port: 9200
+discovery.seed_hosts: ["127.0.0.1", "[::1]"]
+discovery.type: single-node
+xpack.ml.enabled: false
+xpack.security.enabled: false
+xpack.security.enrollment.enabled: false
+</code></pre></div></div>
+
+<p>Начиная с версии Magento 2.2, для управления файлами журналов был добавлен файл crontab. В FreeBSD вы можете управлять файлами crontab в /etc/crontab. Выполните команду ниже, чтобы установить файл crontab.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/www/magento/bin
+root@ns3:/usr/local/www/magento/bin # ./magento cron:install --force
+Crontab has been generated and saved
+</code></pre></div></div>
+
+<p>Затем в файл /etc/crontab добавьте скрипт, указанный ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www/magento/bin # ee /etc/crontab
+* * * * * /usr/local/bin/php /usr/local/www/magento/bin/magento cron:run 2&gt;&amp;1 | grep -v "Ran jobs by schedule" &gt;&gt; /usr/local/www/magento/var/log/magento.cron.log
+</code></pre></div></div>
+
+<p>Далее выполните команды ниже, чтобы обновить базу данных, развернуть файлы статического представления и отключить двухфакторную аутентификацию.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/www/magento/bin # ./magento indexer:reindex &amp;&amp; ./magento se:up &amp;&amp; ./magento se:s:d -f &amp;&amp; ./magento c:f &amp;&amp; ./magento module:disable Magento_TwoFactorAuth
+</code></pre></div></div>
+
+<p>Затем вы добавляете права доступа и владельца к файлам и папкам Magento.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # chown -R www:www /usr/local/www/magento/
+root@ns3:~ # chmod -R 775 /usr/local/www/magento
+</code></pre></div></div>
+
+<h2 id="создать-apache-vhost">Создать Apache Vhost</h2>
+<p>В качестве интерфейса Magento мы будем использовать Apache24 как веб-сервер. С помощью Apache Magento можно отображать и настраивать через Google Chrome. Чтобы подключить Magento к Apache, вам необходимо включить файл виртуального хоста Apache. В файле httpd.conf включите файл vhost, удалив знак «#», см. пример ниже.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # cd /usr/local/etc/apache24
+root@ns3:/usr/local/etc/apache24 # ee httpd.conf
+#Include etc/apache24/extra/httpd-vhosts.conf
+Include etc/apache24/extra/httpd-vhosts.conf
+</code></pre></div></div>
+
+<p>После этого удалите все скрипты /usr/local/etc/apache24/extra/vhost.conf и замените их скриптами, приведенными ниже (настройте под свою серверную систему FreeBSD).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:/usr/local/etc/apache24 # cd extra
+root@ns3:/usr/local/etc/apache24/extra # ee httpd-vhosts.conf
+&lt;VirtualHost *:80&gt;
+    ServerAdmin datainchi@gmail.com
+    DocumentRoot "/usr/local/www/magento/pub"
+    ServerName datainchi.com
+    ServerAlias www.datainchi.com
+SetEnv MAGE_RUN_CODE "base"
+    SetEnv MAGE_RUN_TYPE "website"
+
+  &lt;Directory /usr/local/www/magento/pub&gt;
+       Options Indexes FollowSymLinks MultiViews
+       AllowOverride All
+       Require all granted
+  &lt;/Directory&gt;
+
+    ErrorLog "/var/log/dummy-host.example.com-error_log"
+    CustomLog "/var/log/dummy-host.example.com-access_log" common
+&lt;/VirtualHost&gt;
+</code></pre></div></div>
+
+<p>Следующий шаг — перезапуск Apache24.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns3:~ # service apache24 restart
+</code></pre></div></div>
+
+<p>Последний шаг — проверка, для чего откройте Google Chrome и введите «http://192.168.5.2/magento/setup/» или «http://192.168.5.2/magento/pub/». Просмотрите результаты в Google Chrome. Если ваши настройки верны, появится меню конфигурации Magento.</p>
+
+<p>Если вы хотите использовать Magento для открытия интернет-магазина, полное и понятное руководство по установке и настройке облегчит этот процесс. В этом руководстве показано, как вручную настроить Magento на сервере FreeBSD. Однако существующий скрипт можно использовать на серверах Linux, таких как Ubuntu. Мы представляем все содержание этой статьи в полном объеме и можем помочь тем из вас, кто хочет создать интернет-магазин на Magento.</p>
+
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2024-02-15T19:00:00+03:00">2024-02-15</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#sysadmin" class="page__taxonomy-item" rel="tag">SysAdmin</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#ru" class="page__taxonomy-item" rel="tag">ru</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/freebsd/2024/01/26/samba-on-freebsd-connect-windows/" class="pagination--pager" title="Как подключить FreeBSD к Windows с помощью Samba
+">Previous</a><a href="https://penaadventure.com/ru/linux/2024/03/16/freebsd-install-ubuntu-linux-binary/" class="pagination--pager" title="
+  
+    
+      Как установить Ubuntu на FreeBSD
+      Совместимость двоичных файлов Linux
+    
+  
+
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>
