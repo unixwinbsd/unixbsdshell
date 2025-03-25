@@ -16,6 +16,8 @@ Building a Restful application is one of the popular ways to build a cool blog b
 
 Go Lang is a popular programming language known for its efficiency, simplicity, and stability, while MySQL is a relational database management system (RDBMS) developed by Oracle based on the structured query language (SQL). While MySQL is one of the most popular database technologies in the modern big data ecosystem, and is now widely and effectively used, regardless of industry, it is clear that anyone involved with enterprise data or IT should have at least a basic understanding of MySQL.
 
+![cover freebsd golang go crud mysql server database](https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud/-/raw/main/FreeBSD_Golang_CRUD.jpg)
+
 With MySQL, we can learn the relational database system can immediately build a data storage system that is easy, fast, and secure. Data in MySQL is arranged according to the relational model. In this model, tables consist of rows and columns, and the relationships between data elements all follow a strict logical structure. Often people who are new to learning Golang do not know how to store data in MySQL because there are not many online resources. This article will help you understand the concept of Golang with MySQL.<br><br/>
 ## 1. System Specifications Used
 > OS: FreeBSD 14.
