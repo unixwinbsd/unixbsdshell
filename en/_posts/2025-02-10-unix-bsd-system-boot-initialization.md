@@ -59,8 +59,11 @@ The first part of the bootloader (which is called boot0) is a program written du
 The list of partitions to select includes their names according to the file system type identifier, for example:
 
 > F1 : DOS
+> 
 > F2 : Linux
+> 
 > F3 : BSD
+> 
 > F5 : Drive 1
 
 Until now, BSD Loader could not recognize logical partitions within Extended DOS or boot any operating system from them. However, the situation seems to have changed now - this can be concluded from reports about the possibility of installing DragonFlyBSD on an extended partition (the only BSD system capable of this, as far as I know). But is it possible to imagine installing a system without the possibility of booting it with standard tools?
@@ -85,4 +88,62 @@ The task of the loader is to quickly load the kernel and a set of default module
 -   **Escape to loader prompt**  : exit to the bootloader command line.
 -   **Reboot**  : well, we know this like the back of our hand, only better.
 
+If you don't make any selection, the default options will start loading in ten seconds. To avoid this (and give yourself more time to think), just press the space bar - the countdown will stop and not load until you make a clear choice.
 
+After the selection or expiration of the statute of limitations, a rather long hardware detection process begins, during which numerous kernel messages, different from normal messages, are displayed on the screen in bright white "color" symbols. These messages are very interesting, but they are not easy to see. However, this is not scary - you can later view it with the dmesg command. After this, the root file system is mounted and the boot process is started from it (using the usual executable file /sbin/init), and the startup script is processed. To signal this, the bright white color of the kernel messages changes to the usual gray - the boot stage we are interested in today has ended.
+
+## 4. Interactive control of the boot process
+The question arises: can the user influence the boot process? The answer will be yes. During the operation of the boot system, the user has the freedom to choose three times: choosing the boot partition at the initial boot0 stage, choosing interactive control at the boot2 stage, and choosing the boot mode immediately after starting the loader. And in all these cases, the user can intervene in the process manually. Why? This is another question, and I hope the answer will be clear in the following presentation.
+
+With the choice of the boot partition, everything is clear: it allows you to boot one of the operating systems, if several of them are installed on a particular machine. But at the boot2 stage of work, it is possible to stop its execution, or rather, prevent its launch by the loader. To do this, in the pause between choosing to boot from the BSD partition and the appearance of a message about loading the kernel and modules (this pause is indicated by the appearance of a flashing symbol on the screen _), you need to press any key. In response there will be a message like the following:
+
+```
+>> BSD/i386 BOOT
+ Default: 0:ad(0,a)/boot/loader
+ boot:
+```
+
+And in the message, you can specify boot options other than the default ones. For example, you can boot directly from the system kernel image file. This might make sense after rebuilding the kernel, if the new one turns out to be incorrectly configured enough to boot (but, unfortunately, enough to compile).
+
+To do this, you need to create a path to the old kernel in the image and likeness of the default version. That is, determine:
+
+-   the disk number in the machine in accordance with the BIOS ( 0— the first of the available ones, 1— the second, and so on, regardless of the connection order);
+-   its interface - in the example adit symbolizes an ATA disk (for a SCSI disk it would be da, for a floppy disk - fd);
+-   number on the IDE channel (0 - master, 1 - slave);
+-   partition in the sense used by BSD Label, that is, the part of a slice reserved for the BSD root file system ( a;The name of the old kernel image file is /kernel.old.
+
+If there are several primary partitions of different types on the disk, then the non-BSD type partition will be skipped, and the letter a (obviously, the kernel image can only be on the root file system) will refer to the first subsection of the segment with identifier 165 (even if it is the fourth on the disk).
+
+If you are not sure of the exact name of the file (and there may be several; before installing each new untested kernel, it is recommended to make a copy of the old one, which is known to work), you can enter a question mark on the command line, the answers to which will be a list of root directories (but not deeper: boot2 will not be able to see the contents of subdirectories, even within the same file system, at this stage).
+
+However, the same procedure - loading the old kernel - can (and should, because (it is much simpler) to be done through the loader, taking into account the interactive capabilities we are discussing now.
+
+The menu loaderoffers a sufficient selection of modes for standard situations, but clearly does not cover all the non-standard ones (that's what they are for). In particular, the option to load the old kernel is not provided in the menu. Fortunately, the penultimate menu item solves this problem (and many others).
+
+So, by selecting the sixth menu item — Escape to loader prompt — we find ourselves in the command interpreter environment loader. It has a shell-like interface — commands with their options and arguments are entered after the prompt, which looks like
+
+**OK**
+
+In terms of the convenience of interactive work, GRUB is certainly not one of them: it has no auto-completion, no command history, editing possibilities are limited to the Backspaceloader key. But it does a good job of its main function - entering and executing built-in commands.
+
+In addition, there are quite a few such commands - a complete list of them can be obtained by entering a question mark on the command line. Help is also available,  the help command will give a short hint help
+
+The loader built-in commands can be divided into three parts according to their purpose:
+
+-   to obtain information.
+-   to configure the bootloader.
+-   actually to manage the loading process.
+
+From the first group of commands, we highlight the following: ls, lsdev, lsmod, show, more. The first is intended to view the root file system and its subdirectories, although only those that are not located in separate subsections. However, since all the files needed for loading are located in subdirectories of the root itself (in /boot, /dev, /modules), this limitation is not significant. The ls -l variant of the command displays a list of files (and directories) indicating their sizes; without this option, directories are simply marked with letters.
+
+The lsdev command lists the disk devices present on the machine, its primary partitions and subpartitions (the latter only for partitions marked according to BSD label rules). The -v option provides output details.
+
+The lsmod command provides a display of the loaded modules of the loader before the menu (or command line) appears. As in the previous case, there is a verbose option - -v.
+
+The show command performs the same function, but with respect to loader variables. Without arguments, this command prints the values of all specified variables. If a variable name is specified as an argument, only its value is displayed. Multiple arguments, separated by semicolons, are allowed.
+
+Well, this command performs more of the same function as its name suggests among Unix utilities. This command allows viewing the contents of a text file, i.e., being in the loader's command interpreter, we can familiarize ourselves with the settings that are important for loading (and others).
+
+Configuration commands allow you to define or clear bootloader variables, load or remove kernel modules. As already mentioned, the kernel itself with a set of predefined modules and variables is loaded before the loader and command interpreter menu. So, using the appropriate commands, this predefined set can be slightly adjusted (or changed completely). This may be necessary if the default kernel configuration is not loaded for some reason (a common case is a conflict between the laptop's power-saving system and the ACPI system module), for debugging purposes, or just to satisfy curiosity.
+
+First, let's look at the module management commands. This is a pair of load commands for unloading and removing modules. The first one is used with the argument, which can be searched (using ls) in the /modules directory if necessary; the name in the argument is given without the *.ko suffix. An unload command with similar arguments will remove the specified module, without arguments; it will remove all modules completely, allowing you to start configuring from scratch.
