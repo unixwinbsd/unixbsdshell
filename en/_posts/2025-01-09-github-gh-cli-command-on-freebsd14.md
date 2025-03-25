@@ -76,7 +76,7 @@ Then an authentication code will appear. You have to copy the code in a web brow
 ### b. Authenticate SSH
 The main requirement for SSH Authentication is that you must have an SSH public key, how to do it is easy, you can read our previous article about creating public keys for Github.
 
-**[Setup Github Via FreeBSD SSH To Upload Repository from Local Computer](https://www.blogger.com/u/1/blog/post/edit/3047631139734470358/663489472755747923#)**  
+**[Setup Github Via FreeBSD SSH To Upload Repository from Local Computer](https://penaadventure.com/en/freebsd/2025-01-10-github-via-freebsd-command-ssh-repository/)**  
 
 Once you have the SSH public key, you can run the command "gh auth login" in the "What is your preferred protocol for GIT operation?" you select SSH.
 
