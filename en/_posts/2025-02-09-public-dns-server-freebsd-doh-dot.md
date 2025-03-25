@@ -29,20 +29,15 @@ Microsoft's new Windows 11 operating system supports by default DNS servers with
 I have been using DOH and DOT servers from various providers to protect DNS requests for about 2 years now. And Cloudflare, Google, and Quad9 are also in the TOP.
 
 **List of recommended free DNS servers with DOT encryption:**<br><br/>
-**Provider    IPv4 address      Port      DNS TLS**
 
-CloudFlare	1.1.1.1	          853	      cloudflare-dns.com
+![List of Public dns server](https://gitflic.ru/project/iwanse1212/unixwinbsd/blob/raw?file=List%20of%20Public%20dns%20server.jpg)
 
-CloudFlare	1.0.0.1	          853	      cloudflare-dns.com
+The information in the table may be redundant for configuring your device. The minimum list looks like this:
 
-Google	    8.8.8.8	          853	      dns.google
+-   tls://cloudflare-dns.com
+-   tls://dns.google
+-   tls://dns.quad9.net
+-   common.dot.dns.yandex.net
 
-Google	    8.8.4.4	          853	      dns.google
-
-Quad9	      9.9.9.9	          853	      dns.quad9.net
-
-Quad9	      149.112.112.112	  853	      dns.quad9.net
-
-Yandex	    77.88.8.8	        853	      common.dot.dns.yandex.net
-
+**List of recommended free DNS servers with DOH encryption:**
 
