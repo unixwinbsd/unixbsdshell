@@ -300,6 +300,6 @@ root@ns7:/var/FreeBSD-Golang-MySQL # go run main.go
 
 You can see the results in the image below.
 
-gambar
+![freebsd mysql server crud golang](https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud/-/raw/main/FreeBSD%20Crud%20MysQL%20With%20Go%20Lang.jpg?ref_type=heads)
 
 In this article, we can learn how to create a simple CRUD application using GoLang and MySQL on a FreeBSD server. You can develop the following application with an attractive menu display. Stay tuned for our latest articles on Go Lang.
