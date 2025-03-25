@@ -109,7 +109,8 @@ Follow the instructions below to upload the repository to Github.
 Now you have a public repository called "blogmetatag" which we will place in the "/usr/local/etc/" folder. On your local computer, open Putty and open the "/usr/local/etc/blogmetatag" folder.
 
 ```
-root@ns7:~ # cd /usr/local/etc/blogmetatag root@ns7:/usr/local/etc/blogmetatag # ls
+root@ns7:~ # cd /usr/local/etc/blogmetatag
+root@ns7:/usr/local/etc/blogmetatag # ls
 ```
 
 We start by uploading the Repository to the Github server.
