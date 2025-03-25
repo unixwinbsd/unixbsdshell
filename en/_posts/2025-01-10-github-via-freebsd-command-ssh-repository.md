@@ -116,13 +116,21 @@ root@ns7:/usr/local/etc/blogmetatag # ls
 We start by uploading the Repository to the Github server.
 
 ```
-root@ns7:/usr/local/etc/blogmetatag # echo "# blogmetatag" >> README.md root@ns7:/usr/local/etc/blogmetatag # git init root@ns7:/usr/local/etc/blogmetatag # git add README.md root@ns7:/usr/local/etc/blogmetatag # git commit -m "first commit" root@ns7:/usr/local/etc/blogmetatag # git branch -M main root@ns7:/usr/local/etc/blogmetatag # git remote add origin git@github.com:unixwinbsd/blogmetatag.git root@ns7:/usr/local/etc/blogmetatag # git push -u origin main  Enter passphrase for key '/root/.ssh/id_ed25519': **_Enter the SSH password_** Enumerating objects: 3, done.
+root@ns7:/usr/local/etc/blogmetatag # echo "# blogmetatag" >> README.md
+root@ns7:/usr/local/etc/blogmetatag # git init root@ns7:/usr/local/etc/blogmetatag # git add README.md
+root@ns7:/usr/local/etc/blogmetatag # git commit -m "first commit"
+root@ns7:/usr/local/etc/blogmetatag # git branch -M main
+root@ns7:/usr/local/etc/blogmetatag # git remote add origin git@github.com:unixwinbsd/blogmetatag.git
+root@ns7:/usr/local/etc/blogmetatag # git push -u origin main
+Enter passphrase for key '/root/.ssh/id_ed25519': Enter the SSH password
+Enumerating objects: 3, done.
 Counting objects: 100% (3/3), done.
 Writing objects: 100% (3/3), 225 bytes | 225.00 KiB/s, done.
 Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
 To github.com:unixwinbsd/blogmetatag.git
  * [new branch]      main -> main
-branch 'main' set up to track 'origin/main'. root@ns7:/usr/local/etc/blogmetatag #
+branch 'main' set up to track 'origin/main'.
+root@ns7:/usr/local/etc/blogmetatag #
 ```
 
 ".gitignore" is a text file containing a list of files and directories to exclude. The ".gitignore" file is not tracked and is not uploaded, in the git repository. You can use it to stop tracking some hidden files or exclude uploading large files. Github limits file sizes, the maximum size limit per file is 100 MB.
