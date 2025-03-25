@@ -54,7 +54,8 @@ The second way is with the port system, ports are a collection of more than 20,0
 Follow the steps below to install Git on FreeBSD using the ports system.
 
 ```
-root@ns7:~ # cd /usr/ports/devel/git root@ns7:/usr/ports/devel/git # make install clean
+root@ns7:~ # cd /usr/ports/devel/git
+root@ns7:/usr/ports/devel/git # make install clean
 ```
 <br><br/>
 ## 2. Enable SSH Keygen
