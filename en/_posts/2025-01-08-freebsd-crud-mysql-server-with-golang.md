@@ -240,7 +240,7 @@ root@ns7:/var/FreeBSD-Golang-MySQL # cd template
 root@ns7:/var/FreeBSD-Golang-MySQL/template # touch Edit.tmpl Footer.tmpl Header.tmpl Index.tmpl Menu.tmpl New.tmpl Show.tmpl
 ```
 
-> [Download the script code of the "*.tmpl" file](https://gitflic.ru/project/iwanse1212/freebsd-golang-mysql).
+> [Download the script code of the "*.tmpl" file](https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud.git).
 <br><br/>
 ## 3. Create MySQL Database
 Your Go lang project is almost done, just one more step. Now you create a MySQL database as the backend of Go lang. Please login to the MySQL database server, with the root password.
