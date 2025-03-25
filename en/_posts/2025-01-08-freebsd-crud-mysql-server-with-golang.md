@@ -241,4 +241,65 @@ root@ns7:/var/FreeBSD-Golang-MySQL/template # touch Edit.tmpl Footer.tmpl Header
 ```
 
 > [Download the script code of the "*.tmpl" file](https://gitflic.ru/project/iwanse1212/freebsd-golang-mysql).
+<br><br/>
+## 3. Create MySQL Database
+Your Go lang project is almost done, just one more step. Now you create a MySQL database as the backend of Go lang. Please login to the MySQL database server, with the root password.
+
+```
+root@ns7:/var/FreeBSD-Golang-MySQL # mysql -u root -p
+Enter password: "Enter your MySQL password"
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 83
+Server version: 8.0.35 Source distribution
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+root@localhost [(none)]>
+```
+
+Create a database "goblog" and a table "Employee".
+
+```
+root@localhost [(none)]> create database goblog;
+root@localhost [(none)]> use goblog;
+Database changed
+root@localhost [goblog]> CREATE TABLE IF NOT EXISTS `Employee` (
+    ->   `id` int unsigned NOT NULL AUTO_INCREMENT,
+    ->   `Name` text,
+    ->   `city` text,
+    ->   PRIMARY KEY (`id`)
+    -> ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
+Query OK, 0 rows affected, 1 warning (0.02 sec)
+
+root@localhost [goblog]>
+```
+
+Create a MySQL user, so that the MySQL database can be connected to Go lang.
+
+```
+root@localhost [(none)]> CREATE USER 'jhondoe'@'localhost' IDENTIFIED BY 'router';
+root@localhost [(none)]> GRANT ALL PRIVILEGES ON * . * TO 'jhondoe'@'localhost';
+root@localhost [(none)]> FLUSH PRIVILEGES;
+```
+
+## 4. Run the application
+Now that we have implemented all the MySQL and Go lang operations, it's time to test our application. Whether it works or not.
+
+Open the Google Chrome web browser, and run the command "http://192.168.5.2:4000". If all the above configurations are correct, Google Chrome will display the following image.
+
+```
+root@ns7:~ # cd /var/FreeBSD-Golang-MySQL
+root@ns7:/var/FreeBSD-Golang-MySQL # go run main.go
+```
+
+You can see the results in the image below.
+
+
+
 
