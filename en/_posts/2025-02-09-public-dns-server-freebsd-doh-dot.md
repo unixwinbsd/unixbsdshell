@@ -32,6 +32,7 @@ I have been using DOH and DOT servers from various providers to protect DNS requ
 
 ![List of Public dns server](https://gitflic.ru/project/iwanse1212/unixwinbsd/blob/raw?file=List%20of%20Public%20dns%20server.jpg)
 
+
 The information in the table may be redundant for configuring your device. The minimum list looks like this:
 
 -   tls://cloudflare-dns.com
@@ -40,4 +41,18 @@ The information in the table may be redundant for configuring your device. The m
 -   common.dot.dns.yandex.net
 
 **List of recommended free DNS servers with DOH encryption:**
+
+![List of recommended free DNS servers with DOH encryption](https://gitflic.ru/project/iwanse1212/unixwinbsd/blob/raw?file=List%20of%20recommended%20free%20DNS%20servers%20with%20DOH%20encryption.jpg)
+
+
+The information in the table may be excessive for setting up your device. The minimum list looks like this:
+
+-   https://cloudflare-dns.com/dns-query
+-   https://dns.google/dns-query
+-   https://dns.quad9.net/dns-query
+-   https://common.dot.dns.yandex.net/dns-query
+
+## 2. Alternative DNS servers with DOT and DOH encryption
+In addition to the top three, there are alternative fast, stable and free DNS servers with DOT and DOH encryption support. I have been using them for about a year, and have no particular complaints about them.
+
 
