@@ -45,7 +45,7 @@ Github offers 2 Github GH CLI Authentication options, namely:
 
 In this article we will discuss both, so that readers can choose one of the two authentication methods.
 
-### a.Authenticate HTTPS
+### a. Authenticate HTTPS
 The next step, authenticate your Github account. Run the command "gh auth login" to authenticate your GitHub account. It will ask you to select the account type, either a regular account or a corporate account. I will choose a normal account.
 
 ```
