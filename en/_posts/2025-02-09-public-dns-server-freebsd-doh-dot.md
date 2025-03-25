@@ -55,4 +55,15 @@ The information in the table may be excessive for setting up your device. The mi
 ## 2. Alternative DNS servers with DOT and DOH encryption
 In addition to the top three, there are alternative fast, stable and free DNS servers with DOT and DOH encryption support. I have been using them for about a year, and have no particular complaints about them.
 
+![Alternative DNS servers with DOT and DOH encryption](https://gitflic.ru/project/iwanse1212/unixwinbsd/blob/raw?file=Alternative%20DNS%20servers%20with%20DOT%20and%20DOH%20encryption.jpg)
 
+There are many other decent DNS services that support encryption, but I have not tested them and therefore they are not included in this article.
+
+
+Choose Which DOH or DOT or Which is better DOH or DOT?
+
+In terms of network security, DoT is probably better. It can also often be faster than DoH.
+
+From a privacy perspective, DoH is preferable because DoH DNS queries use port 443 and are therefore hidden in the vast stream of HTTPS traffic.
+
+The article lists DNS servers with DOT and DOH encryption without any analysis of their operation. This list is based on my personal experience. All services are listed in the "default" mode, which usually means partial blocking of some resources.
