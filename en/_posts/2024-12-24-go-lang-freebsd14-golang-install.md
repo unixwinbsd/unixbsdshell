@@ -98,7 +98,7 @@ After go has been successfully installed and configured, it's time to do a go te
 
 ```
 root@ns1:~ # cd /usr/local/go121/test
-root@ns1:/usr/local/go120/test # ee test.go
+root@ns1:/usr/local/go121/test # ee test.go
 package main
 
 import (
@@ -114,14 +114,14 @@ func main() {
 Now do a test.
 
 ```
-root@ns1:/usr/local/go120/test # go run test.go
+root@ns1:/usr/local/go121/test # go run test.go
 Hello from freebsd
 ```
 
 The text "Hello from freebsd" appears, meaning the Go program is running. Now we do the second test.
 
 ```
-root@ns1:/usr/local/go120/test # ee hello.go
+root@ns1:/usr/local/go121/test # ee hello.go
 package main
  import "fmt"
  func main() {
@@ -132,7 +132,7 @@ package main
 Still active in the /usr/local/go120/test folder, do a test on the "hello.go" file.
 
 ```
-root@ns1:/usr/local/go120/test # go run hello.go
+root@ns1:/usr/local/go121/test # go run hello.go
 hello, world
 ```
 
