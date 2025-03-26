@@ -1,7 +1,7 @@
 ---
 title: FreeBSD14 Installation Ruby Gemfile and Bundle With Path Environemnt
 date: "2024-12-28 14:10:10 +0200"
-id: starship-cross-prompt-freebsd
+id: freebsd-ruby-gemfile-bundle
 lang: en
 layout: single
 author_profile: true
