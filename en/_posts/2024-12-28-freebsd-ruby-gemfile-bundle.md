@@ -57,8 +57,10 @@ root@ns3:/usr/ports/lang/ruby32 # make install clean
 
 By default the Ruby binary file is "ruby32". Change the file to "ruby" by creating a symlink.
 
->Create Symlink
+>**Create Symlink**
+>
 >root@ns3:~ # cd /usr/local/bin
+>
 >root@ns3:/usr/local/bin # ln -s ruby32 /usr/local/bin/ruby
 
 
