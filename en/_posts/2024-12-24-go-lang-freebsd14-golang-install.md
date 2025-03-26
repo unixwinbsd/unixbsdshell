@@ -97,7 +97,7 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 After go has been successfully installed and configured, it's time to do a go test. In this test we will create a program that will display the words "Hello from freebsd" and "hello, world" to check whether Go is running. Create a file for test go with the following script.
 
 ```
-root@ns1:~ # cd /usr/local/go120/test
+root@ns1:~ # cd /usr/local/go121/test
 root@ns1:/usr/local/go120/test # ee test.go
 package main
 
