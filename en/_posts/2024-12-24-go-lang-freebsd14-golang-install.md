@@ -42,45 +42,46 @@ In the command above, the Go application used is version go1.20.3 freebsd/amd64.
 
 ```
 root@ns1:~ # go env
-GO111MODULE=""
-GOARCH="amd64"
-GOBIN=""
-GOCACHE="/root/.cache/go-build"
-GOENV="/root/.config/go/env"
-GOEXE=""
-GOEXPERIMENT=""
-GOFLAGS=""
-GOHOSTARCH="amd64"
-GOHOSTOS="freebsd"
-GOINSECURE=""
-GOMODCACHE="/root/go/pkg/mod"
-GONOPROXY=""
-GONOSUMDB=""
-GOOS="freebsd"
-GOPATH="/root/go"
-GOPRIVATE=""
-GOPROXY="https://proxy.golang.org,direct"
-GOROOT="/usr/local/go120"
-GOSUMDB="sum.golang.org"
-GOTMPDIR=""
-GOTOOLDIR="/usr/local/go120/pkg/tool/freebsd_amd64"
-GOVCS=""
-GOVERSION="go1.20.3"
-GCCGO="gccgo"
-GOAMD64="v1"
-AR="ar"
-CC="cc"
-CXX="clang++"
-CGO_ENABLED="1"
-GOMOD="/dev/null"
-GOWORK=""
-CGO_CFLAGS="-O2 -g"
-CGO_CPPFLAGS=""
-CGO_CXXFLAGS="-O2 -g"
-CGO_FFLAGS="-O2 -g"
-CGO_LDFLAGS="-O2 -g"
-PKG_CONFIG="pkg-config"
-GOGCCFLAGS="-fPIC -m64 -pthread -fno-caret-diagnostics -Qunused-arguments -Wl,--no-gc-sections -fmessage-length=0 -fdebug-prefix-map=/tmp/go-build2339347747=/tmp/go-build -gno-record-gcc-switches"
+GO111MODULE=''
+GOARCH='amd64'
+GOBIN=''
+GOCACHE='/root/.cache/go-build'
+GOENV='/root/.config/go/env'
+GOEXE=''
+GOEXPERIMENT=''
+GOFLAGS=''
+GOHOSTARCH='amd64'
+GOHOSTOS='freebsd'
+GOINSECURE=''
+GOMODCACHE='/root/go/pkg/mod'
+GONOPROXY=''
+GONOSUMDB=''
+GOOS='freebsd'
+GOPATH='/root/go'
+GOPRIVATE=''
+GOPROXY='https://proxy.golang.org,direct'
+GOROOT='/usr/local/go121'
+GOSUMDB='sum.golang.org'
+GOTMPDIR=''
+GOTOOLCHAIN='auto'
+GOTOOLDIR='/usr/local/go121/pkg/tool/freebsd_amd64'
+GOVCS=''
+GOVERSION='go1.21.13'
+GCCGO='gccgo'
+GOAMD64='v1'
+AR='ar'
+CC='cc'
+CXX='clang++'
+CGO_ENABLED='1'
+GOMOD='/dev/null'
+GOWORK=''
+CGO_CFLAGS='-O2 -g'
+CGO_CPPFLAGS=''
+CGO_CXXFLAGS='-O2 -g'
+CGO_FFLAGS='-O2 -g'
+CGO_LDFLAGS='-O2 -g'
+PKG_CONFIG='pkg-config'
+GOGCCFLAGS='-fPIC -m64 -pthread -fno-caret-diagnostics -Qunused-arguments -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=/tmp/go-build3564134109=/tmp/go-build -gno-record-gcc-switches'
 ```
 
 The next step, create an environment variable called GOPATH (which will be the location for the installed packages). Enter the following script into the /root/.profile folder.
