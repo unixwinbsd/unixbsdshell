@@ -15,7 +15,7 @@ Go is an Open Source programming language (BSD license), Go was created with the
 
 On the other hand, Go is a compiled language and has the advantage of reducing latency to a minimum to guarantee optimal performance. Therefore, there are many reasons why program developers make Go their main language. In this article we try to discuss how to install GOLANG or Go Language on the FreeBSD 13.2 system.
 
-To install GO on FreeBSD, you can use the pkg package or FreeBSD ports. The following is how to install GO on FreeBSD.
+To install GO on FreeBSD, you can use the pkg package or FreeBSD ports. The following is how to install GO on [FreeBSD14](https://www.freebsd.org/releases/14.0R/relnotes/).
 
 ```
 root@ns2:~ # pkg install curl
@@ -35,7 +35,7 @@ After the installation process is complete, check the GO version.
 
 ```
 root@ns1:~ # go version
-go version go1.20.3 freebsd/amd64
+go version go1.21.13 freebsd/amd64
 ```
 
 In the command above, the Go application used is version go1.20.3 freebsd/amd64. You can also use the env command to view go details.
