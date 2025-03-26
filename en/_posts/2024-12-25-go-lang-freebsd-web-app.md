@@ -93,7 +93,7 @@ root@ns1:/var/GoogleBlog # go run main.go
 
 We can see the results by opening the Mozilla Firefox or Google Chrome web browser, in the address bar menu type "http://192.168.5.2:8999/" and the results will look like the image below.
 
-gambar selamat pagi
+![Good Morning FreeBSD 14](https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud/-/raw/main/template/Good_Morning__FreeBSD.jpg)
 
 Another example of a script that you can practice, delete all the scripts in the "main.go" file and replace them with the script below.
 
@@ -272,6 +272,6 @@ root@ns1:/var/GoogleBlog # go run main.go
 
 We can see the results by opening the Google Chrome or Yandex web browser, in the address bar menu type "http://192.168.5.2:8999/", then it will look like the image below.
 
-gambar 2
+![go lang web app create user and group](https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud/-/raw/main/template/golang_web_app_user_and_group.jpg)
 
 In this tutorial, we learn how to create a web application in Go from scratch. we also learn how to import the necessary packages, define controller paths and functions, create an HTML template, and start an HTTP server. We have finished this article for now, we will continue to the next article with material that is quite difficult and a challenging script.
