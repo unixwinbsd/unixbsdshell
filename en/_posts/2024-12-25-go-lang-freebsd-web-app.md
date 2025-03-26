@@ -47,4 +47,50 @@ Go programs are organized into packages. A package is a collection of source fil
 
 A repository contains one or more modules. A module is a collection of related Go packages released together. A Go repository usually contains only one module, located at the root of the repository. A file named go.mod declares the module path:import path prefix for all packages in the module. The module contains packages in a directory containing the go.mod file as well as subdirectories of that directory, up to the next subdirectory containing other go.mod files (if any).
 
+To compile and run a simple program, first select the module path (we will use the working directory above and create a go.mod file declaring it.
+
+```
+root@ns1:~ # cd /var/GoogleBlog
+root@ns1:/var/GoogleBlog # go mod init GoogleBlog
+go: creating new go.mod: module GoogleBlog
+root@ns1:/var/GoogleBlog #
+```
+
+The script above will create a go.mod file that we will use to compile and run Go programs. After the go.mod compilation file has been successfully created, the next step is to create the main Go file which we call "main.go" and enter the script code below in the "main.go" file.
+
+```
+root@ns1:/var/GoogleBlog # ee main.go
+
+package main
+
+import (
+	"net/http"
+	"os"
+)
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("<h1>Selamat Pagi Gunung Rinjani!</h1>"))
+}
+
+func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8999"
+	}
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", indexHandler)
+	http.ListenAndServe("192.168.5.2:"+port, mux)
+}
+```
+
+Then we run the "main.go" file by typing in the script below.
+
+```
+root@ns1:/var/GoogleBlog # go run main.go
+```
+
+We can see the results by opening the Mozilla Firefox or Google Chrome web browser, in the address bar menu type "http://192.168.5.2:8999/" and the results will look like the image below.
+
 
