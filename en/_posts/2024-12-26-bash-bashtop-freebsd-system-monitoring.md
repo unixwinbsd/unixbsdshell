@@ -62,7 +62,6 @@ root@ns7:~ # bashtop
 
 If there is nothing wrong with the installation, the command above will display the following image.
 
-
-gambar
+![bashtop system monitoring tool on freebsd](https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud/-/raw/main/template/bashtop_system_monitoring_tool_on_freebsd.jpg)
 
 Bashtop provides computer users with a great way to keep an eye on system resources. With Bashtop you can monitor computer resources very easily and with a stunning game display.
