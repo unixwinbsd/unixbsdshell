@@ -32,7 +32,7 @@ This tutorial will explain and guide you to create a practical example of buildi
 -   Port GoLang Web: 8999
 
 ## 2. Create Simple Web Applications
-The first step to get started with Go is to install it on our server computer. For the Go installation process, you can read our previous article: "[How to Install GOLANG GO Language on FreeBSD](https://www.blogger.com/u/1/blog/post/edit/3047631139734470358/8206179386387319774#)". You can practice all the contents of this article on Linux server machines such as Ubuntu, Debian and others, and can also be applied to Windows and MacOS operating systems.  
+The first step to get started with Go is to install it on our server computer. For the Go installation process, you can read our previous article: "[How to Install GOLANG GO Language on FreeBSD](https://penaadventure.com/en/freebsd/2024-12-24-go-lang-freebsd14-golang-install/)". You can practice all the contents of this article on Linux server machines such as Ubuntu, Debian and others, and can also be applied to Windows and MacOS operating systems.  
 
 As basic material or opening material, we start by creating a simple web application that only displays text in a web browser. To start, we will create a working folder/directory, here are the steps.
 
