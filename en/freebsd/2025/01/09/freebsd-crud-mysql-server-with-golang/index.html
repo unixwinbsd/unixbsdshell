@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Language" content="en">
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/freebsd/2025/01/09/freebsd-crud-mysql-server-with-golang/"/>
+
+  <meta charset="utf-8">
+  
+  <title>FreeBSD14 Crud MysQL Server With Go Lang  UnixBSDShell</title>
+  <meta property="og:locale" content="en">
+  <meta property="og:site_name" content="UnixBSDShell">
+  <meta property="og:title" content="FreeBSD14 Crud MysQL Server With Go Lang"><link rel="canonical" href="https://penaadventure.com/en/freebsd/2025/01/09/freebsd-crud-mysql-server-with-golang/">
+  <meta property="og:url" content="https://penaadventure.com/en/freebsd/2025/01/09/freebsd-crud-mysql-server-with-golang/"><meta property="og:description" content="CRUD, which stands for Create, Read, Update, and Delete, is a common utility in software development"><meta name="twitter:site" content="@iwanset96143401">
+  <meta name="twitter:title" content="FreeBSD14 Crud MysQL Server With Go Lang">
+  <meta name="twitter:description" content="CRUD, which stands for Create, Read, Update, and Delete, is a common utility in software development">
+  <meta name="twitter:url" content="https://penaadventure.com/en/freebsd/2025/01/09/freebsd-crud-mysql-server-with-golang/"><meta name="twitter:card" content="summary"><meta property="og:type" content="article">
+  <meta property="article:published_time" content="2025-01-09T16:11:10+03:00"><script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "https://penaadventure.com",
+      "sameAs" : null
+    }
+  </script><meta name="google-site-verification" content="googledc9be5e5382da4fd" /><meta name="msvalidate.01" content="BCDF1444D895EBA62C6422C90DF8EA1C"><meta name="yandex-verification" content="69d778baa1dbd371">
+  <link href="feed.xml" type="application/atom+xml" rel="alternate" title="UnixBSDShellFeed" />
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
+  <!-- For all browsers -->
+  <link rel="stylesheet" href="https://penaadventure.com/assets/css/main.css" />
+  <meta http-equiv="cleartype" content="on" />    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+    <meta name="apple-mobile-web-app-title" content="JHW Blog" />
+    <meta name="application-name" content="JHW Blog" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="fediverse:creator" content="@jwildeboer@social.wildeboer.net" /><script type='text/javascript' src='//timdinosaur.com/5a/a1/16/5aa1163b15793d4f19e80dbdf2135e99.js'></script>
+
+  <meta http-equiv="Content-Language" content="en">
+<meta name="verified-code" content="7e9546f3-7a9d-4d82-b8b4-d8e51e2c6c17">
+  <link rel="alternate" hreflang="en" href="https://penaadventure.com/en/freebsd/2025/01/09/freebsd-crud-mysql-server-with-golang/" />
+  
+<link rel="alternate" hreflang="en" href="https://penaadventure.com/en" />
+<link rel="alternate" hreflang="ru" href="https://penaadventure.com/ru" />
+
+  </head>
+  <body class="layout--single">  <!--[if lt IE 9]>
+  <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+  <![endif]--><div class="masthead">
+    <div class="masthead__inner-wrap">
+      <div class="masthead__menu">
+        <nav id="site-nav" class="greedy-nav">
+          <ul class="visible-links">
+            <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://penaadventure.com/">UnixBSDShell</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/about/">Me</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/year-archive/">By Year</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/categories/">Categories</a></li><li class="masthead__menu-item"><a href="https://penaadventure.com/tags/">Tags</a></li></ul>
+          <ul class="hidden-links hidden"></ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="https://penaadventure.com/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#en" itemprop="item"><span itemprop="name">En</span></a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#freebsd" itemprop="item"><span itemprop="name">Freebsd</span></a>
+          <meta itemprop="position" content="3" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#2025" itemprop="item"><span itemprop="name">2025</span></a>
+          <meta itemprop="position" content="4" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#01" itemprop="item"><span itemprop="name">01</span></a>
+          <meta itemprop="position" content="5" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/categories/#09" itemprop="item"><span itemprop="name">09</span></a>
+          <meta itemprop="position" content="6" />
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">FreeBSD14 Crud MysQL Server With Go Lang</li>
+      
+    
+  </ol>
+</nav>
+<script type="application/ld+json">
+
+{"@context":"https://schema.org",
+
+"@graph":[
+
+{"@type":"ProfilePage",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"relatedLink": "httpss://www.github.com/unixbsdshell",
+"dateCreated": "2025-01-09 16:11:10 +0300",
+"datePublished": "2025-01-09 16:11:10 +0300",
+"abstract": "WARNET DAPURNET leverages open-source Linux to provide educational services in Cikarang Barat, Indonesia.",
+
+"mainEntity":[
+{"@type":"Person",
+"@id": "https://penaadventure.com/#person",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+"gender": "male",
+"description": "Lahir di Bekasi - Jawa Barat, seorang anak laki-laki yang mendedikasikan dirinya untuk menulis berbagai artikel tentang IT.",
+"alternateName": "Iwan Sting",
+"additionalName": "setiawan",
+"givenName": "Bata",
+"familyName": "Om Iwan",
+"birthDate": "1977",
+"birthPlace": "Kabupaten Bekasi, Provinsi Jawa Barat, Indonesia",
+"jobTitle": "Blogger Writer",
+"spouse": "Siti Umaroh",  
+
+"homeLocation": 
+{ "@type": "Place",
+"image": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"url": "https://lh3.googleusercontent.com/vLqLiGPo6QmAaoml2wwECAjBD_ZMivRMpakTpgCkGf-foAn3SjzMtxi-9CYKJf8aM1Zgxm8-fgpA8ar4=s265-w265-h265",
+"hasMap": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1165375,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu",
+"photo": "https://maps.app.goo.gl/5e3jR7dbtUypBe2Q8",
+"name": "MyHome",
+"description": "Dari tugu Warung Bongkok sebelum Pom Bensin/10 mtr arah timur dari tugu bambu runcing/Belakang RM. Padang Selera Bunda",
+"identifier": "Tugu Bambu Runcing Warung bongkok"},
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+
+"image": {"@type": "ImageObject",
+"width": "32",
+"height": "32",
+"url": "https://lh3.googleusercontent.com/a/ACg8ocINT1yW-xPXQuI4Qku0LW5-QNI-26KpzLWO9_DrPDQWSVJ8gQtu=s288-c-no"}
+
+},
+
+{"@context": "http://schema.org",
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization",
+"url": "https://www.inchimediatama.org/p/organization.html",
+"identifier": "https://www.google.com/maps/place/WARNET+DAPURNET/@-6.2697727,107.1139626,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69854270602ca7:0x71e63dfb53b7b95!8m2!3d-6.2697727!4d107.1165375!16s%2Fg%2F11fx88pw2p?entry=ttu/#2425380976366117670",
+"name": "Inchimediatama Nusantara",
+"foundingDate": "2009",
+"slogan": "FreeBSD The Power To Serve",
+"knowsAbout": "Tutorials UNIX BSD Linux Windows Opensource",
+"knowsLanguage": ["id","en"],
+"legalName" : "Inchimediatama Nusantara",
+"image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgz6JYLaq1_DkQMs0yJBpGZZve00P5m-7HPxrRIYhDdVng6kHfmZc4x9EW_vI0DyspmFsWtcMenBJzfaummNCefFmTdZr5c8M1IL9l2sufVKbaSVEQs-0feAUpmCkDu4Eo-1rCR60XZ66Ym5BFLYe2dnPHWRHqRp4-OpmJE56J9Z-zhvg/s1600/logo%20unixwinbsd.png",      
+"logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRDo6ylljwvU7hLVWRd9cIciBEO4sknBzOHQGECuvW5x8ZK6LuFj890M6HCZZM9j61NaqQU3DA1_SJZELqdtiIEdUejC9zkIf_lLDFFgR3dXAQ2l2lqadxk0waF_lYet5olTZX19oEbYHYJSMaBScwIACW1pGs3TtnR7ZCu7P_FqmzX61yUasXjXmPdC6l/s320/Logo%20Inchi%20copy.png",
+"address": {"@type": "PostalAddress",
+"addressLocality": "Jawa Barat, Indonesia",
+"addressRegion": "Jawa Barat",
+"addressCountry": "ID",
+"postalCode": "17841",
+"telephone": "+62 812 8906 5249",
+"email": "datainchi@gmail.com",
+"streetAddress": "Jl. Raya Imam Bonjol No.86, Telagamurni, Kec. Cikarang Bar., Kabupaten Bekasi, Jawa Barat 17841"},
+"location": 
+{"@type": "Place",
+"geo": {"@type": "GeoCoordinates",
+"latitude": "-6.2697727", "longitude": "107.1165375"}
+}
+}
+],
+
+"image":{"@type":"ImageObject",
+"@id":"https://penaadventure.com/#logo",
+"url": "https://penaadventure.com/img/logo.png",
+"caption":"Inchimediatama Nusantara"}
+
+
+},
+
+{
+
+"@type":"WebSite",
+"@id":"https://penaadventure.com/#website",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "UnixBSDShell",
+"publisher":{"@id": "https://penaadventure.com/#organization"},
+"potentialAction":{"@type":"SearchAction",
+"target":"https://penaadventure.com/?s={search_term_string}",
+"query-input":"required name=search_term_string"}
+},
+
+
+
+{"@type":"WebPage",
+"@id":"https://penaadventure.com/#webpage",
+"url": "https://penaadventure.com",
+"inLanguage":"ru",
+"name": "FreeBSD14 Crud MysQL Server With Go Lang",
+"isPartOf":
+{"@id":"https://penaadventure.com/#website"},
+
+"image": {
+"@type": "ImageObject",
+"@id":"https://penaadventure.com/#image",
+"width": "1200",
+"height": "630",
+"url": "https://penaadventure.com",
+"caption": "CRUD, which stands for Create, Read, Update, and Delete, is a common utility in software development"
+},
+
+"datePublished": "2025-01-09 16:11:10 +0300",
+"dateModified": "2025-01-09 16:11:10 +0300",
+"description": "UnixBSDShell",
+
+"breadcrumb":
+{"@id":"https://penaadventure.com/#breadcrumb"}
+},
+
+{
+"@type":"BreadcrumbList",
+"@id":"https://penaadventure.com/#breadcrumb",
+"itemListElement":[
+{"@type":"ListItem",
+"position":1,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com",
+"name": "UnixBSDShell"
+}},
+
+{
+"@type":"ListItem",
+"position":2,
+"item":{"@type":"WebPage",
+"@id":"https://penaadventure.com/",
+"url": "https://penaadventure.com/en/freebsd/2025/01/09/freebsd-crud-mysql-server-with-golang/",
+"name": "FreeBSD14 Crud MysQL Server With Go Lang"
+}},
+
+{
+
+"@type":"ListItem",
+"position":3,
+"item":{"@type":"WebPage",
+"url": "https://penaadventure.com/en/freebsd/2025/01/09/freebsd-crud-mysql-server-with-golang/",
+"name": "DataBase"
+}}
+
+]},
+
+
+
+{  "@type": "BlogPosting",
+  "url": "https://penaadventure.com/en/freebsd/2025/01/09/freebsd-crud-mysql-server-with-golang/",
+  "name": "FreeBSD14 Crud MysQL Server With Go Lang",
+  "headline": "FreeBSD14 Crud MysQL Server With Go Lang",
+  "keywords": "DataBase",
+  "description": "CRUD, which stands for Create, Read, Update, and Delete, is a common utility in software development",
+  "articleBody": "Building a Restful application is one of the popular ways to build a cool blog by following a simple and scalable architecture. With CRUD, users can easily process MySQL databases. CRUD, which stands for Create, Read, Update, and Delete, is a common utility in software development. The ability to perform CRUD operations is fundamental to any application development.\n\nGo Lang is a popular programming language known for its efficiency, simplicity, and stability, while MySQL is a relational database management system (RDBMS) developed by Oracle based on the structured query language (SQL). While MySQL is one of the most popular database technologies in the modern big data ecosystem, and is now widely and effectively used, regardless of industry, it is clear that anyone involved with enterprise data or IT should have at least a basic understanding of MySQL.\n\n\n\nWith MySQL, we can learn the relational database system can immediately build a data storage system that is easy, fast, and secure. Data in MySQL is arranged according to the relational model. In this model, tables consist of rows and columns, and the relationships between data elements all follow a strict logical structure. Often people who are new to learning Golang do not know how to store data in MySQL because there are not many online resources. This article will help you understand the concept of Golang with MySQL.\n1. System Specifications Used\n\n  OS: FreeBSD 14.\n\n  IP Address: 192.168.5.2.\n\n  Go version: go-1.19.\n\n  MySql Server.\n\n  Hostname: ns7.\n\n  2. Create a Golang project\n  The first step is to create a working directory to set up the development environment and start a Golang project. Follow the steps below to set up a new Golang project.\n\n\nroot@ns7:~ # cd /var\nroot@ns7:/var # mkdir -p FreeBSD-Golang-MySQL\nroot@ns7:/var # cd FreeBSD-Golang-MySQL\nroot@ns7:/var/FreeBSD-Golang-MySQL #\n\n\nOnce you have finished creating the Go language directory, create a new file named “main.go”.\n\nroot@ns7:/var/FreeBSD-Golang-MySQL # touch main.go\nroot@ns7:/var/FreeBSD-Golang-MySQL # chmod +x main.go\n\n\nIn the file “/root/var/FreeBSD-Golang-MySQL/main.go”, you enter the script below.\n\npackage main\n\nimport (\n\t\"database/sql\"\n\t\"html/template\"\n\t\"log\"\n\t\"net/http\"\n\n\t_ \"github.com/go-sql-driver/mysql\"\n)\n\n// Employee Struct\ntype Employee struct {\n\tID   int\n\tName string\n\tCity string\n}\n\n// Open Connection with MySQL Driver\nfunc dbConnect() (db *sql.DB) {\n\tdbDriver := \"mysql\"\n\tdbUser := \"jhondoe\"\n\tdbPass := \"router\"\n\tdbName := \"goblog\"\n\tdb, err := sql.Open(dbDriver, dbUser+\":\"+dbPass+\"@/\"+dbName)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\treturn db\n}\n\n// Read All Templates on folder template\nvar tmpl = template.Must(template.ParseGlob(\"template/*\"))\n\n// Index Page\nfunc Index(w http.ResponseWriter, r *http.Request) {\n\tdb := dbConnect()\n\trows, err := db.Query(\"SELECT * FROM Employee ORDER BY id DESC\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\temp := Employee{}\n\tres := []Employee{}\n\tfor rows.Next() {\n\t\tvar id int\n\t\tvar name, city string\n\t\terr = rows.Scan(&amp;id, &amp;name, &amp;city)\n\t\tif err != nil {\n\t\t\tpanic(err.Error())\n\t\t}\n\t\temp.ID = id\n\t\temp.Name = name\n\t\temp.City = city\n\t\tres = append(res, emp)\n\t}\n\ttmpl.ExecuteTemplate(w, \"Index\", res)\n\tdefer db.Close()\n}\n\n// Show Single Item\nfunc Show(w http.ResponseWriter, r *http.Request) {\n\tdb := dbConnect()\n\tnID := r.URL.Query().Get(\"id\")\n\trows, err := db.Query(\"SELECT * FROM Employee WHERE id = ?\", nID)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\temp := Employee{}\n\tfor rows.Next() {\n\t\tvar id int\n\t\tvar name, city string\n\t\terr = rows.Scan(&amp;id, &amp;name, &amp;city)\n\t\tif err != nil {\n\t\t\tpanic(err.Error())\n\t\t}\n\t\temp.ID = id\n\t\temp.Name = name\n\t\temp.City = city\n\t}\n\ttmpl.ExecuteTemplate(w, \"Show\", emp)\n\tdefer db.Close()\n}\n\n// Show New Page\nfunc New(w http.ResponseWriter, r *http.Request) {\n\ttmpl.ExecuteTemplate(w, \"New\", nil)\n}\n\n// Edit Item\nfunc Edit(w http.ResponseWriter, r *http.Request) {\n\tdb := dbConnect()\n\tnID := r.URL.Query().Get(\"id\")\n\trows, err := db.Query(\"SELECT * FROM Employee WHERE id = ?\", nID)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\temp := Employee{}\n\tfor rows.Next() {\n\t\tvar id int\n\t\tvar name, city string\n\t\terr = rows.Scan(&amp;id, &amp;name, &amp;city)\n\t\tif err != nil {\n\t\t\tpanic(err.Error())\n\t\t}\n\t\temp.ID = id\n\t\temp.Name = name\n\t\temp.City = city\n\t}\n\ttmpl.ExecuteTemplate(w, \"Edit\", emp)\n\tdefer db.Close()\n}\n\n// Insert Item\nfunc Insert(w http.ResponseWriter, r *http.Request) {\n\tdb := dbConnect()\n\tif r.Method == \"POST\" {\n\t\tname := r.FormValue(\"name\")\n\t\tcity := r.FormValue(\"city\")\n\t\tinsert, err := db.Prepare(\"INSERT INTO Employee (name, city) VALUES(?, ?)\")\n\t\tif err != nil {\n\t\t\tpanic(err.Error())\n\t\t}\n\t\tinsert.Exec(name, city)\n\t\tlog.Println(\"INSERT: Name: \" + name + \" | City: \" + city)\n\t}\n\tdefer db.Close()\n\thttp.Redirect(w, r, \"/\", 301)\n}\n\n// Update Item\nfunc Update(w http.ResponseWriter, r *http.Request) {\n\tdb := dbConnect()\n\tif r.Method == \"POST\" {\n\t\tname := r.FormValue(\"name\")\n\t\tcity := r.FormValue(\"city\")\n\t\tid := r.FormValue(\"uid\")\n\t\tinsert, err := db.Prepare(\"UPDATE Employee SET name = ?, city = ? WHERE id = ?\")\n\t\tif err != nil {\n\t\t\tpanic(err.Error())\n\t\t}\n\t\tinsert.Exec(name, city, id)\n\t\tlog.Println(\"UPDATE: Name: \" + name + \" | City: \" + city)\n\t}\n\tdefer db.Close()\n\thttp.Redirect(w, r, \"/\", 301)\n}\n\n// Delete Item\nfunc Delete(w http.ResponseWriter, r *http.Request) {\n\tdb := dbConnect()\n\temp := r.URL.Query().Get(\"id\")\n\tdelete, err := db.Prepare(\"DELETE FROM Employee WHERE id = ?\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tdelete.Exec(emp)\n\tlog.Println(\"DELETE\")\n\tdefer db.Close()\n\thttp.Redirect(w, r, \"/\", 301)\n}\n\nfunc main() {\n\tlog.Println(\"Server started on: http://192.168.5.2:4000\")\n\t// Routes\n\thttp.HandleFunc(\"/\", Index)\n\thttp.HandleFunc(\"/show\", Show)\n\thttp.HandleFunc(\"/new\", New)\n\thttp.HandleFunc(\"/edit\", Edit)\n\thttp.HandleFunc(\"/insert\", Insert)\n\thttp.HandleFunc(\"/update\", Update)\n\thttp.HandleFunc(\"/delete\", Delete)\n\t// Start server on port 4000\n\thttp.ListenAndServe(\"192.168.5.2:4000\", nil)\n}\n\n\nNote the script http://192.168.5.2:4000, this is the IP and Port that Go Lang will use to access the Web browser. Use the git command to initialize your Go Lang project.\n\nroot@ns7:/var/FreeBSD-Golang-MySQL # go mod init github.com/iwanse1977/FreeBSD-Golang-MySQL\nroot@ns7:/var/FreeBSD-Golang-MySQL # go mod tidy\nroot@ns7:/var/FreeBSD-Golang-MySQL # go get github.com/go-sql-driver/mysql\n\n\nIn your working project, create a folder “template”, and create the files Edit.tmpl, Footer.tmpl, Header.tmpl, Index.tmpl, Menu.tmpl, New.tmpl, Show.tmpl.\n\nroot@ns7:/var/FreeBSD-Golang-MySQL # mkdir template\nroot@ns7:/var/FreeBSD-Golang-MySQL # cd template\nroot@ns7:/var/FreeBSD-Golang-MySQL/template # touch Edit.tmpl Footer.tmpl Header.tmpl Index.tmpl Menu.tmpl New.tmpl Show.tmpl\n\n\n\n  Download the script code of the “*.tmpl” file.\n\n  3. Create MySQL Database\n  Your Go lang project is almost done, just one more step. Now you create a MySQL database as the backend of Go lang. Please login to the MySQL database server, with the root password.\n\n\nroot@ns7:/var/FreeBSD-Golang-MySQL # mysql -u root -p\nEnter password: \"Enter your MySQL password\"\nWelcome to the MySQL monitor.  Commands end with ; or \\g.\nYour MySQL connection id is 83\nServer version: 8.0.35 Source distribution\n\nCopyright (c) 2000, 2023, Oracle and/or its affiliates.\n\nOracle is a registered trademark of Oracle Corporation and/or its\naffiliates. Other names may be trademarks of their respective\nowners.\n\nType 'help;' or '\\h' for help. Type '\\c' to clear the current input statement.\n\nroot@localhost [(none)]&gt;\n\n\nCreate a database “goblog” and a table “Employee”.\n\nroot@localhost [(none)]&gt; create database goblog;\nroot@localhost [(none)]&gt; use goblog;\nDatabase changed\nroot@localhost [goblog]&gt; CREATE TABLE IF NOT EXISTS `Employee` (\n    -&gt;   `id` int unsigned NOT NULL AUTO_INCREMENT,\n    -&gt;   `Name` text,\n    -&gt;   `city` text,\n    -&gt;   PRIMARY KEY (`id`)\n    -&gt; ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;\nQuery OK, 0 rows affected, 1 warning (0.02 sec)\n\nroot@localhost [goblog]&gt;\n\n\nCreate a MySQL user, so that the MySQL database can be connected to Go lang.\n\nroot@localhost [(none)]&gt; CREATE USER 'jhondoe'@'localhost' IDENTIFIED BY 'router';\nroot@localhost [(none)]&gt; GRANT ALL PRIVILEGES ON * . * TO 'jhondoe'@'localhost';\nroot@localhost [(none)]&gt; FLUSH PRIVILEGES;\n\n\n4. Run the application\nNow that we have implemented all the MySQL and Go lang operations, it’s time to test our application. Whether it works or not.\n\nOpen the Google Chrome web browser, and run the command “http://192.168.5.2:4000”. If all the above configurations are correct, Google Chrome will display the following image.\n\nroot@ns7:~ # cd /var/FreeBSD-Golang-MySQL\nroot@ns7:/var/FreeBSD-Golang-MySQL # go run main.go\n\n\nYou can see the results in the image below.\n\n\n\nIn this article, we can learn how to create a simple CRUD application using GoLang and MySQL on a FreeBSD server. You can develop the following application with an attractive menu display. Stay tuned for our latest articles on Go Lang.\n",
+  "datePublished": "2025-01-09 16:11:10 +0300",
+  "dateModified": "2025-01-09 16:11:10 +0300",
+  "author": {
+    "@type": "Person",
+"@id": "https://penaadventure.com/#profilepage",
+"name": {"name":"UnixBSDShell's Blog","avatar":"auth/JHW500.jpg","avataralt":"Thank you for visiting our site. Have a nice day!.","bio":"penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.","location":"Moscow, Russia"},
+"url": "https://penaadventure.com/about-us",
+    "email": {"uri":null,"bitbucket":null,"codeberg":null,"codepen":null,"dribbble":null,"flickr":null,"facebook":null,"foursquare":null,"github":"datainchi@gmail.com","google_plus":null,"instagram":null,"keybase":null,"lastfm":null,"linkedin":"datainchi@gmail.com","mastodon":null,"pinterest":null,"soundcloud":null,"stackoverflow":null,"steemit":null,"steam":null,"tumblr":"datainchi@gmail.com","twitter":null,"vine":null,"weibo":null,"xing":null,"youtube":"datainchi@gmail.com"}
+  },
+"publisher": {
+"@type": "EducationalOrganization",
+"@id": "https://penaadventure.com/#organization"  },
+
+
+
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+"@id":"https://penaadventure.com/#webpage"
+  },
+  "image": {
+    "@type": "ImageObject",
+"@id":"https://penaadventure.com/#image"
+  }
+}
+
+]}</script<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SKDSF4Y03H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SKDSF4Y03H');
+</script>
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95806836, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95806836" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+ 
+    <!-- Clarity tracking code for https://penaadventure.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qrb63393nv");
+</script>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '67fb5d6234d340006720e0f69ca5be7f',
+		'format' : 'iframe',
+		'height' : 90,
+		'width' : 728,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/67fb5d6234d340006720e0f69ca5be7f/invoke.js"></script>
+
+
+<div id="main" role="main"><div class="sidebar sticky"><div itemscope itemtype="http://schema.org/Person">
+  <div class="author__avatar"><img src="https://penaadventure.com/images/auth/JHW500.jpg" class="author__avatar" alt="Thank you for visiting our site. Have a nice day!."></div>
+  <div class="author__content">
+    <h3 class="author__name">UnixBSDShell's Blog</h3><p class="author__bio">penaadventure.com is an online learning platform that provides online tutorials and videos about unix, FreeBSD, OpenBSD and Linux. Not only that, penaadventure.com also presents a variety of topics, including software development, programming, web design, and more. This blog provides various online tutorials and videos for beginners and experienced professionals. This blog also provides a Q&A forum for users to ask questions and get help from other members.</p></div>
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons"><li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Moscow, Russia</li></ul>
+  </div>
+</div></div><article class="page" itemscope itemtype="http://schema.org/CreativeWork"><meta itemprop="headline" content="FreeBSD14 Crud MysQL Server With Go Lang"><meta itemprop="description" content="CRUD, which stands for Create, Read, Update, and Delete, is a common utility in software development"><meta itemprop="datePublished" content="2025-01-09"><div class="page__inner-wrap"><header><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-09T16:11:10+03:00">2025-01-09</time> </p><h1 class="page__title" itemprop="headline">FreeBSD14 Crud MysQL Server With Go Lang
+</h1></header><section class="page__content" itemprop="text">
+        <p>Building a Restful application is one of the popular ways to build a cool blog by following a simple and scalable architecture. With CRUD, users can easily process MySQL databases. CRUD, which stands for Create, Read, Update, and Delete, is a common utility in software development. The ability to perform CRUD operations is fundamental to any application development.</p>
+
+<p>Go Lang is a popular programming language known for its efficiency, simplicity, and stability, while MySQL is a relational database management system (RDBMS) developed by Oracle based on the structured query language (SQL). While MySQL is one of the most popular database technologies in the modern big data ecosystem, and is now widely and effectively used, regardless of industry, it is clear that anyone involved with enterprise data or IT should have at least a basic understanding of MySQL.</p>
+
+<p><img src="https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud/-/raw/main/FreeBSD_Golang_CRUD.jpg" alt="cover freebsd golang go crud mysql server database" /></p>
+
+<p>With MySQL, we can learn the relational database system can immediately build a data storage system that is easy, fast, and secure. Data in MySQL is arranged according to the relational model. In this model, tables consist of rows and columns, and the relationships between data elements all follow a strict logical structure. Often people who are new to learning Golang do not know how to store data in MySQL because there are not many online resources. This article will help you understand the concept of Golang with MySQL.<br /><br /></p>
+<h2 id="1-system-specifications-used">1. System Specifications Used</h2>
+<blockquote>
+  <p>OS: FreeBSD 14.</p>
+
+  <p>IP Address: 192.168.5.2.</p>
+
+  <p>Go version: go-1.19.</p>
+
+  <p>MySql Server.</p>
+
+  <p>Hostname: ns7.
+<br /><br /></p>
+  <h2 id="2-create-a-golang-project">2. Create a Golang project</h2>
+  <p>The first step is to create a working directory to set up the development environment and start a Golang project. Follow the steps below to set up a new Golang project.</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns7:~ # cd /var
+root@ns7:/var # mkdir -p FreeBSD-Golang-MySQL
+root@ns7:/var # cd FreeBSD-Golang-MySQL
+root@ns7:/var/FreeBSD-Golang-MySQL #
+</code></pre></div></div>
+
+<p>Once you have finished creating the Go language directory, create a new file named “main.go”.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns7:/var/FreeBSD-Golang-MySQL # touch main.go
+root@ns7:/var/FreeBSD-Golang-MySQL # chmod +x main.go
+</code></pre></div></div>
+
+<p>In the file “/root/var/FreeBSD-Golang-MySQL/main.go”, you enter the script below.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package main
+
+import (
+	"database/sql"
+	"html/template"
+	"log"
+	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+// Employee Struct
+type Employee struct {
+	ID   int
+	Name string
+	City string
+}
+
+// Open Connection with MySQL Driver
+func dbConnect() (db *sql.DB) {
+	dbDriver := "mysql"
+	dbUser := "jhondoe"
+	dbPass := "router"
+	dbName := "goblog"
+	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@/"+dbName)
+	if err != nil {
+		panic(err.Error())
+	}
+	return db
+}
+
+// Read All Templates on folder template
+var tmpl = template.Must(template.ParseGlob("template/*"))
+
+// Index Page
+func Index(w http.ResponseWriter, r *http.Request) {
+	db := dbConnect()
+	rows, err := db.Query("SELECT * FROM Employee ORDER BY id DESC")
+	if err != nil {
+		panic(err.Error())
+	}
+	emp := Employee{}
+	res := []Employee{}
+	for rows.Next() {
+		var id int
+		var name, city string
+		err = rows.Scan(&amp;id, &amp;name, &amp;city)
+		if err != nil {
+			panic(err.Error())
+		}
+		emp.ID = id
+		emp.Name = name
+		emp.City = city
+		res = append(res, emp)
+	}
+	tmpl.ExecuteTemplate(w, "Index", res)
+	defer db.Close()
+}
+
+// Show Single Item
+func Show(w http.ResponseWriter, r *http.Request) {
+	db := dbConnect()
+	nID := r.URL.Query().Get("id")
+	rows, err := db.Query("SELECT * FROM Employee WHERE id = ?", nID)
+	if err != nil {
+		panic(err.Error())
+	}
+	emp := Employee{}
+	for rows.Next() {
+		var id int
+		var name, city string
+		err = rows.Scan(&amp;id, &amp;name, &amp;city)
+		if err != nil {
+			panic(err.Error())
+		}
+		emp.ID = id
+		emp.Name = name
+		emp.City = city
+	}
+	tmpl.ExecuteTemplate(w, "Show", emp)
+	defer db.Close()
+}
+
+// Show New Page
+func New(w http.ResponseWriter, r *http.Request) {
+	tmpl.ExecuteTemplate(w, "New", nil)
+}
+
+// Edit Item
+func Edit(w http.ResponseWriter, r *http.Request) {
+	db := dbConnect()
+	nID := r.URL.Query().Get("id")
+	rows, err := db.Query("SELECT * FROM Employee WHERE id = ?", nID)
+	if err != nil {
+		panic(err.Error())
+	}
+	emp := Employee{}
+	for rows.Next() {
+		var id int
+		var name, city string
+		err = rows.Scan(&amp;id, &amp;name, &amp;city)
+		if err != nil {
+			panic(err.Error())
+		}
+		emp.ID = id
+		emp.Name = name
+		emp.City = city
+	}
+	tmpl.ExecuteTemplate(w, "Edit", emp)
+	defer db.Close()
+}
+
+// Insert Item
+func Insert(w http.ResponseWriter, r *http.Request) {
+	db := dbConnect()
+	if r.Method == "POST" {
+		name := r.FormValue("name")
+		city := r.FormValue("city")
+		insert, err := db.Prepare("INSERT INTO Employee (name, city) VALUES(?, ?)")
+		if err != nil {
+			panic(err.Error())
+		}
+		insert.Exec(name, city)
+		log.Println("INSERT: Name: " + name + " | City: " + city)
+	}
+	defer db.Close()
+	http.Redirect(w, r, "/", 301)
+}
+
+// Update Item
+func Update(w http.ResponseWriter, r *http.Request) {
+	db := dbConnect()
+	if r.Method == "POST" {
+		name := r.FormValue("name")
+		city := r.FormValue("city")
+		id := r.FormValue("uid")
+		insert, err := db.Prepare("UPDATE Employee SET name = ?, city = ? WHERE id = ?")
+		if err != nil {
+			panic(err.Error())
+		}
+		insert.Exec(name, city, id)
+		log.Println("UPDATE: Name: " + name + " | City: " + city)
+	}
+	defer db.Close()
+	http.Redirect(w, r, "/", 301)
+}
+
+// Delete Item
+func Delete(w http.ResponseWriter, r *http.Request) {
+	db := dbConnect()
+	emp := r.URL.Query().Get("id")
+	delete, err := db.Prepare("DELETE FROM Employee WHERE id = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+	delete.Exec(emp)
+	log.Println("DELETE")
+	defer db.Close()
+	http.Redirect(w, r, "/", 301)
+}
+
+func main() {
+	log.Println("Server started on: http://192.168.5.2:4000")
+	// Routes
+	http.HandleFunc("/", Index)
+	http.HandleFunc("/show", Show)
+	http.HandleFunc("/new", New)
+	http.HandleFunc("/edit", Edit)
+	http.HandleFunc("/insert", Insert)
+	http.HandleFunc("/update", Update)
+	http.HandleFunc("/delete", Delete)
+	// Start server on port 4000
+	http.ListenAndServe("192.168.5.2:4000", nil)
+}
+</code></pre></div></div>
+
+<p>Note the script http://192.168.5.2:4000, this is the IP and Port that Go Lang will use to access the Web browser. Use the git command to initialize your Go Lang project.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns7:/var/FreeBSD-Golang-MySQL # go mod init github.com/iwanse1977/FreeBSD-Golang-MySQL
+root@ns7:/var/FreeBSD-Golang-MySQL # go mod tidy
+root@ns7:/var/FreeBSD-Golang-MySQL # go get github.com/go-sql-driver/mysql
+</code></pre></div></div>
+
+<p>In your working project, create a folder “template”, and create the files Edit.tmpl, Footer.tmpl, Header.tmpl, Index.tmpl, Menu.tmpl, New.tmpl, Show.tmpl.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns7:/var/FreeBSD-Golang-MySQL # mkdir template
+root@ns7:/var/FreeBSD-Golang-MySQL # cd template
+root@ns7:/var/FreeBSD-Golang-MySQL/template # touch Edit.tmpl Footer.tmpl Header.tmpl Index.tmpl Menu.tmpl New.tmpl Show.tmpl
+</code></pre></div></div>
+
+<blockquote>
+  <p><a href="https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud.git">Download the script code of the “*.tmpl” file</a>.
+<br /><br /></p>
+  <h2 id="3-create-mysql-database">3. Create MySQL Database</h2>
+  <p>Your Go lang project is almost done, just one more step. Now you create a MySQL database as the backend of Go lang. Please login to the MySQL database server, with the root password.</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns7:/var/FreeBSD-Golang-MySQL # mysql -u root -p
+Enter password: "Enter your MySQL password"
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 83
+Server version: 8.0.35 Source distribution
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+root@localhost [(none)]&gt;
+</code></pre></div></div>
+
+<p>Create a database “goblog” and a table “Employee”.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@localhost [(none)]&gt; create database goblog;
+root@localhost [(none)]&gt; use goblog;
+Database changed
+root@localhost [goblog]&gt; CREATE TABLE IF NOT EXISTS `Employee` (
+    -&gt;   `id` int unsigned NOT NULL AUTO_INCREMENT,
+    -&gt;   `Name` text,
+    -&gt;   `city` text,
+    -&gt;   PRIMARY KEY (`id`)
+    -&gt; ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
+Query OK, 0 rows affected, 1 warning (0.02 sec)
+
+root@localhost [goblog]&gt;
+</code></pre></div></div>
+
+<p>Create a MySQL user, so that the MySQL database can be connected to Go lang.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@localhost [(none)]&gt; CREATE USER 'jhondoe'@'localhost' IDENTIFIED BY 'router';
+root@localhost [(none)]&gt; GRANT ALL PRIVILEGES ON * . * TO 'jhondoe'@'localhost';
+root@localhost [(none)]&gt; FLUSH PRIVILEGES;
+</code></pre></div></div>
+
+<h2 id="4-run-the-application">4. Run the application</h2>
+<p>Now that we have implemented all the MySQL and Go lang operations, it’s time to test our application. Whether it works or not.</p>
+
+<p>Open the Google Chrome web browser, and run the command “http://192.168.5.2:4000”. If all the above configurations are correct, Google Chrome will display the following image.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ns7:~ # cd /var/FreeBSD-Golang-MySQL
+root@ns7:/var/FreeBSD-Golang-MySQL # go run main.go
+</code></pre></div></div>
+
+<p>You can see the results in the image below.</p>
+
+<p><img src="https://www.opencode.net/unixbsdshell/freebsd-golang-mysql-crud/-/raw/main/FreeBSD%20Crud%20MysQL%20With%20Go%20Lang.jpg?ref_type=heads" alt="freebsd mysql server crud golang" /></p>
+
+<p>In this article, we can learn how to create a simple CRUD application using GoLang and MySQL on a FreeBSD server. You can develop the following application with an attractive menu display. Stay tuned for our latest articles on Go Lang.</p>
+</section>
+      <footer class="page__meta"><script type="text/javascript">
+	atOptions = {
+		'key' : '9f0fbeed81ad3c9bfba81d92c5429c29',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//timdinosaur.com/9f0fbeed81ad3c9bfba81d92c5429c29/invoke.js"></script>
+
+
+        <p class="page__date"><strong><i class="fa fa-fw fa-creative-commons" aria-hidden="true"></i> License: </strong> <a href="https://creativecommons.org/licenses/by/4.0/">By:</a> UnixBSDShell's Blog</p><p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Posted:</strong> <time datetime="2025-01-09T16:11:10+03:00">2025-01-09</time></p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/tags/#database" class="page__taxonomy-item" rel="tag">DataBase</a></span>
+  </p><p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords"><a href="https://penaadventure.com/categories/#en" class="page__taxonomy-item" rel="tag">en</a><span class="sep">, </span><a href="https://penaadventure.com/categories/#freebsd" class="page__taxonomy-item" rel="tag">FreeBSD</a></span>
+  </p></footer><nav class="pagination"><a href="https://penaadventure.com/ru/linux/2025/01/02/install-mariadb-database-server-linux-ubuntu/" class="pagination--pager" title="Как установить сервер базы данных MariaDB на Linux Ubuntu
+">Previous</a><a href="https://penaadventure.com/en/openbsd/2025/01/10/configuration-freeradius-auth-freebsd-mysql/" class="pagination--pager" title="Configuring OpenBSD to Use Freeradius Auth with MySQL Server
+">Next</a></nav></div>
+  </article></div><div class="page__footer">
+      <footer><!-- start custom footer snippets -->
+<!-- end custom footer snippets --><div class="page__footer-follow">
+  <ul class="social-icons"><li><a href="https://x.com/iwanset96143401"><i class="fa fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li><li><a href="feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Atom Feed</a></li>
+    <li><a href="https://penaadventure.com/about/"><i class="fa fa-fw fa-user" aria-hidden="true"></i> About Us</a></li>
+  </ul>
+</div>
+<div class="page__footer-copyright">&copy; 2025 UnixBSDShell. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://www.inchimediatama.org/" rel="dofollow">Minimal Mistakes</a>.</div>
+</footer>
+    </div><script src="https://penaadventure.com/assets/js/main.min.js"></script></body>
+</html>
