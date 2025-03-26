@@ -167,3 +167,60 @@ mysql  Ver 15.1 Distrib 10.9.8-MariaDB, for OpenBSD (amd64) using readline 4.3
 ### b. Login to MariaDB
 Run the command below to log in to the Mariadb server.
 
+```
+ns3# mysql -u root -p
+Enter password: router123
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 3
+Server version: 10.9.8-MariaDB OpenBSD port: mariadb-server-10.9.8p0v1
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]>
+```
+
+### c. Create database, user and password
+After you have successfully logged into the MariaDB server, that means your MariaDB is running, you can run SQL commands such as creating databases, tables, deleting, replacing and others. In this example, we will explain how to create a database, username and password in MariaDB.
+
+```
+ns3# mysql -u root -p
+
+MariaDB [(none)]> CREATE DATABASE router;
+Query OK, 1 row affected (0.006 sec)
+
+MariaDB [(none)]> CREATE DATABASE captiveportal ;
+Query OK, 1 row affected (0.006 sec)
+
+MariaDB [(none)]> show databases;
+```
+
+```
+MariaDB [(none)]> CREATE USER 'steve'@'localhost' IDENTIFIED BY 'router123';
+Query OK, 0 rows affected (0.017 sec)
+
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON router.* TO 'steve'@'localhost';
+Query OK, 0 rows affected (0.004 sec)
+
+MariaDB [(none)]> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.001 sec)
+```
+
+### d. Delete database and password
+If the database you are using is no longer used and the user is no longer useful, you can delete it with the following command.
+
+```
+MariaDB [(none)]> drop database router;
+Query OK, 0 rows affected (0.014 sec)
+
+MariaDB [(none)]> drop database captiveportal;
+Query OK, 0 rows affected (0.014 sec)
+```
+
+```
+MariaDB [(none)]> DROP USER 'steve'@'localhost';
+Query OK, 0 rows affected (0.004 sec)
+```
+
+This article only contains a basic lesson on the Mariadb installation and configuration process on OpenBSD. Keep learning, because there are lots of SQL commands that can be useful, especially for web site development.
