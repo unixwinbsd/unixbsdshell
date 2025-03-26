@@ -25,3 +25,36 @@ On FreeBSD, managing and running a Ruby application usually involves determining
 In this article, we will learn about the Ruby installation process and file library dependencies for Ruby. To complete the contents of this article, we will also explain the process of creating a Ruby PATH. We have implemented the entire contents of this article on the FreeBSD 13.3 server, and you can also apply it to FreeBSD 14.<br><br/>
 ## 1. Install Ruby From ports and PKG
 There are two ways to install applications on FreeBSD, namely the ports system and the PKG package. In this article, we will use both methods. Before you start installing Ruby, update and install Ruby dependencies. Follow the method below.
+
+**Update PKG**
+```
+root@ns3:~ # pkg update -f
+root@ns3:~ # pkg upgrade -f
+```
+**Update Ports**
+```
+root@ns3:~ # portmaster -a
+root@ns3:~ # portupgrade -a
+```
+
+After that, we continue by installing the dependencies.
+
+```
+root@ns3:~ # pkg install libffi autoconf automake libyaml libedit libunwind rubygem-atk rubygem-fpm rubygem-minitar-cli puppetdb-terminus7 puppetdb-terminus8 rubygem-activemodel61
+```
+
+Once you have finished installing dependencies, continue with installing Ruby.
+
+**Install Ruby with PKG**
+```
+root@ns3:~ #  pkg install ruby32
+```
+**Install Ruby with Ports**
+```
+root@ns3:~ # cd /usr/ports/lang/ruby32
+root@ns3:/usr/ports/lang/ruby32 # make install clean
+```
+
+
+
+
