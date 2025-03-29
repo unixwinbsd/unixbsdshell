@@ -46,7 +46,6 @@ hostname1# pkg_info -Q mariadb | grep php
 Once you are sure about the version of MariaDB to be installed, let's start the installation process.
 
 ```
-Install MariaDB Server
 hostname1# pkg_add mariadb-server
 quirks-6.122 signed on 2023-09-01T21:25:11Z
 mariadb-server-10.9.4v1:(...): ok
